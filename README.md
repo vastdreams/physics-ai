@@ -1,5 +1,9 @@
 # Physics AI - Neurosymbotic Rule-Based Modular AI
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 A cutting-edge neurosymbotic rule-based modular AI system designed to break through the barriers of reality using modern AI architecture. This project aims to solve the hardest problems in physics by building an integrated map of physics that can self-code and evolve.
 
 ## Vision
@@ -47,7 +51,7 @@ physics-ai/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/abhisheksehgal/physics-ai.git
+git clone https://github.com/vastdreams/physics-ai.git
 cd physics-ai
 ```
 
@@ -102,7 +106,29 @@ MIT License - See [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! This project follows best practices for open source collaboration:
+
+- 📖 Read our [Contributing Guide](CONTRIBUTING.md)
+- 📋 Check out our [Code of Conduct](CODE_OF_CONDUCT.md)
+- 🔒 Review our [Security Policy](SECURITY.md)
+- 🐛 Report bugs via [GitHub Issues](https://github.com/vastdreams/physics-ai/issues)
+- 💡 Suggest features via [GitHub Issues](https://github.com/vastdreams/physics-ai/issues)
+- 💬 Join discussions in [GitHub Discussions](https://github.com/vastdreams/physics-ai/discussions)
+
+### Quick Contribution Steps
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Add tests if applicable
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+All pull requests require:
+- ✅ Passing tests
+- ✅ Code review approval
+- ✅ Updated documentation (if applicable)
 
 ## Author
 
