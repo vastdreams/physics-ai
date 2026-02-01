@@ -37,6 +37,8 @@ from .logs import logs_bp
 from .agents import agents_bp
 # Import evolution API blueprint
 from .evolution_api import evolution_bp
+# Import auth blueprint
+from .auth import auth_bp
 
 # Register nested blueprints under api_v1
 api_v1.register_blueprint(substrate_bp)
@@ -45,4 +47,5 @@ api_v1.register_blueprint(reasoning_bp, url_prefix='/reasoning')
 api_v1.register_blueprint(logs_bp)
 api_v1.register_blueprint(agents_bp)
 api_v1.register_blueprint(evolution_bp)
+api_v1.register_blueprint(auth_bp)
 
