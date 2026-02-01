@@ -246,3 +246,114 @@
   font-size: 0.875rem;
   line-height: 1.5;
 }
+
+/* Resizable panel styles */
+.resize-handle {
+  position: relative;
+  user-select: none;
+}
+
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transition: background-color 0.15s;
+}
+
+.resize-handle:hover::after {
+  background-color: rgba(16, 163, 127, 0.2);
+}
+
+.resize-handle:active::after {
+  background-color: rgba(16, 163, 127, 0.4);
+}
+
+/* Console/Terminal dark theme */
+.console-dark {
+  background-color: var(--color-light-950);
+  color: var(--color-light-200);
+}
+
+.console-dark ::-webkit-scrollbar-track {
+  background-color: var(--color-light-900);
+}
+
+.console-dark ::-webkit-scrollbar-thumb {
+  background-color: var(--color-light-700);
+}
+
+/* Panel transitions */
+.panel-transition {
+  transition: all 0.2s ease-out;
+}
+
+/* Slide in animations for panels */
+.animate-slide-in-right {
+  animation: slideInRight 0.2s ease-out;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp 0.2s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Cursor-style gutter */
+.resize-gutter {
+  position: relative;
+  z-index: 10;
+}
+
+.resize-gutter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transition: background-color 0.15s;
+}
+
+.resize-gutter:hover::before {
+  background-color: var(--color-accent-primary);
+}
+
+/* Focus ring */
+.focus-ring:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: var(--color-accent-primary);
+  ring-opacity: 0.5;
+}
+
+/* Keyboard shortcut hint */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.625rem;
+  font-family: var(--font-mono);
+  background-color: var(--color-light-200);
+  border: 1px solid var(--color-light-300);
+  border-radius: 0.25rem;
+  color: var(--color-light-600);
+}

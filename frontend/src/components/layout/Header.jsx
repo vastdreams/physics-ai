@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
-export default function Header({ sidebarCollapsed, onToggleSidebar, title, subtitle }) {
+export default function Header({ sidebarCollapsed, onToggleSidebar, title, subtitle, rightActions }) {
   const [isConnected, setIsConnected] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -27,7 +27,7 @@ export default function Header({ sidebarCollapsed, onToggleSidebar, title, subti
   };
 
   return (
-    <header className="h-14 bg-light-50/80 backdrop-blur-xl border-b border-light-200 flex items-center justify-between px-4 sticky top-0 z-40">
+    <header className="h-14 bg-light-50/80 backdrop-blur-xl border-b border-light-200 flex items-center justify-between px-4 sticky top-0 z-40 flex-shrink-0">
       {/* Left Section */}
       <div className="flex items-center gap-4">
         <button 
@@ -77,6 +77,14 @@ export default function Header({ sidebarCollapsed, onToggleSidebar, title, subti
           <Bell size={18} />
           <span className="absolute top-1 right-1 w-2 h-2 bg-accent-purple rounded-full" />
         </button>
+
+        {/* Divider */}
+        {rightActions && (
+          <div className="w-px h-6 bg-light-300 mx-1" />
+        )}
+
+        {/* Custom Right Actions */}
+        {rightActions}
       </div>
     </header>
   );
