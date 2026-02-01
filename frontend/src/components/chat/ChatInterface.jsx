@@ -106,6 +106,16 @@ function MessageBubble({ message, isLast }) {
           )}
         </div>
 
+        {/* Agent Metadata */}
+        {!isUser && !message.isLoading && (message.model || message.latency) && (
+          <div className="flex items-center gap-3 mt-2 text-xs text-light-400">
+            {message.model && <span>Model: {message.model}</span>}
+            {message.latency && <span>{Math.round(message.latency)}ms</span>}
+            {message.tokens && <span>{message.tokens} tokens</span>}
+            {message.provider && <span className="px-1.5 py-0.5 bg-light-200 rounded">{message.provider}</span>}
+          </div>
+        )}
+
         {/* Actions */}
         {!isUser && !message.isLoading && (
           <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -154,11 +164,18 @@ export default function ChatInterface() {
     setMessages(prev => [...prev, { role: 'assistant', isLoading: true }]);
 
     try {
-      // Call the Physics AI API
-      const response = await fetch('http://localhost:5002/api/v1/chat', {
+      // Call the DREAM Agents API
+      const apiBase = window.location.hostname === 'localhost' 
+        ? 'http://localhost:5002' 
+        : `http://${window.location.hostname}`;
+      
+      const response = await fetch(`${apiBase}/api/v1/agents/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input.trim() }),
+        body: JSON.stringify({ 
+          message: input.trim(),
+          context: messages.slice(-4).map(m => `${m.role}: ${m.content}`).join('\n')
+        }),
       });
 
       if (!response.ok) {
@@ -167,24 +184,34 @@ export default function ChatInterface() {
 
       const data = await response.json();
       
+      // Extract response from DREAM agent format
+      const agentResponse = data.response || {};
+      const content = agentResponse.content || data.message || "I've processed your request.";
+      
       // Remove loading message and add response
       setMessages(prev => [
         ...prev.slice(0, -1),
         {
           role: 'assistant',
-          content: data.response || data.message || "I've processed your request.",
+          content: content,
           code: data.code,
           simulation: data.simulation,
           reasoning: data.reasoning,
+          // Add agent metadata
+          model: agentResponse.model,
+          provider: agentResponse.provider,
+          latency: agentResponse.latency_ms,
+          tokens: agentResponse.usage?.total_tokens,
         }
       ]);
     } catch (error) {
+      console.error('Chat error:', error);
       // Remove loading message and add error
       setMessages(prev => [
         ...prev.slice(0, -1),
         {
           role: 'assistant',
-          content: `I apologize, but I'm having trouble connecting to the Physics AI backend. Please ensure the API server is running on port 5002.\n\nYou can start it with:\n\`\`\`bash\npython -m api.app\n\`\`\`\n\nIn the meantime, here's what I can help you with:\n\n• **Simulations**: Run physics simulations (harmonic oscillator, pendulum, etc.)\n• **Equations**: Solve symbolic equations\n• **Rules**: Manage inference rules\n• **Evolution**: Track code evolution`,
+          content: `I apologize, but I'm having trouble connecting to the Physics AI backend.\n\nError: ${error.message}\n\nPlease ensure the server is running. The Physics AI system includes:\n\n- **DREAM Agents**: Multi-layer AI (Gatekeeper, Workhorse, Orchestrator)\n- **522 Physics Equations** across 19 domains\n- **Simulations**: Quantum, Classical, Astrophysics\n- **Knowledge Graph**: Relational physics concepts`,
         }
       ]);
     } finally {

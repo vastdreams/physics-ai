@@ -24,7 +24,9 @@ import {
 import { clsx } from 'clsx';
 import { io } from 'socket.io-client';
 
-const API_BASE = 'http://localhost:5002';
+const API_BASE = typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+  ? `http://${window.location.hostname}` 
+  : 'http://localhost:5002';
 
 const logLevels = {
   debug: { icon: Bug, color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-300' },

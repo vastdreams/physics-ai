@@ -31,7 +31,9 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
-const API_BASE = 'http://localhost:5002';
+const API_BASE = typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+  ? `http://${window.location.hostname}` 
+  : 'http://localhost:5002';
 
 // Domain icons mapping
 const domainIcons = {
