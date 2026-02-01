@@ -17,6 +17,7 @@ Includes:
 - knowledge: Physics knowledge base (constants, equations, relationships)
 - reasoning: PageIndex-style reasoning-based retrieval
 - logs: Real-time system logging
+- agents: DREAM-style multi-layer agent system
 """
 
 from flask import Blueprint
@@ -32,10 +33,13 @@ from .knowledge import knowledge_bp
 from .reasoning import reasoning_bp
 # Import logs blueprint
 from .logs import logs_bp
+# Import agents blueprint (DREAM-style multi-layer agents)
+from .agents import agents_bp
 
 # Register nested blueprints under api_v1
 api_v1.register_blueprint(substrate_bp)
 api_v1.register_blueprint(knowledge_bp, url_prefix='/knowledge')
 api_v1.register_blueprint(reasoning_bp, url_prefix='/reasoning')
 api_v1.register_blueprint(logs_bp)
+api_v1.register_blueprint(agents_bp)
 
