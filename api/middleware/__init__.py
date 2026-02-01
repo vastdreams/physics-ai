@@ -11,12 +11,26 @@ First Principle Analysis:
 - Architecture: Middleware pipeline for request processing
 """
 
-from .auth import AuthMiddleware
+from .auth import (
+    require_auth,
+    require_role,
+    optional_auth,
+    get_current_user,
+    register_user,
+    login_user,
+    AUTH_CONFIG,
+)
 from .validation import ValidationMiddleware
 from .logging import LoggingMiddleware
 
 __all__ = [
-    'AuthMiddleware',
+    'require_auth',
+    'require_role',
+    'optional_auth',
+    'get_current_user',
+    'register_user',
+    'login_user',
+    'AUTH_CONFIG',
     'ValidationMiddleware',
     'LoggingMiddleware'
 ]
