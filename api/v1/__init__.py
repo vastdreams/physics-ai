@@ -15,6 +15,7 @@ Includes:
 - brain: Brain modal
 - substrate: PhysicsAI substrate
 - knowledge: Physics knowledge base (constants, equations, relationships)
+- reasoning: PageIndex-style reasoning-based retrieval
 """
 
 from flask import Blueprint
@@ -26,8 +27,11 @@ from . import simulate, nodes, rules, evolution, cot, vector, state_graph, conte
 from .substrate import substrate_bp
 # Import knowledge blueprint
 from .knowledge import knowledge_bp
+# Import reasoning blueprint (PageIndex-inspired)
+from .reasoning import reasoning_bp
 
 # Register nested blueprints under api_v1
 api_v1.register_blueprint(substrate_bp)
 api_v1.register_blueprint(knowledge_bp, url_prefix='/knowledge')
+api_v1.register_blueprint(reasoning_bp, url_prefix='/reasoning')
 
