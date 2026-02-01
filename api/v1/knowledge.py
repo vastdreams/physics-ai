@@ -1,21 +1,18 @@
 """
 PATH: api/v1/knowledge.py
-PURPOSE: API endpoints for the physics knowledge base (constants, equations, relationships)
+PURPOSE: REST API endpoints for the micro-modular physics knowledge base
 
 ENDPOINTS:
-- GET /api/v1/knowledge/constants - List all physical constants
-- GET /api/v1/knowledge/constants/<symbol> - Get specific constant
-- GET /api/v1/knowledge/equations - List all equations
-- GET /api/v1/knowledge/equations/<name> - Get specific equation
-- GET /api/v1/knowledge/equations/<name>/derivation - Get derivation tree
-- GET /api/v1/knowledge/domains - List all domains
-- GET /api/v1/knowledge/domains/<domain> - Get all knowledge for domain
-- GET /api/v1/knowledge/search - Search constants and equations
-- GET /api/v1/knowledge/statistics - Get database statistics
-
-DEPENDENCIES:
-- Flask: Web framework
-- physics.knowledge: Knowledge base module
+- GET /knowledge/statistics     - Graph statistics
+- GET /knowledge/nodes          - List all nodes
+- GET /knowledge/nodes/:id      - Get specific node
+- GET /knowledge/constants      - List constants
+- GET /knowledge/equations      - List equations  
+- GET /knowledge/domains        - List domains
+- GET /knowledge/domains/:name  - Get domain contents
+- GET /knowledge/path/:from/:to - Find derivation path
+- GET /knowledge/derivation/:id - Get derivation tree
+- GET /knowledge/search         - Search nodes
 """
 
 from flask import Blueprint, jsonify, request
@@ -24,337 +21,387 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from physics.knowledge import (
-    get_knowledge_base,
-    PhysicsDomain,
-    EquationStatus
-)
-
 knowledge_bp = Blueprint('knowledge', __name__)
 
 
-@knowledge_bp.route('/constants', methods=['GET'])
-def list_constants():
-    """
-    List all physical constants.
-    
-    Query params:
-    - domain: Filter by physics domain
-    - exact_only: If true, only return exactly defined constants
-    
-    Returns:
-        JSON with all constants
-    """
-    kb = get_knowledge_base()
-    domain = request.args.get('domain')
-    exact_only = request.args.get('exact_only', '').lower() == 'true'
-    
-    if domain:
-        try:
-            domain_enum = PhysicsDomain(domain)
-            constants = kb.constants.list_by_domain(domain_enum)
-        except ValueError:
-            return jsonify({
-                'error': f'Invalid domain: {domain}',
-                'valid_domains': [d.value for d in PhysicsDomain]
-            }), 400
-    else:
-        constants = kb.constants.list_all()
-    
-    if exact_only:
-        constants = {k: v for k, v in constants.items() if v.is_exact}
-    
-    return jsonify({
-        'count': len(constants),
-        'constants': {k: v.to_dict() for k, v in constants.items()}
-    })
+def get_graph():
+    """Lazy import and get the knowledge graph."""
+    from physics.knowledge import get_knowledge_graph
+    return get_knowledge_graph()
 
 
-@knowledge_bp.route('/constants/<symbol>', methods=['GET'])
-def get_constant(symbol):
-    """
-    Get a specific physical constant.
-    
-    Args:
-        symbol: The constant symbol (e.g., 'c', 'h', 'G')
-    
-    Returns:
-        JSON with constant details
-    """
-    kb = get_knowledge_base()
-    constant = kb.get_constant(symbol)
-    
-    if not constant:
-        return jsonify({
-            'error': f'Constant not found: {symbol}',
-            'hint': 'Use /api/v1/knowledge/constants to list all available constants'
-        }), 404
-    
-    return jsonify(constant.to_dict())
+def get_builder():
+    """Get a graph builder instance."""
+    from physics.knowledge import get_loader, GraphBuilder
+    return GraphBuilder(get_loader())
 
 
-@knowledge_bp.route('/equations', methods=['GET'])
-def list_equations():
-    """
-    List all physics equations.
-    
-    Query params:
-    - domain: Filter by physics domain
-    - status: Filter by verification status (fundamental, proven, empirical)
-    - limit: Maximum number of results
-    
-    Returns:
-        JSON with equations list
-    """
-    kb = get_knowledge_base()
-    domain = request.args.get('domain')
-    status = request.args.get('status')
-    limit = request.args.get('limit', type=int)
-    
-    equations = kb.equations.list_all()
-    
-    if domain:
-        try:
-            domain_enum = PhysicsDomain(domain)
-            equations = {k: v for k, v in equations.items() if v.domain == domain_enum}
-        except ValueError:
-            return jsonify({
-                'error': f'Invalid domain: {domain}',
-                'valid_domains': [d.value for d in PhysicsDomain]
-            }), 400
-    
-    if status:
-        try:
-            status_enum = EquationStatus(status)
-            equations = {k: v for k, v in equations.items() if v.status == status_enum}
-        except ValueError:
-            return jsonify({
-                'error': f'Invalid status: {status}',
-                'valid_statuses': [s.value for s in EquationStatus]
-            }), 400
-    
-    if limit:
-        equations = dict(list(equations.items())[:limit])
-    
-    return jsonify({
-        'count': len(equations),
-        'equations': {k: v.to_dict() for k, v in equations.items()}
-    })
-
-
-@knowledge_bp.route('/equations/<path:name>', methods=['GET'])
-def get_equation(name):
-    """
-    Get a specific equation by name.
-    
-    Args:
-        name: The equation name (e.g., "Newton's Second Law")
-    
-    Returns:
-        JSON with equation details
-    """
-    kb = get_knowledge_base()
-    equation = kb.get_equation(name)
-    
-    if not equation:
-        # Try searching
-        results = kb.equations.search(name)
-        if results:
-            suggestions = list(results.keys())[:5]
-            return jsonify({
-                'error': f'Equation not found: {name}',
-                'suggestions': suggestions
-            }), 404
-        return jsonify({
-            'error': f'Equation not found: {name}',
-            'hint': 'Use /api/v1/knowledge/equations to list all equations'
-        }), 404
-    
-    return jsonify(equation.to_dict())
-
-
-@knowledge_bp.route('/equations/<path:name>/derivation', methods=['GET'])
-def get_derivation(name):
-    """
-    Get the derivation tree for an equation.
-    
-    Shows what equations this derives from and what it leads to.
-    
-    Args:
-        name: The equation name
-    
-    Returns:
-        JSON with derivation relationships
-    """
-    kb = get_knowledge_base()
-    tree = kb.equations.get_derivation_tree(name)
-    
-    if not tree:
-        return jsonify({
-            'error': f'Equation not found: {name}'
-        }), 404
-    
-    return jsonify(tree)
-
-
-@knowledge_bp.route('/domains', methods=['GET'])
-def list_domains():
-    """
-    List all physics domains.
-    
-    Returns:
-        JSON with domain list and counts
-    """
-    kb = get_knowledge_base()
-    stats = kb.get_statistics()
-    
-    domains = []
-    for domain in PhysicsDomain:
-        domains.append({
-            'name': domain.value,
-            'equation_count': stats['equations_by_domain'].get(domain.value, 0)
-        })
-    
-    return jsonify({
-        'domains': domains
-    })
-
-
-@knowledge_bp.route('/domains/<domain>', methods=['GET'])
-def get_domain(domain):
-    """
-    Get all knowledge for a specific domain.
-    
-    Args:
-        domain: The domain name (e.g., 'classical_mechanics', 'quantum_mechanics')
-    
-    Returns:
-        JSON with constants and equations for that domain
-    """
-    try:
-        domain_enum = PhysicsDomain(domain)
-    except ValueError:
-        return jsonify({
-            'error': f'Invalid domain: {domain}',
-            'valid_domains': [d.value for d in PhysicsDomain]
-        }), 400
-    
-    kb = get_knowledge_base()
-    result = kb.get_domain(domain_enum)
-    
-    return jsonify({
-        'domain': domain,
-        'constants_count': len(result['constants']),
-        'equations_count': len(result['equations']),
-        'constants': {k: v.to_dict() for k, v in result['constants'].items()},
-        'equations': {k: v.to_dict() for k, v in result['equations'].items()}
-    })
-
-
-@knowledge_bp.route('/search', methods=['GET'])
-def search_knowledge():
-    """
-    Search the knowledge base.
-    
-    Query params:
-    - q: Search query (required)
-    
-    Returns:
-        JSON with matching constants and equations
-    """
-    query = request.args.get('q', '')
-    
-    if not query:
-        return jsonify({
-            'error': 'Search query required',
-            'hint': 'Use ?q=your_search_term'
-        }), 400
-    
-    kb = get_knowledge_base()
-    results = kb.search_all(query)
-    
-    return jsonify({
-        'query': query,
-        'constants_count': len(results['constants']),
-        'equations_count': len(results['equations']),
-        'constants': {k: v.to_dict() for k, v in results['constants'].items()},
-        'equations': {k: v.to_dict() for k, v in results['equations'].items()}
-    })
+def node_to_dict(node):
+    """Convert a node to a serializable dictionary."""
+    if hasattr(node, 'to_dict'):
+        return node.to_dict()
+    return {'id': str(node)}
 
 
 @knowledge_bp.route('/statistics', methods=['GET'])
 def get_statistics():
-    """
-    Get statistics about the knowledge base.
-    
-    Returns:
-        JSON with counts and breakdowns
-    """
-    kb = get_knowledge_base()
-    return jsonify(kb.get_statistics())
+    """Get knowledge graph statistics."""
+    try:
+        graph = get_graph()
+        stats = graph.get('statistics', {})
+        
+        # Add domain breakdown
+        domains = graph.get('domains', {})
+        stats['domains'] = {d: len(nodes) for d, nodes in domains.items()}
+        
+        return jsonify({
+            'success': True,
+            'statistics': stats
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/nodes', methods=['GET'])
+def list_nodes():
+    """List all nodes with optional filtering."""
+    try:
+        graph = get_graph()
+        nodes = graph.get('nodes', {})
+        
+        # Query parameters
+        node_type = request.args.get('type')
+        domain = request.args.get('domain')
+        limit = request.args.get('limit', type=int)
+        offset = request.args.get('offset', 0, type=int)
+        
+        # Filter
+        result = []
+        for node_id, node in nodes.items():
+            if node_type and node.node_type.value != node_type:
+                continue
+            if domain and node.domain != domain:
+                continue
+            result.append(node_to_dict(node))
+        
+        # Paginate
+        total = len(result)
+        if limit:
+            result = result[offset:offset + limit]
+        
+        return jsonify({
+            'success': True,
+            'total': total,
+            'offset': offset,
+            'count': len(result),
+            'nodes': result
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/nodes/<node_id>', methods=['GET'])
+def get_node(node_id):
+    """Get a specific node by ID."""
+    try:
+        graph = get_graph()
+        nodes = graph.get('nodes', {})
+        
+        if node_id not in nodes:
+            return jsonify({
+                'success': False,
+                'error': f'Node not found: {node_id}'
+            }), 404
+        
+        node = nodes[node_id]
+        node_dict = node_to_dict(node)
+        
+        # Add relation info
+        outgoing = graph.get('outgoing', {}).get(node_id, [])
+        incoming = graph.get('incoming', {}).get(node_id, [])
+        
+        node_dict['relations'] = {
+            'outgoing': outgoing,
+            'incoming': incoming
+        }
+        
+        return jsonify({
+            'success': True,
+            'node': node_dict
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/constants', methods=['GET'])
+def list_constants():
+    """List all physical constants."""
+    try:
+        graph = get_graph()
+        nodes = graph.get('nodes', {})
+        
+        from physics.knowledge.base import ConstantNode
+        
+        constants = [
+            node_to_dict(n) for n in nodes.values()
+            if isinstance(n, ConstantNode)
+        ]
+        
+        return jsonify({
+            'success': True,
+            'count': len(constants),
+            'constants': constants
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/constants/<constant_id>', methods=['GET'])
+def get_constant(constant_id):
+    """Get a specific constant."""
+    try:
+        graph = get_graph()
+        nodes = graph.get('nodes', {})
+        
+        if constant_id not in nodes:
+            return jsonify({
+                'success': False,
+                'error': f'Constant not found: {constant_id}'
+            }), 404
+        
+        from physics.knowledge.base import ConstantNode
+        node = nodes[constant_id]
+        
+        if not isinstance(node, ConstantNode):
+            return jsonify({
+                'success': False,
+                'error': f'{constant_id} is not a constant'
+            }), 400
+        
+        return jsonify({
+            'success': True,
+            'constant': node_to_dict(node)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/equations', methods=['GET'])
+def list_equations():
+    """List all equations."""
+    try:
+        graph = get_graph()
+        nodes = graph.get('nodes', {})
+        
+        from physics.knowledge.base import EquationNode
+        
+        domain = request.args.get('domain')
+        limit = request.args.get('limit', type=int)
+        
+        equations = []
+        for n in nodes.values():
+            if isinstance(n, EquationNode):
+                if domain and n.domain != domain:
+                    continue
+                equations.append(node_to_dict(n))
+        
+        if limit:
+            equations = equations[:limit]
+        
+        return jsonify({
+            'success': True,
+            'count': len(equations),
+            'equations': equations
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/equations/<equation_id>', methods=['GET'])
+def get_equation(equation_id):
+    """Get a specific equation."""
+    try:
+        graph = get_graph()
+        nodes = graph.get('nodes', {})
+        
+        if equation_id not in nodes:
+            return jsonify({
+                'success': False,
+                'error': f'Equation not found: {equation_id}'
+            }), 404
+        
+        node = nodes[equation_id]
+        node_dict = node_to_dict(node)
+        
+        # Add derivation tree
+        builder = get_builder()
+        tree = builder.get_derivation_tree(equation_id, graph, depth=2)
+        node_dict['derivation_tree'] = tree
+        
+        return jsonify({
+            'success': True,
+            'equation': node_dict
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/domains', methods=['GET'])
+def list_domains():
+    """List all physics domains."""
+    try:
+        graph = get_graph()
+        domains = graph.get('domains', {})
+        
+        domain_list = [
+            {'name': name, 'node_count': len(nodes)}
+            for name, nodes in domains.items()
+        ]
+        
+        return jsonify({
+            'success': True,
+            'count': len(domain_list),
+            'domains': domain_list
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/domains/<domain_name>', methods=['GET'])
+def get_domain(domain_name):
+    """Get all nodes in a domain."""
+    try:
+        graph = get_graph()
+        domains = graph.get('domains', {})
+        nodes = graph.get('nodes', {})
+        
+        if domain_name not in domains:
+            return jsonify({
+                'success': False,
+                'error': f'Domain not found: {domain_name}'
+            }), 404
+        
+        node_ids = domains[domain_name]
+        domain_nodes = [node_to_dict(nodes[nid]) for nid in node_ids if nid in nodes]
+        
+        return jsonify({
+            'success': True,
+            'domain': domain_name,
+            'count': len(domain_nodes),
+            'nodes': domain_nodes
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/path/<start_id>/<end_id>', methods=['GET'])
+def find_path(start_id, end_id):
+    """Find derivation path between two nodes."""
+    try:
+        graph = get_graph()
+        builder = get_builder()
+        
+        path = builder.find_path(start_id, end_id, graph)
+        
+        if path is None:
+            return jsonify({
+                'success': False,
+                'error': f'No path found from {start_id} to {end_id}'
+            }), 404
+        
+        # Get full node info for path
+        nodes = graph.get('nodes', {})
+        path_nodes = [node_to_dict(nodes[nid]) for nid in path if nid in nodes]
+        
+        return jsonify({
+            'success': True,
+            'path': path,
+            'path_nodes': path_nodes,
+            'length': len(path)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/derivation/<node_id>', methods=['GET'])
+def get_derivation(node_id):
+    """Get the derivation tree for a node."""
+    try:
+        graph = get_graph()
+        builder = get_builder()
+        
+        depth = request.args.get('depth', 3, type=int)
+        tree = builder.get_derivation_tree(node_id, graph, depth=depth)
+        
+        if not tree:
+            return jsonify({
+                'success': False,
+                'error': f'Node not found: {node_id}'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'derivation_tree': tree
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@knowledge_bp.route('/search', methods=['GET'])
+def search_nodes():
+    """Search nodes by name, description, or tags."""
+    try:
+        graph = get_graph()
+        nodes = graph.get('nodes', {})
+        
+        query = request.args.get('q', '').lower()
+        if not query:
+            return jsonify({
+                'success': False,
+                'error': 'Query parameter q is required'
+            }), 400
+        
+        results = []
+        for node_id, node in nodes.items():
+            # Search in name, description, tags
+            searchable = ' '.join([
+                node.name.lower(),
+                node.description.lower() if hasattr(node, 'description') else '',
+                ' '.join(node.tags) if hasattr(node, 'tags') else '',
+                node.domain.lower()
+            ])
+            
+            if query in searchable:
+                results.append(node_to_dict(node))
+        
+        return jsonify({
+            'success': True,
+            'query': query,
+            'count': len(results),
+            'results': results
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @knowledge_bp.route('/export', methods=['GET'])
-def export_knowledge():
-    """
-    Export the entire knowledge base.
-    
-    Returns:
-        JSON with all constants, equations, and statistics
-    """
-    kb = get_knowledge_base()
-    return jsonify(kb.export_all())
-
-
-@knowledge_bp.route('/fundamental', methods=['GET'])
-def get_fundamental():
-    """
-    Get all fundamental equations (axioms/postulates).
-    
-    Returns:
-        JSON with fundamental equations
-    """
-    kb = get_knowledge_base()
-    fundamental = kb.equations.list_by_status(EquationStatus.FUNDAMENTAL)
-    
-    return jsonify({
-        'count': len(fundamental),
-        'equations': {k: v.to_dict() for k, v in fundamental.items()}
-    })
-
-
-@knowledge_bp.route('/relationships', methods=['GET'])
-def get_relationships():
-    """
-    Get equation derivation relationships as a graph.
-    
-    Returns:
-        JSON with nodes and edges for visualization
-    """
-    kb = get_knowledge_base()
-    equations = kb.equations.list_all()
-    
-    nodes = []
-    edges = []
-    
-    for name, eq in equations.items():
-        nodes.append({
-            'id': name,
-            'domain': eq.domain.value,
-            'status': eq.status.value
-        })
+def export_graph():
+    """Export the entire knowledge graph."""
+    try:
+        graph = get_graph()
         
-        for parent in eq.derived_from:
-            if parent in equations:
-                edges.append({
-                    'source': parent,
-                    'target': name,
-                    'type': 'derives'
-                })
-    
-    return jsonify({
-        'node_count': len(nodes),
-        'edge_count': len(edges),
-        'nodes': nodes,
-        'edges': edges
-    })
+        # Convert nodes to dicts
+        nodes_dict = {nid: node_to_dict(n) for nid, n in graph.get('nodes', {}).items()}
+        relations_dict = {rid: r.to_dict() for rid, r in graph.get('relations', {}).items()}
+        
+        return jsonify({
+            'success': True,
+            'graph': {
+                'nodes': nodes_dict,
+                'relations': relations_dict,
+                'domains': graph.get('domains', {}),
+                'statistics': graph.get('statistics', {})
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
