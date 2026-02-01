@@ -73,12 +73,23 @@ This document serves as the master architecture blueprint for the Physics AI sys
   - Evolutionary algorithms
 
 #### 4. Physics Integration (`physics/`)
-- **Purpose**: Domain-specific physics knowledge
+- **Purpose**: Domain-specific physics knowledge with first-principles foundation
 - **Responsibilities**:
   - Physics model representation
   - Equation solving
-  - Theory integration
+  - Theory integration and unification
   - Experimental validation
+  - **Submodules**:
+    - `foundations/`: Conservation laws, symmetries, constraints
+    - `domains/`: Classical, quantum, field theory, statistical mechanics
+    - `unification/`: Theory synergy matrix for combining theories
+    - `knowledge/`: Physics knowledge graph
+    - `data/`: Experimental data ingestion
+    - `solvers/`: Differential, symbolic, numerical, perturbation solvers
+    - `validation/`: Physics validation system
+    - `ai_control/`: AI command and control
+    - `evolution/`: Theory evolution and refinement
+    - `integration/`: Unified simulation framework
 
 #### 5. Validators (`validators/`)
 - **Purpose**: Input/output validation

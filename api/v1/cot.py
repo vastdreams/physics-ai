@@ -1,0 +1,129 @@
+# api/v1/
+"""
+Chain-of-Thought logging endpoints.
+"""
+
+from flask import request, jsonify
+from api.v1 import api_v1
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+from utilities.cot_logging import ChainOfThoughtLogger, LogLevel
+from loggers.system_logger import SystemLogger
+
+logger = SystemLogger()
+
+# Store active CoT loggers (in production, would use proper session management)
+active_cot_loggers = {}
+
+
+@api_v1.route('/cot/tree', methods=['GET'])
+def get_cot_tree():
+    """
+    Get full CoT tree.
+    
+    Query parameters:
+    - session_id: Session ID (optional)
+    """
+    cot = ChainOfThoughtLogger()
+    step_id = cot.start_step(
+        action="API_GET_COT_TREE",
+        level=LogLevel.INFO
+    )
+    
+    try:
+        session_id = request.args.get('session_id')
+        
+        if session_id and session_id in active_cot_loggers:
+            cot = active_cot_loggers[session_id]
+        else:
+            # Return empty tree if no session
+            cot.end_step(step_id, output_data={'tree': {}}, validation_passed=True)
+            return jsonify({'tree': {}}), 200
+        
+        tree = cot.get_full_tree()
+        
+        cot.end_step(step_id, output_data={'tree_keys': list(tree.keys())}, validation_passed=True)
+        
+        return jsonify(tree), 200
+    
+    except Exception as e:
+        cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
+        logger.log(f"Error in get_cot_tree endpoint: {str(e)}", level="ERROR")
+        return jsonify({'error': str(e)}), 500
+
+
+@api_v1.route('/cot/statistics', methods=['GET'])
+def get_cot_statistics():
+    """Get CoT statistics."""
+    cot = ChainOfThoughtLogger()
+    step_id = cot.start_step(
+        action="API_GET_COT_STATISTICS",
+        level=LogLevel.INFO
+    )
+    
+    try:
+        session_id = request.args.get('session_id')
+        
+        if session_id and session_id in active_cot_loggers:
+            cot = active_cot_loggers[session_id]
+        else:
+            cot.end_step(step_id, output_data={'statistics': {}}, validation_passed=True)
+            return jsonify({'statistics': {}}), 200
+        
+        stats = cot.get_statistics()
+        
+        cot.end_step(step_id, output_data={'statistics': stats}, validation_passed=True)
+        
+        return jsonify(stats), 200
+    
+    except Exception as e:
+        cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
+        logger.log(f"Error in get_cot_statistics endpoint: {str(e)}", level="ERROR")
+        return jsonify({'error': str(e)}), 500
+
+
+@api_v1.route('/cot/export', methods=['POST'])
+def export_cot():
+    """
+    Export CoT log to JSON file.
+    
+    Request body:
+    {
+        "session_id": "...",
+        "filepath": "/path/to/output.json"
+    }
+    """
+    cot = ChainOfThoughtLogger()
+    step_id = cot.start_step(
+        action="API_EXPORT_COT",
+        level=LogLevel.INFO
+    )
+    
+    try:
+        data = request.get_json()
+        
+        if not data or 'filepath' not in data:
+            cot.end_step(step_id, output_data={'error': 'filepath required'}, validation_passed=False)
+            return jsonify({'error': 'filepath required'}), 400
+        
+        session_id = data.get('session_id')
+        filepath = data['filepath']
+        
+        if session_id and session_id in active_cot_loggers:
+            cot = active_cot_loggers[session_id]
+        else:
+            cot.end_step(step_id, output_data={'error': 'Session not found'}, validation_passed=False)
+            return jsonify({'error': 'Session not found'}), 404
+        
+        cot.export_json(filepath)
+        
+        cot.end_step(step_id, output_data={'filepath': filepath}, validation_passed=True)
+        
+        return jsonify({'success': True, 'filepath': filepath}), 200
+    
+    except Exception as e:
+        cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
+        logger.log(f"Error in export_cot endpoint: {str(e)}", level="ERROR")
+        return jsonify({'error': str(e)}), 500
+
