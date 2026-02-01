@@ -114,19 +114,19 @@ export default function Equations() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold text-dark-100">Equation Solver</h1>
-        <p className="text-dark-400 text-sm">Symbolic mathematics with step-by-step solutions</p>
+        <h1 className="text-xl font-semibold text-light-900">Equation Solver</h1>
+        <p className="text-light-500 text-sm">Symbolic mathematics with step-by-step solutions</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Input Panel */}
         <div className="lg:col-span-2 space-y-4">
           <div className="card">
-            <h3 className="font-medium text-dark-100 mb-4">Enter Equation</h3>
+            <h3 className="font-medium text-light-800 mb-4">Enter Equation</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-dark-400 mb-1 block">Equation</label>
+                <label className="text-sm text-light-600 mb-1 block">Equation</label>
                 <input
                   type="text"
                   value={equation}
@@ -134,13 +134,13 @@ export default function Equations() {
                   placeholder="e.g., F = m * a"
                   className="input font-mono"
                 />
-                <p className="text-xs text-dark-500 mt-1">
+                <p className="text-xs text-light-400 mt-1">
                   Use ** for exponents, e.g., x**2 for x²
                 </p>
               </div>
 
               <div>
-                <label className="text-sm text-dark-400 mb-1 block">Known Variables (JSON)</label>
+                <label className="text-sm text-light-600 mb-1 block">Known Variables (JSON)</label>
                 <textarea
                   value={variables}
                   onChange={(e) => setVariables(e.target.value)}
@@ -151,7 +151,7 @@ export default function Equations() {
               </div>
 
               <div>
-                <label className="text-sm text-dark-400 mb-1 block">Solve For</label>
+                <label className="text-sm text-light-600 mb-1 block">Solve For</label>
                 <input
                   type="text"
                   value={solveFor}
@@ -180,7 +180,7 @@ export default function Equations() {
           {(result || error) && (
             <div className="card">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-medium text-dark-100">Solution</h3>
+                <h3 className="font-medium text-light-800">Solution</h3>
                 <button 
                   onClick={handleCopy}
                   className="btn-ghost text-sm"
@@ -191,7 +191,7 @@ export default function Equations() {
               </div>
 
               {error && (
-                <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-400 text-sm">
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
                   {error}
                 </div>
               )}
@@ -199,11 +199,11 @@ export default function Equations() {
               {result && (
                 <div className="space-y-4">
                   {/* Solutions */}
-                  <div className="p-4 bg-accent-primary/10 border border-accent-primary/20 rounded-lg">
-                    <p className="text-sm text-dark-400 mb-1">Solutions</p>
+                  <div className="p-4 bg-accent-primary/5 border border-accent-primary/20 rounded-lg">
+                    <p className="text-sm text-light-500 mb-1">Solutions</p>
                     <div className="flex flex-wrap gap-2">
                       {result.solutions?.map((sol, i) => (
-                        <span key={i} className="px-3 py-1 bg-dark-800 rounded-lg text-lg font-mono text-accent-primary">
+                        <span key={i} className="px-3 py-1 bg-white rounded-lg text-lg font-mono text-accent-primary shadow-sm">
                           {solveFor} = {typeof sol === 'number' ? sol.toFixed(4) : sol}
                         </span>
                       ))}
@@ -213,14 +213,14 @@ export default function Equations() {
                   {/* Steps */}
                   {result.steps && (
                     <div>
-                      <p className="text-sm text-dark-400 mb-2">Solution Steps</p>
+                      <p className="text-sm text-light-500 mb-2">Solution Steps</p>
                       <div className="space-y-2">
                         {result.steps.map((step, i) => (
                           <div key={i} className="flex items-start gap-3">
-                            <span className="w-6 h-6 rounded-full bg-dark-700 text-dark-400 text-xs flex items-center justify-center flex-shrink-0">
+                            <span className="w-6 h-6 rounded-full bg-light-200 text-light-600 text-xs flex items-center justify-center flex-shrink-0">
                               {i + 1}
                             </span>
-                            <span className="text-dark-300 font-mono text-sm">{step}</span>
+                            <span className="text-light-700 font-mono text-sm">{step}</span>
                           </div>
                         ))}
                       </div>
@@ -228,7 +228,7 @@ export default function Equations() {
                   )}
 
                   {/* Method */}
-                  <div className="flex items-center gap-2 text-sm text-dark-500">
+                  <div className="flex items-center gap-2 text-sm text-light-400">
                     <Sparkles size={14} />
                     Solved using {result.method} method
                   </div>
@@ -241,22 +241,22 @@ export default function Equations() {
         {/* Examples Panel */}
         <div className="space-y-4">
           <div className="card">
-            <h3 className="font-medium text-dark-100 mb-3">Example Equations</h3>
+            <h3 className="font-medium text-light-800 mb-3">Example Equations</h3>
             <div className="space-y-2">
               {exampleEquations.map((example, i) => (
                 <button
                   key={i}
                   onClick={() => handleExample(example)}
-                  className="w-full flex items-center gap-3 p-3 bg-dark-700/50 hover:bg-dark-700 rounded-lg text-left transition-colors group"
+                  className="w-full flex items-center gap-3 p-3 bg-light-100 hover:bg-light-200 rounded-lg text-left transition-colors group"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-dark-600 group-hover:bg-accent-primary/20 flex items-center justify-center transition-colors">
-                    <BookOpen size={16} className="text-dark-400 group-hover:text-accent-primary" />
+                  <div className="w-8 h-8 rounded-lg bg-light-200 group-hover:bg-accent-primary/10 flex items-center justify-center transition-colors">
+                    <BookOpen size={16} className="text-light-500 group-hover:text-accent-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-mono text-dark-200 truncate">{example.equation}</p>
-                    <p className="text-xs text-dark-500">{example.description}</p>
+                    <p className="text-sm font-mono text-light-700 truncate">{example.equation}</p>
+                    <p className="text-xs text-light-400">{example.description}</p>
                   </div>
-                  <ChevronRight size={14} className="text-dark-500" />
+                  <ChevronRight size={14} className="text-light-400" />
                 </button>
               ))}
             </div>
@@ -264,58 +264,58 @@ export default function Equations() {
 
           {/* Quick Reference */}
           <div className="card">
-            <h3 className="font-medium text-dark-100 mb-3">Syntax Reference</h3>
+            <h3 className="font-medium text-light-800 mb-3">Syntax Reference</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-dark-400">Addition</span>
-                <code className="text-dark-300">a + b</code>
+                <span className="text-light-500">Addition</span>
+                <code className="text-light-700">a + b</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Subtraction</span>
-                <code className="text-dark-300">a - b</code>
+                <span className="text-light-500">Subtraction</span>
+                <code className="text-light-700">a - b</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Multiplication</span>
-                <code className="text-dark-300">a * b</code>
+                <span className="text-light-500">Multiplication</span>
+                <code className="text-light-700">a * b</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Division</span>
-                <code className="text-dark-300">a / b</code>
+                <span className="text-light-500">Division</span>
+                <code className="text-light-700">a / b</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Exponent</span>
-                <code className="text-dark-300">a ** b</code>
+                <span className="text-light-500">Exponent</span>
+                <code className="text-light-700">a ** b</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Square Root</span>
-                <code className="text-dark-300">sqrt(a)</code>
+                <span className="text-light-500">Square Root</span>
+                <code className="text-light-700">sqrt(a)</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Sine</span>
-                <code className="text-dark-300">sin(a)</code>
+                <span className="text-light-500">Sine</span>
+                <code className="text-light-700">sin(a)</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Cosine</span>
-                <code className="text-dark-300">cos(a)</code>
+                <span className="text-light-500">Cosine</span>
+                <code className="text-light-700">cos(a)</code>
               </div>
             </div>
           </div>
 
           {/* Constants */}
           <div className="card">
-            <h3 className="font-medium text-dark-100 mb-3">Physical Constants</h3>
+            <h3 className="font-medium text-light-800 mb-3">Physical Constants</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-dark-400">Speed of Light</span>
-                <code className="text-dark-300">c = 299792458</code>
+                <span className="text-light-500">Speed of Light</span>
+                <code className="text-light-700">c = 299792458</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Planck's Constant</span>
-                <code className="text-dark-300">h = 6.626e-34</code>
+                <span className="text-light-500">Planck's Constant</span>
+                <code className="text-light-700">h = 6.626e-34</code>
               </div>
               <div className="flex justify-between">
-                <span className="text-dark-400">Gravity</span>
-                <code className="text-dark-300">g = 9.81</code>
+                <span className="text-light-500">Gravity</span>
+                <code className="text-light-700">g = 9.81</code>
               </div>
             </div>
           </div>

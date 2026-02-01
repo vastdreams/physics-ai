@@ -40,22 +40,22 @@ function MetricCard({ title, value, change, icon: Icon, trend, unit = '' }) {
     <div className="card">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-dark-400 mb-1">{title}</p>
-          <p className="text-2xl font-semibold text-dark-100">
+          <p className="text-sm text-light-500 mb-1">{title}</p>
+          <p className="text-2xl font-semibold text-light-900">
             {value}{unit}
           </p>
           {change && (
             <div className={clsx(
               'flex items-center gap-1 mt-2 text-sm',
-              trend === 'up' ? 'text-green-400' : 'text-red-400'
+              trend === 'up' ? 'text-green-500' : 'text-red-500'
             )}>
               {trend === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
               {change}
             </div>
           )}
         </div>
-        <div className="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
-          <Icon size={20} className="text-dark-400" />
+        <div className="w-10 h-10 rounded-lg bg-light-200 flex items-center justify-center">
+          <Icon size={20} className="text-light-600" />
         </div>
       </div>
     </div>
@@ -72,10 +72,10 @@ export default function Metrics() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">System Metrics</h1>
-          <p className="text-dark-400 text-sm">Performance and usage analytics</p>
+          <h1 className="text-xl font-semibold text-light-900">System Metrics</h1>
+          <p className="text-light-500 text-sm">Performance and usage analytics</p>
         </div>
-        <div className="flex items-center gap-1 p-1 bg-dark-800 rounded-lg">
+        <div className="flex items-center gap-1 p-1 bg-light-200 rounded-lg">
           {['1h', '6h', '24h', '7d'].map((range) => (
             <button
               key={range}
@@ -83,8 +83,8 @@ export default function Metrics() {
               className={clsx(
                 'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
                 timeRange === range
-                  ? 'bg-dark-700 text-dark-100'
-                  : 'text-dark-400 hover:text-dark-200'
+                  ? 'bg-white text-light-800 shadow-sm'
+                  : 'text-light-500 hover:text-light-700'
               )}
             >
               {range}
@@ -129,24 +129,25 @@ export default function Metrics() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Request Volume */}
         <div className="card">
-          <h3 className="font-medium text-dark-100 mb-4">Request Volume</h3>
+          <h3 className="font-medium text-light-800 mb-4">Request Volume</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={timeData}>
                 <defs>
                   <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10a37f" stopOpacity={0.3}/>
+                    <stop offset="5%" stopColor="#10a37f" stopOpacity={0.2}/>
                     <stop offset="95%" stopColor="#10a37f" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#343541" />
-                <XAxis dataKey="time" stroke="#6e6e80" fontSize={12} />
-                <YAxis stroke="#6e6e80" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                <XAxis dataKey="time" stroke="#737373" fontSize={12} />
+                <YAxis stroke="#737373" fontSize={12} />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#202123', 
-                    border: '1px solid #343541',
-                    borderRadius: '8px'
+                    backgroundColor: '#ffffff', 
+                    border: '1px solid #e5e5e5',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}
                 />
                 <Area 
@@ -163,18 +164,19 @@ export default function Metrics() {
 
         {/* Latency */}
         <div className="card">
-          <h3 className="font-medium text-dark-100 mb-4">Response Latency (ms)</h3>
+          <h3 className="font-medium text-light-800 mb-4">Response Latency (ms)</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={timeData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#343541" />
-                <XAxis dataKey="time" stroke="#6e6e80" fontSize={12} />
-                <YAxis stroke="#6e6e80" fontSize={12} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+                <XAxis dataKey="time" stroke="#737373" fontSize={12} />
+                <YAxis stroke="#737373" fontSize={12} />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#202123', 
-                    border: '1px solid #343541',
-                    borderRadius: '8px'
+                    backgroundColor: '#ffffff', 
+                    border: '1px solid #e5e5e5',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}
                 />
                 <Line 
@@ -192,18 +194,19 @@ export default function Metrics() {
 
       {/* Component Usage */}
       <div className="card">
-        <h3 className="font-medium text-dark-100 mb-4">Component Resource Usage</h3>
+        <h3 className="font-medium text-light-800 mb-4">Component Resource Usage</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={componentData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#343541" />
-              <XAxis type="number" stroke="#6e6e80" fontSize={12} />
-              <YAxis dataKey="name" type="category" stroke="#6e6e80" fontSize={12} width={80} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
+              <XAxis type="number" stroke="#737373" fontSize={12} />
+              <YAxis dataKey="name" type="category" stroke="#737373" fontSize={12} width={80} />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#202123', 
-                  border: '1px solid #343541',
-                  borderRadius: '8px'
+                  backgroundColor: '#ffffff', 
+                  border: '1px solid #e5e5e5',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                 }}
               />
               <Bar dataKey="cpu" fill="#10a37f" name="CPU %" radius={[0, 4, 4, 0]} />

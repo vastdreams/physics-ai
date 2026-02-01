@@ -73,7 +73,7 @@ const models = [
 function ParameterInput({ param, value, onChange }) {
   return (
     <div className="space-y-1">
-      <label className="text-sm text-dark-400">{param.label}</label>
+      <label className="text-sm text-light-600">{param.label}</label>
       <input
         type="number"
         value={value}
@@ -206,8 +206,8 @@ export default function Simulations() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">Physics Simulations</h1>
-          <p className="text-dark-400 text-sm">Run and visualize physics models with real-time data</p>
+          <h1 className="text-xl font-semibold text-light-900">Physics Simulations</h1>
+          <p className="text-light-500 text-sm">Run and visualize physics models with real-time data</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
@@ -236,7 +236,7 @@ export default function Simulations() {
         <div className="space-y-4">
           {/* Model Selection */}
           <div className="card">
-            <h3 className="font-medium text-dark-100 mb-3">Select Model</h3>
+            <h3 className="font-medium text-light-800 mb-3">Select Model</h3>
             <div className="space-y-2">
               {models.map((model) => (
                 <button
@@ -245,26 +245,26 @@ export default function Simulations() {
                   className={clsx(
                     'w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left',
                     selectedModel.id === model.id
-                      ? 'border-accent-primary bg-accent-primary/10'
-                      : 'border-dark-700 hover:border-dark-600 hover:bg-dark-800'
+                      ? 'border-accent-primary bg-accent-primary/5'
+                      : 'border-light-300 hover:border-light-400 hover:bg-light-100'
                   )}
                 >
                   <div className={clsx(
                     'w-10 h-10 rounded-lg flex items-center justify-center',
                     selectedModel.id === model.id
                       ? 'bg-accent-primary text-white'
-                      : 'bg-dark-700 text-dark-400'
+                      : 'bg-light-200 text-light-500'
                   )}>
                     <model.icon size={20} />
                   </div>
                   <div>
                     <p className={clsx(
                       'font-medium text-sm',
-                      selectedModel.id === model.id ? 'text-accent-primary' : 'text-dark-200'
+                      selectedModel.id === model.id ? 'text-accent-primary' : 'text-light-700'
                     )}>
                       {model.name}
                     </p>
-                    <p className="text-xs text-dark-500">{model.description}</p>
+                    <p className="text-xs text-light-500">{model.description}</p>
                   </div>
                 </button>
               ))}
@@ -273,7 +273,7 @@ export default function Simulations() {
 
           {/* Parameters */}
           <div className="card">
-            <h3 className="font-medium text-dark-100 mb-3">Parameters</h3>
+            <h3 className="font-medium text-light-800 mb-3">Parameters</h3>
             <div className="space-y-3">
               {selectedModel.params.map((param) => (
                 <ParameterInput
@@ -288,7 +288,7 @@ export default function Simulations() {
 
           {/* Initial Conditions */}
           <div className="card">
-            <h3 className="font-medium text-dark-100 mb-3">Initial Conditions</h3>
+            <h3 className="font-medium text-light-800 mb-3">Initial Conditions</h3>
             <div className="space-y-3">
               {selectedModel.initial.map((param) => (
                 <ParameterInput
@@ -299,7 +299,7 @@ export default function Simulations() {
                 />
               ))}
               <div className="space-y-1">
-                <label className="text-sm text-dark-400">Duration (s)</label>
+                <label className="text-sm text-light-600">Duration (s)</label>
                 <input
                   type="number"
                   value={duration}
@@ -319,7 +319,7 @@ export default function Simulations() {
           {/* Chart */}
           <div className="card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium text-dark-100">Simulation Results</h3>
+              <h3 className="font-medium text-light-800">Simulation Results</h3>
               {results && (
                 <div className="flex items-center gap-2">
                   {results.conservation?.length === 0 ? (
@@ -338,7 +338,7 @@ export default function Simulations() {
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-400 text-sm">
+              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
                 {error}
               </div>
             )}
@@ -347,21 +347,22 @@ export default function Simulations() {
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={results.data}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#343541" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
                     <XAxis 
                       dataKey="time" 
-                      stroke="#6e6e80"
+                      stroke="#737373"
                       fontSize={12}
                       tickFormatter={(v) => v.toFixed(1)}
                     />
-                    <YAxis stroke="#6e6e80" fontSize={12} />
+                    <YAxis stroke="#737373" fontSize={12} />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: '#202123', 
-                        border: '1px solid #343541',
-                        borderRadius: '8px'
+                        backgroundColor: '#ffffff', 
+                        border: '1px solid #e5e5e5',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                       }}
-                      labelStyle={{ color: '#ececf1' }}
+                      labelStyle={{ color: '#262626' }}
                     />
                     <Legend />
                     {Object.keys(results.data[0] || {}).filter(k => k !== 'time').map((key, i) => (
@@ -378,9 +379,9 @@ export default function Simulations() {
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-80 flex items-center justify-center text-dark-500">
+              <div className="h-80 flex items-center justify-center text-light-400">
                 <div className="text-center">
-                  <Atom size={48} className="mx-auto mb-3 text-dark-600" />
+                  <Atom size={48} className="mx-auto mb-3 text-light-300" />
                   <p>Run a simulation to see results</p>
                 </div>
               </div>
@@ -390,23 +391,23 @@ export default function Simulations() {
           {/* Metadata */}
           {results && (
             <div className="card">
-              <h3 className="font-medium text-dark-100 mb-3">Simulation Metadata</h3>
+              <h3 className="font-medium text-light-800 mb-3">Simulation Metadata</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <p className="text-xs text-dark-500">Model</p>
-                  <p className="text-sm text-dark-200">{selectedModel.name}</p>
+                  <p className="text-xs text-light-500">Model</p>
+                  <p className="text-sm text-light-700">{selectedModel.name}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-dark-500">Data Points</p>
-                  <p className="text-sm text-dark-200">{results.data.length}</p>
+                  <p className="text-xs text-light-500">Data Points</p>
+                  <p className="text-sm text-light-700">{results.data.length}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-dark-500">Duration</p>
-                  <p className="text-sm text-dark-200">{duration}s</p>
+                  <p className="text-xs text-light-500">Duration</p>
+                  <p className="text-sm text-light-700">{duration}s</p>
                 </div>
                 <div>
-                  <p className="text-xs text-dark-500">Method</p>
-                  <p className="text-sm text-dark-200">{results.metadata?.demo ? 'Demo' : 'RK4'}</p>
+                  <p className="text-xs text-light-500">Method</p>
+                  <p className="text-sm text-light-700">{results.metadata?.demo ? 'Demo' : 'RK4'}</p>
                 </div>
               </div>
             </div>

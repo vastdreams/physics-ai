@@ -34,15 +34,15 @@ function StatCard({ title, value, change, icon: Icon, color }) {
   };
 
   return (
-    <div className="card group hover:border-dark-600 transition-all">
+    <div className="card group hover:border-light-400 transition-all">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm text-dark-400 mb-1">{title}</p>
-          <p className="text-2xl font-semibold text-dark-100">{value}</p>
+          <p className="text-sm text-light-500 mb-1">{title}</p>
+          <p className="text-2xl font-semibold text-light-900">{value}</p>
           {change && (
             <div className="flex items-center gap-1 mt-2">
-              <TrendingUp size={14} className="text-green-400" />
-              <span className="text-xs text-green-400">{change}</span>
+              <TrendingUp size={14} className="text-green-500" />
+              <span className="text-xs text-green-600">{change}</span>
             </div>
           )}
         </div>
@@ -70,12 +70,12 @@ function QuickAction({ title, description, icon: Icon, to, color }) {
         <Icon size={24} className="text-white" />
       </div>
       <div className="flex-1">
-        <h3 className="font-medium text-dark-100 group-hover:text-white transition-colors">
+        <h3 className="font-medium text-light-800 group-hover:text-light-900 transition-colors">
           {title}
         </h3>
-        <p className="text-sm text-dark-400">{description}</p>
+        <p className="text-sm text-light-500">{description}</p>
       </div>
-      <ArrowRight size={18} className="text-dark-500 group-hover:text-dark-300 group-hover:translate-x-1 transition-all" />
+      <ArrowRight size={18} className="text-light-400 group-hover:text-light-600 group-hover:translate-x-1 transition-all" />
     </Link>
   );
 }
@@ -84,7 +84,7 @@ function RecentActivity({ activities }) {
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium text-dark-100">Recent Activity</h3>
+        <h3 className="font-medium text-light-800">Recent Activity</h3>
         <Link to="/logs" className="text-sm text-accent-primary hover:underline">
           View all
         </Link>
@@ -94,10 +94,10 @@ function RecentActivity({ activities }) {
           <div key={i} className="flex items-start gap-3 py-2">
             <div className={clsx(
               'w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0',
-              activity.type === 'simulation' && 'bg-blue-500/20 text-blue-400',
-              activity.type === 'rule' && 'bg-purple-500/20 text-purple-400',
-              activity.type === 'evolution' && 'bg-green-500/20 text-green-400',
-              activity.type === 'error' && 'bg-red-500/20 text-red-400',
+              activity.type === 'simulation' && 'bg-blue-50 text-blue-500',
+              activity.type === 'rule' && 'bg-purple-50 text-purple-500',
+              activity.type === 'evolution' && 'bg-green-50 text-green-500',
+              activity.type === 'error' && 'bg-red-50 text-red-500',
             )}>
               {activity.type === 'simulation' && <Atom size={16} />}
               {activity.type === 'rule' && <Database size={16} />}
@@ -105,8 +105,8 @@ function RecentActivity({ activities }) {
               {activity.type === 'error' && <AlertCircle size={16} />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-dark-200 truncate">{activity.message}</p>
-              <p className="text-xs text-dark-500">{activity.time}</p>
+              <p className="text-sm text-light-700 truncate">{activity.message}</p>
+              <p className="text-xs text-light-400">{activity.time}</p>
             </div>
           </div>
         ))}
@@ -119,7 +119,7 @@ function SystemStatus({ status }) {
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium text-dark-100">System Status</h3>
+        <h3 className="font-medium text-light-800">System Status</h3>
         <span className={clsx(
           'badge',
           status.overall === 'healthy' ? 'badge-green' : 'badge-yellow'
@@ -131,16 +131,16 @@ function SystemStatus({ status }) {
         {status.components.map((component, i) => (
           <div key={i} className="flex items-center justify-between py-2">
             <div className="flex items-center gap-2">
-              <component.icon size={16} className="text-dark-400" />
-              <span className="text-sm text-dark-300">{component.name}</span>
+              <component.icon size={16} className="text-light-500" />
+              <span className="text-sm text-light-600">{component.name}</span>
             </div>
             <div className="flex items-center gap-2">
               {component.status === 'operational' ? (
-                <CheckCircle2 size={14} className="text-green-400" />
+                <CheckCircle2 size={14} className="text-green-500" />
               ) : (
-                <AlertCircle size={14} className="text-yellow-400" />
+                <AlertCircle size={14} className="text-yellow-500" />
               )}
-              <span className="text-xs text-dark-400">{component.latency}</span>
+              <span className="text-xs text-light-400">{component.latency}</span>
             </div>
           </div>
         ))}
@@ -201,14 +201,14 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="card bg-gradient-to-r from-dark-800 to-dark-850 border-dark-700 overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-accent-primary/10 to-accent-purple/10" />
+      <div className="card bg-gradient-to-r from-light-50 to-light-100 border-light-200 overflow-hidden relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-accent-primary/5 to-accent-purple/5" />
         <div className="relative flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-dark-100 mb-1">
+            <h1 className="text-xl font-semibold text-light-900 mb-1">
               Welcome back to Physics AI
             </h1>
-            <p className="text-dark-400">
+            <p className="text-light-500">
               Your neurosymbolic engine is ready for exploration
             </p>
           </div>
@@ -255,7 +255,7 @@ export default function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="space-y-3">
-          <h2 className="text-lg font-medium text-dark-100">Quick Actions</h2>
+          <h2 className="text-lg font-medium text-light-800">Quick Actions</h2>
           <QuickAction
             title="Run Simulation"
             description="Execute physics simulations with real-time visualization"

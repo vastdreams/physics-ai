@@ -21,10 +21,10 @@ import {
 import { clsx } from 'clsx';
 
 const logLevels = {
-  debug: { icon: Bug, color: 'text-gray-400', bg: 'bg-gray-500/10' },
-  info: { icon: Info, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-  warn: { icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
-  error: { icon: AlertCircle, color: 'text-red-400', bg: 'bg-red-500/10' },
+  debug: { icon: Bug, color: 'text-gray-500', bg: 'bg-gray-50' },
+  info: { icon: Info, color: 'text-blue-500', bg: 'bg-blue-50' },
+  warn: { icon: AlertTriangle, color: 'text-yellow-500', bg: 'bg-yellow-50' },
+  error: { icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
 };
 
 function LogEntry({ log }) {
@@ -35,11 +35,11 @@ function LogEntry({ log }) {
   return (
     <div 
       className={clsx(
-        'border-l-2 pl-4 py-2 hover:bg-dark-800/50 cursor-pointer transition-colors',
-        log.level === 'error' && 'border-red-500',
-        log.level === 'warn' && 'border-yellow-500',
-        log.level === 'info' && 'border-blue-500',
-        log.level === 'debug' && 'border-gray-500',
+        'border-l-2 pl-4 py-2 hover:bg-light-100 cursor-pointer transition-colors',
+        log.level === 'error' && 'border-red-400',
+        log.level === 'warn' && 'border-yellow-400',
+        log.level === 'info' && 'border-blue-400',
+        log.level === 'debug' && 'border-gray-300',
       )}
       onClick={() => setExpanded(!expanded)}
     >
@@ -49,13 +49,13 @@ function LogEntry({ log }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <span className="text-xs text-dark-500 font-mono">{log.timestamp}</span>
+            <span className="text-xs text-light-400 font-mono">{log.timestamp}</span>
             <span className={clsx('text-xs font-medium', level.color)}>[{log.level.toUpperCase()}]</span>
-            <span className="text-xs text-dark-500">{log.source}</span>
+            <span className="text-xs text-light-400">{log.source}</span>
           </div>
-          <p className="text-sm text-dark-200 font-mono">{log.message}</p>
+          <p className="text-sm text-light-700 font-mono">{log.message}</p>
           {expanded && log.details && (
-            <pre className="mt-2 p-2 bg-dark-900 rounded text-xs text-dark-400 overflow-x-auto">
+            <pre className="mt-2 p-2 bg-light-900 text-light-100 rounded text-xs overflow-x-auto">
               {JSON.stringify(log.details, null, 2)}
             </pre>
           )}
@@ -64,7 +64,7 @@ function LogEntry({ log }) {
           <ChevronDown 
             size={14} 
             className={clsx(
-              'text-dark-500 transition-transform flex-shrink-0',
+              'text-light-400 transition-transform flex-shrink-0',
               expanded && 'rotate-180'
             )} 
           />
@@ -119,20 +119,20 @@ export default function Logs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">System Logs</h1>
-          <p className="text-dark-400 text-sm">{filteredLogs.length} log entries</p>
+          <h1 className="text-xl font-semibold text-light-900">System Logs</h1>
+          <p className="text-light-500 text-sm">{filteredLogs.length} log entries</p>
         </div>
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsStreaming(!isStreaming)}
             className={clsx(
               'btn-secondary flex items-center gap-2',
-              isStreaming && 'border-green-500/50'
+              isStreaming && 'border-green-400'
             )}
           >
             <div className={clsx(
               'w-2 h-2 rounded-full',
-              isStreaming ? 'bg-green-400 animate-pulse' : 'bg-dark-500'
+              isStreaming ? 'bg-green-400 animate-pulse' : 'bg-light-400'
             )} />
             {isStreaming ? 'Live' : 'Paused'}
           </button>
@@ -140,7 +140,7 @@ export default function Logs() {
             <Download size={16} />
             Export
           </button>
-          <button onClick={handleClear} className="btn-secondary flex items-center gap-2 text-red-400 hover:text-red-300">
+          <button onClick={handleClear} className="btn-secondary flex items-center gap-2 text-red-500 hover:text-red-600">
             <Trash2 size={16} />
             Clear
           </button>
@@ -150,7 +150,7 @@ export default function Logs() {
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-light-400" />
           <input
             type="text"
             value={searchQuery}
@@ -159,7 +159,7 @@ export default function Logs() {
             className="input pl-10"
           />
         </div>
-        <div className="flex items-center gap-1 p-1 bg-dark-800 rounded-lg">
+        <div className="flex items-center gap-1 p-1 bg-light-200 rounded-lg">
           {['all', 'debug', 'info', 'warn', 'error'].map((level) => (
             <button
               key={level}
@@ -167,8 +167,8 @@ export default function Logs() {
               className={clsx(
                 'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
                 filter === level
-                  ? 'bg-dark-700 text-dark-100'
-                  : 'text-dark-400 hover:text-dark-200'
+                  ? 'bg-white text-light-800 shadow-sm'
+                  : 'text-light-500 hover:text-light-700'
               )}
             >
               {level.charAt(0).toUpperCase() + level.slice(1)}
@@ -179,16 +179,16 @@ export default function Logs() {
 
       {/* Logs */}
       <div className="card p-0 overflow-hidden">
-        <div className="bg-dark-850 px-4 py-2 border-b border-dark-700 flex items-center gap-2">
-          <Terminal size={16} className="text-dark-400" />
-          <span className="text-sm text-dark-400">Log Stream</span>
+        <div className="bg-light-100 px-4 py-2 border-b border-light-200 flex items-center gap-2">
+          <Terminal size={16} className="text-light-500" />
+          <span className="text-sm text-light-500">Log Stream</span>
         </div>
-        <div className="max-h-[600px] overflow-y-auto divide-y divide-dark-800">
+        <div className="max-h-[600px] overflow-y-auto divide-y divide-light-100">
           {filteredLogs.map((log) => (
             <LogEntry key={log.id} log={log} />
           ))}
           {filteredLogs.length === 0 && (
-            <div className="py-12 text-center text-dark-500">
+            <div className="py-12 text-center text-light-400">
               <Terminal size={48} className="mx-auto mb-3 opacity-50" />
               <p>No logs to display</p>
             </div>

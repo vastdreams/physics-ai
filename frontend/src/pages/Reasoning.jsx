@@ -70,7 +70,7 @@ function ReasoningTypeCard({ type, isSelected, onSelect }) {
       onClick={() => onSelect(type)}
       className={clsx(
         'card text-left transition-all',
-        isSelected ? 'border-accent-primary ring-1 ring-accent-primary/30' : 'hover:border-dark-600'
+        isSelected ? 'border-accent-primary ring-2 ring-accent-primary/20' : 'hover:border-light-400'
       )}
     >
       <div className="flex items-start gap-4">
@@ -81,11 +81,11 @@ function ReasoningTypeCard({ type, isSelected, onSelect }) {
           <Icon size={24} className="text-white" />
         </div>
         <div className="flex-1">
-          <h3 className="font-medium text-dark-100 mb-1">{type.name}</h3>
-          <p className="text-sm text-dark-400">{type.description}</p>
+          <h3 className="font-medium text-light-800 mb-1">{type.name}</h3>
+          <p className="text-sm text-light-500">{type.description}</p>
         </div>
         <ChevronRight size={18} className={clsx(
-          'text-dark-500 transition-colors',
+          'text-light-400 transition-colors',
           isSelected && 'text-accent-primary'
         )} />
       </div>
@@ -118,7 +118,7 @@ function ReasoningDemo({ type }) {
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium text-dark-100">Demo: {type.name}</h3>
+        <h3 className="font-medium text-light-800">Demo: {type.name}</h3>
         <button 
           onClick={handleRun}
           disabled={isProcessing}
@@ -137,10 +137,10 @@ function ReasoningDemo({ type }) {
       <div className="space-y-4 mb-6">
         {type.id === 'deductive' && (
           <div>
-            <p className="text-sm text-dark-400 mb-2">Premises</p>
+            <p className="text-sm text-light-500 mb-2">Premises</p>
             <div className="space-y-2">
               {type.example.premises.map((p, i) => (
-                <div key={i} className="p-3 bg-dark-700/50 rounded-lg text-dark-200 text-sm">
+                <div key={i} className="p-3 bg-light-100 rounded-lg text-light-700 text-sm">
                   {i + 1}. {p}
                 </div>
               ))}
@@ -150,10 +150,10 @@ function ReasoningDemo({ type }) {
         
         {type.id === 'inductive' && (
           <div>
-            <p className="text-sm text-dark-400 mb-2">Observations</p>
+            <p className="text-sm text-light-500 mb-2">Observations</p>
             <div className="space-y-2">
               {type.example.observations.map((o, i) => (
-                <div key={i} className="p-3 bg-dark-700/50 rounded-lg text-dark-200 text-sm">
+                <div key={i} className="p-3 bg-light-100 rounded-lg text-light-700 text-sm">
                   {o}
                 </div>
               ))}
@@ -163,8 +163,8 @@ function ReasoningDemo({ type }) {
 
         {type.id === 'abductive' && (
           <div>
-            <p className="text-sm text-dark-400 mb-2">Observation</p>
-            <div className="p-3 bg-dark-700/50 rounded-lg text-dark-200 text-sm">
+            <p className="text-sm text-light-500 mb-2">Observation</p>
+            <div className="p-3 bg-light-100 rounded-lg text-light-700 text-sm">
               {type.example.observation}
             </div>
           </div>
@@ -172,8 +172,8 @@ function ReasoningDemo({ type }) {
 
         {type.id === 'analogical' && (
           <div>
-            <p className="text-sm text-dark-400 mb-2">Source Analogy</p>
-            <div className="p-3 bg-dark-700/50 rounded-lg text-dark-200 text-sm">
+            <p className="text-sm text-light-500 mb-2">Source Analogy</p>
+            <div className="p-3 bg-light-100 rounded-lg text-light-700 text-sm">
               {type.example.source}
             </div>
           </div>
@@ -182,17 +182,17 @@ function ReasoningDemo({ type }) {
 
       {/* Result */}
       {result && (
-        <div className="border-t border-dark-700 pt-4">
+        <div className="border-t border-light-200 pt-4">
           <div className="flex items-center gap-2 mb-3">
             <ArrowRight size={16} className="text-accent-primary" />
-            <span className="text-sm font-medium text-dark-200">Result</span>
+            <span className="text-sm font-medium text-light-700">Result</span>
             <span className="badge-green text-[10px]">
               Confidence: {(result.confidence * 100).toFixed(0)}%
             </span>
           </div>
           
-          <div className="p-4 bg-accent-primary/10 border border-accent-primary/20 rounded-lg mb-4">
-            <p className="text-dark-100">
+          <div className="p-4 bg-accent-primary/5 border border-accent-primary/20 rounded-lg mb-4">
+            <p className="text-light-800">
               {type.id === 'deductive' && type.example.conclusion}
               {type.id === 'inductive' && type.example.generalization}
               {type.id === 'abductive' && type.example.hypothesis}
@@ -201,15 +201,15 @@ function ReasoningDemo({ type }) {
           </div>
 
           <div>
-            <p className="text-xs text-dark-500 mb-2">Reasoning Steps</p>
+            <p className="text-xs text-light-400 mb-2">Reasoning Steps</p>
             <div className="flex items-center gap-2">
               {result.steps.map((step, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <span className="px-2 py-1 bg-dark-700 rounded text-xs text-dark-300">
+                  <span className="px-2 py-1 bg-light-200 rounded text-xs text-light-600">
                     {step}
                   </span>
                   {i < result.steps.length - 1 && (
-                    <ArrowRight size={12} className="text-dark-600" />
+                    <ArrowRight size={12} className="text-light-300" />
                   )}
                 </div>
               ))}
@@ -228,14 +228,14 @@ export default function Reasoning() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold text-dark-100">Reasoning Engine</h1>
-        <p className="text-dark-400 text-sm">Four types of logical reasoning for physics analysis</p>
+        <h1 className="text-xl font-semibold text-light-900">Reasoning Engine</h1>
+        <p className="text-light-500 text-sm">Four types of logical reasoning for physics analysis</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Type Selection */}
         <div className="space-y-3">
-          <h2 className="text-sm font-medium text-dark-400">Select Reasoning Type</h2>
+          <h2 className="text-sm font-medium text-light-500">Select Reasoning Type</h2>
           {reasoningTypes.map((type) => (
             <ReasoningTypeCard
               key={type.id}

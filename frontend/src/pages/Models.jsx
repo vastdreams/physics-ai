@@ -87,7 +87,7 @@ function ModelCard({ model }) {
   return (
     <Link 
       to={`/simulations?model=${model.id}`}
-      className="card group hover:border-dark-600 transition-all"
+      className="card group hover:border-light-400 transition-all"
     >
       <div className="flex items-start gap-4">
         <div className={clsx(
@@ -98,29 +98,29 @@ function ModelCard({ model }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium text-dark-100 group-hover:text-white transition-colors">
+            <h3 className="font-medium text-light-800 group-hover:text-light-900 transition-colors">
               {model.name}
             </h3>
             <span className="badge-blue text-[10px]">{model.category}</span>
           </div>
-          <p className="text-sm text-dark-400 mb-3 line-clamp-2">{model.description}</p>
+          <p className="text-sm text-light-500 mb-3 line-clamp-2">{model.description}</p>
           
           <div className="space-y-2">
             <div>
-              <p className="text-xs text-dark-500 mb-1">Key Equations</p>
+              <p className="text-xs text-light-400 mb-1">Key Equations</p>
               <div className="flex flex-wrap gap-1">
                 {model.equations.map((eq, i) => (
-                  <code key={i} className="px-2 py-0.5 bg-dark-700 rounded text-xs text-dark-300 font-mono">
+                  <code key={i} className="px-2 py-0.5 bg-light-200 rounded text-xs text-light-700 font-mono">
                     {eq}
                   </code>
                 ))}
               </div>
             </div>
             <div>
-              <p className="text-xs text-dark-500 mb-1">Parameters</p>
+              <p className="text-xs text-light-400 mb-1">Parameters</p>
               <div className="flex flex-wrap gap-1">
                 {model.parameters.map((param, i) => (
-                  <span key={i} className="px-2 py-0.5 bg-dark-800 rounded text-xs text-dark-400">
+                  <span key={i} className="px-2 py-0.5 bg-light-100 rounded text-xs text-light-500">
                     {param}
                   </span>
                 ))}
@@ -128,7 +128,7 @@ function ModelCard({ model }) {
             </div>
           </div>
         </div>
-        <ArrowRight size={18} className="text-dark-500 group-hover:text-dark-300 group-hover:translate-x-1 transition-all flex-shrink-0" />
+        <ArrowRight size={18} className="text-light-400 group-hover:text-light-600 group-hover:translate-x-1 transition-all flex-shrink-0" />
       </div>
     </Link>
   );
@@ -150,14 +150,14 @@ export default function Models() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-semibold text-dark-100">Physics Models</h1>
-        <p className="text-dark-400 text-sm">Browse and explore available simulation models</p>
+        <h1 className="text-xl font-semibold text-light-900">Physics Models</h1>
+        <p className="text-light-500 text-sm">Browse and explore available simulation models</p>
       </div>
 
       {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-light-400" />
           <input
             type="text"
             value={searchQuery}
@@ -166,7 +166,7 @@ export default function Models() {
             className="input pl-10"
           />
         </div>
-        <div className="flex items-center gap-1 p-1 bg-dark-800 rounded-lg">
+        <div className="flex items-center gap-1 p-1 bg-light-200 rounded-lg">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -174,8 +174,8 @@ export default function Models() {
               className={clsx(
                 'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
                 categoryFilter === cat
-                  ? 'bg-dark-700 text-dark-100'
-                  : 'text-dark-400 hover:text-dark-200'
+                  ? 'bg-white text-light-800 shadow-sm'
+                  : 'text-light-500 hover:text-light-700'
               )}
             >
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -193,8 +193,8 @@ export default function Models() {
 
       {filteredModels.length === 0 && (
         <div className="card text-center py-12">
-          <Atom size={48} className="mx-auto mb-3 text-dark-600" />
-          <p className="text-dark-400">No models found</p>
+          <Atom size={48} className="mx-auto mb-3 text-light-300" />
+          <p className="text-light-400">No models found</p>
         </div>
       )}
     </div>

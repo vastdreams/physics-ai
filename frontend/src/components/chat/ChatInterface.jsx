@@ -46,7 +46,7 @@ function MessageBubble({ message, isLast }) {
   return (
     <div className={clsx(
       'group flex gap-4 py-6 px-4 animate-fade-in',
-      isUser ? 'bg-transparent' : 'bg-dark-850'
+      isUser ? 'bg-transparent' : 'bg-light-50'
     )}>
       {/* Avatar */}
       <div className={clsx(
@@ -61,7 +61,7 @@ function MessageBubble({ message, isLast }) {
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <span className="font-medium text-dark-200 text-sm">
+          <span className="font-medium text-light-800 text-sm">
             {isUser ? 'You' : 'Physics AI'}
           </span>
           {!isUser && message.reasoning && (
@@ -69,9 +69,9 @@ function MessageBubble({ message, isLast }) {
           )}
         </div>
         
-        <div className="text-dark-200 prose prose-invert prose-sm max-w-none">
+        <div className="text-light-700 prose prose-sm max-w-none">
           {message.isLoading ? (
-            <div className="flex items-center gap-2 text-dark-400">
+            <div className="flex items-center gap-2 text-light-500">
               <Loader2 size={16} className="animate-spin" />
               <span>Thinking...</span>
             </div>
@@ -81,25 +81,25 @@ function MessageBubble({ message, isLast }) {
           
           {message.code && (
             <div className="mt-3 relative">
-              <pre className="code-block text-dark-300 overflow-x-auto">
+              <pre className="code-block overflow-x-auto">
                 <code>{message.code}</code>
               </pre>
               <button 
                 onClick={() => navigator.clipboard.writeText(message.code)}
-                className="absolute top-2 right-2 p-1.5 bg-dark-800 hover:bg-dark-700 rounded transition-colors"
+                className="absolute top-2 right-2 p-1.5 bg-light-700 hover:bg-light-600 rounded transition-colors"
               >
-                <Copy size={14} className="text-dark-400" />
+                <Copy size={14} className="text-light-300" />
               </button>
             </div>
           )}
 
           {message.simulation && (
-            <div className="mt-3 p-4 bg-dark-800 rounded-lg border border-dark-700">
+            <div className="mt-3 p-4 bg-light-100 rounded-lg border border-light-300">
               <div className="flex items-center gap-2 mb-2">
                 <Atom size={16} className="text-accent-primary" />
-                <span className="text-sm font-medium text-dark-200">Simulation Result</span>
+                <span className="text-sm font-medium text-light-800">Simulation Result</span>
               </div>
-              <pre className="text-xs text-dark-400 overflow-x-auto">
+              <pre className="text-xs text-light-600 overflow-x-auto">
                 {JSON.stringify(message.simulation, null, 2)}
               </pre>
             </div>
@@ -111,12 +111,12 @@ function MessageBubble({ message, isLast }) {
           <div className="flex items-center gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
             <button 
               onClick={handleCopy}
-              className="flex items-center gap-1.5 px-2 py-1 text-xs text-dark-400 hover:text-dark-200 hover:bg-dark-800 rounded transition-colors"
+              className="flex items-center gap-1.5 px-2 py-1 text-xs text-light-500 hover:text-light-700 hover:bg-light-200 rounded transition-colors"
             >
               {copied ? <Check size={12} /> : <Copy size={12} />}
               {copied ? 'Copied' : 'Copy'}
             </button>
-            <button className="flex items-center gap-1.5 px-2 py-1 text-xs text-dark-400 hover:text-dark-200 hover:bg-dark-800 rounded transition-colors">
+            <button className="flex items-center gap-1.5 px-2 py-1 text-xs text-light-500 hover:text-light-700 hover:bg-light-200 rounded transition-colors">
               <RefreshCw size={12} />
               Regenerate
             </button>
@@ -213,8 +213,8 @@ export default function ChatInterface() {
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-primary to-accent-blue flex items-center justify-center mb-6">
               <Sparkles size={32} className="text-white" />
             </div>
-            <h2 className="text-2xl font-semibold text-dark-100 mb-2">Physics AI Assistant</h2>
-            <p className="text-dark-400 text-center max-w-md mb-8">
+            <h2 className="text-2xl font-semibold text-light-900 mb-2">Physics AI Assistant</h2>
+            <p className="text-light-500 text-center max-w-md mb-8">
               Ask me about physics simulations, equations, or any scientific questions.
               I can help you run simulations, solve equations, and explore physics concepts.
             </p>
@@ -225,12 +225,12 @@ export default function ChatInterface() {
                 <button
                   key={i}
                   onClick={() => handleSuggestion(prompt.text)}
-                  className="flex items-center gap-3 p-4 bg-dark-800 hover:bg-dark-700 border border-dark-700 hover:border-dark-600 rounded-xl text-left transition-all group"
+                  className="flex items-center gap-3 p-4 bg-light-50 hover:bg-light-100 border border-light-300 hover:border-light-400 rounded-xl text-left transition-all group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-dark-700 group-hover:bg-dark-600 flex items-center justify-center transition-colors">
-                    <prompt.icon size={20} className="text-dark-400 group-hover:text-accent-primary transition-colors" />
+                  <div className="w-10 h-10 rounded-lg bg-light-200 group-hover:bg-accent-primary/10 flex items-center justify-center transition-colors">
+                    <prompt.icon size={20} className="text-light-500 group-hover:text-accent-primary transition-colors" />
                   </div>
-                  <span className="text-sm text-dark-300 group-hover:text-dark-100 transition-colors">
+                  <span className="text-sm text-light-600 group-hover:text-light-800 transition-colors">
                     {prompt.text}
                   </span>
                 </button>
@@ -252,7 +252,7 @@ export default function ChatInterface() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-dark-800 p-4 bg-dark-900">
+      <div className="border-t border-light-200 p-4 bg-light-50">
         <div className="max-w-3xl mx-auto">
           <div className="relative">
             <textarea
@@ -262,7 +262,7 @@ export default function ChatInterface() {
               onKeyDown={handleKeyDown}
               placeholder="Ask about physics, run simulations, or solve equations..."
               rows={1}
-              className="w-full px-4 py-3 pr-12 bg-dark-800 border border-dark-700 rounded-xl text-dark-100 placeholder-dark-500 resize-none focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/30 transition-all"
+              className="w-full px-4 py-3 pr-12 bg-white border border-light-300 rounded-xl text-light-900 placeholder-light-400 resize-none focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 transition-all"
               style={{ minHeight: '52px', maxHeight: '200px' }}
             />
             <button
@@ -272,7 +272,7 @@ export default function ChatInterface() {
                 'absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all',
                 input.trim() && !isLoading
                   ? 'bg-accent-primary text-white hover:bg-accent-primary/90'
-                  : 'bg-dark-700 text-dark-500 cursor-not-allowed'
+                  : 'bg-light-200 text-light-400 cursor-not-allowed'
               )}
             >
               {isLoading ? (
@@ -282,7 +282,7 @@ export default function ChatInterface() {
               )}
             </button>
           </div>
-          <p className="text-xs text-dark-500 text-center mt-2">
+          <p className="text-xs text-light-400 text-center mt-2">
             Physics AI can make mistakes. Verify important calculations.
           </p>
         </div>

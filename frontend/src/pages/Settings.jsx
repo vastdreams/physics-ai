@@ -21,12 +21,12 @@ function SettingSection({ title, description, icon: Icon, children }) {
   return (
     <div className="card">
       <div className="flex items-start gap-4 mb-4">
-        <div className="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center flex-shrink-0">
-          <Icon size={20} className="text-dark-400" />
+        <div className="w-10 h-10 rounded-lg bg-light-200 flex items-center justify-center flex-shrink-0">
+          <Icon size={20} className="text-light-600" />
         </div>
         <div>
-          <h3 className="font-medium text-dark-100">{title}</h3>
-          <p className="text-sm text-dark-500">{description}</p>
+          <h3 className="font-medium text-light-800">{title}</h3>
+          <p className="text-sm text-light-500">{description}</p>
         </div>
       </div>
       <div className="space-y-4 pl-14">
@@ -40,19 +40,19 @@ function Toggle({ label, description, checked, onChange }) {
   return (
     <div className="flex items-center justify-between py-2">
       <div>
-        <p className="text-sm text-dark-200">{label}</p>
-        {description && <p className="text-xs text-dark-500">{description}</p>}
+        <p className="text-sm text-light-700">{label}</p>
+        {description && <p className="text-xs text-light-400">{description}</p>}
       </div>
       <button
         onClick={() => onChange(!checked)}
         className={clsx(
           'relative w-11 h-6 rounded-full transition-colors',
-          checked ? 'bg-accent-primary' : 'bg-dark-600'
+          checked ? 'bg-accent-primary' : 'bg-light-300'
         )}
       >
         <span
           className={clsx(
-            'absolute top-1 w-4 h-4 rounded-full bg-white transition-transform',
+            'absolute top-1 w-4 h-4 rounded-full bg-white transition-transform shadow-sm',
             checked ? 'left-6' : 'left-1'
           )}
         />
@@ -64,8 +64,8 @@ function Toggle({ label, description, checked, onChange }) {
 function Input({ label, description, value, onChange, type = 'text', placeholder }) {
   return (
     <div className="py-2">
-      <label className="text-sm text-dark-200 block mb-1">{label}</label>
-      {description && <p className="text-xs text-dark-500 mb-2">{description}</p>}
+      <label className="text-sm text-light-700 block mb-1">{label}</label>
+      {description && <p className="text-xs text-light-400 mb-2">{description}</p>}
       <input
         type={type}
         value={value}
@@ -80,8 +80,8 @@ function Input({ label, description, value, onChange, type = 'text', placeholder
 function Select({ label, description, value, onChange, options }) {
   return (
     <div className="py-2">
-      <label className="text-sm text-dark-200 block mb-1">{label}</label>
-      {description && <p className="text-xs text-dark-500 mb-2">{description}</p>}
+      <label className="text-sm text-light-700 block mb-1">{label}</label>
+      {description && <p className="text-xs text-light-400 mb-2">{description}</p>}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -105,7 +105,7 @@ export default function Settings() {
     defaultIntegrationMethod: 'rk4',
     enableNotifications: true,
     soundEnabled: false,
-    darkMode: true,
+    darkMode: false,
     compactView: false,
     enableEvolution: true,
     requireApproval: true,
@@ -134,7 +134,7 @@ export default function Settings() {
       defaultIntegrationMethod: 'rk4',
       enableNotifications: true,
       soundEnabled: false,
-      darkMode: true,
+      darkMode: false,
       compactView: false,
       enableEvolution: true,
       requireApproval: true,
@@ -147,8 +147,8 @@ export default function Settings() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">Settings</h1>
-          <p className="text-dark-400 text-sm">Configure your Physics AI environment</p>
+          <h1 className="text-xl font-semibold text-light-900">Settings</h1>
+          <p className="text-light-500 text-sm">Configure your Physics AI environment</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleReset} className="btn-secondary flex items-center gap-2">

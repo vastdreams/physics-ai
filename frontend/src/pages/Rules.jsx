@@ -30,12 +30,12 @@ function RuleCard({ rule, onEdit, onDelete, onTest }) {
         className="flex items-start gap-4 cursor-pointer"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="w-10 h-10 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center flex-shrink-0">
+        <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center flex-shrink-0">
           <Database size={20} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-medium text-dark-100">{rule.name}</h3>
+            <h3 className="font-medium text-light-800">{rule.name}</h3>
             <span className={clsx(
               'badge text-[10px]',
               rule.enabled ? 'badge-green' : 'badge-yellow'
@@ -46,24 +46,24 @@ function RuleCard({ rule, onEdit, onDelete, onTest }) {
               <span className="badge-blue text-[10px]">Priority: {rule.priority}</span>
             )}
           </div>
-          <p className="text-sm text-dark-400 truncate">{rule.description || 'No description'}</p>
+          <p className="text-sm text-light-500 truncate">{rule.description || 'No description'}</p>
         </div>
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button 
             onClick={(e) => { e.stopPropagation(); onTest(rule); }}
-            className="p-2 hover:bg-dark-700 rounded-lg text-dark-400 hover:text-accent-primary transition-colors"
+            className="p-2 hover:bg-light-200 rounded-lg text-light-500 hover:text-accent-primary transition-colors"
           >
             <Play size={16} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onEdit(rule); }}
-            className="p-2 hover:bg-dark-700 rounded-lg text-dark-400 hover:text-dark-200 transition-colors"
+            className="p-2 hover:bg-light-200 rounded-lg text-light-500 hover:text-light-700 transition-colors"
           >
             <Edit2 size={16} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onDelete(rule); }}
-            className="p-2 hover:bg-dark-700 rounded-lg text-dark-400 hover:text-red-400 transition-colors"
+            className="p-2 hover:bg-light-200 rounded-lg text-light-500 hover:text-red-500 transition-colors"
           >
             <Trash2 size={16} />
           </button>
@@ -71,22 +71,22 @@ function RuleCard({ rule, onEdit, onDelete, onTest }) {
         <ChevronRight 
           size={16} 
           className={clsx(
-            'text-dark-500 transition-transform',
+            'text-light-400 transition-transform',
             expanded && 'rotate-90'
           )} 
         />
       </div>
 
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-dark-700 space-y-3">
+        <div className="mt-4 pt-4 border-t border-light-200 space-y-3">
           <div>
-            <p className="text-xs text-dark-500 mb-1">Condition</p>
+            <p className="text-xs text-light-500 mb-1">Condition</p>
             <pre className="code-block text-xs overflow-x-auto">
               {JSON.stringify(rule.condition, null, 2)}
             </pre>
           </div>
           <div>
-            <p className="text-xs text-dark-500 mb-1">Action</p>
+            <p className="text-xs text-light-500 mb-1">Action</p>
             <pre className="code-block text-xs overflow-x-auto">
               {JSON.stringify(rule.action, null, 2)}
             </pre>
@@ -123,24 +123,24 @@ function AddRuleModal({ isOpen, onClose, onAdd }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-dark-800 rounded-xl border border-dark-700 w-full max-w-lg p-6 mx-4">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl border border-light-200 shadow-xl w-full max-w-lg p-6 mx-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-dark-100">Add New Rule</h2>
-          <button onClick={onClose} className="p-1 hover:bg-dark-700 rounded">
-            <X size={20} className="text-dark-400" />
+          <h2 className="text-lg font-semibold text-light-900">Add New Rule</h2>
+          <button onClick={onClose} className="p-1 hover:bg-light-200 rounded">
+            <X size={20} className="text-light-500" />
           </button>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
             {error}
           </div>
         )}
 
         <div className="space-y-4">
           <div>
-            <label className="text-sm text-dark-400 mb-1 block">Rule Name</label>
+            <label className="text-sm text-light-600 mb-1 block">Rule Name</label>
             <input
               type="text"
               value={name}
@@ -151,7 +151,7 @@ function AddRuleModal({ isOpen, onClose, onAdd }) {
           </div>
 
           <div>
-            <label className="text-sm text-dark-400 mb-1 block">Priority</label>
+            <label className="text-sm text-light-600 mb-1 block">Priority</label>
             <input
               type="number"
               value={priority}
@@ -161,7 +161,7 @@ function AddRuleModal({ isOpen, onClose, onAdd }) {
           </div>
 
           <div>
-            <label className="text-sm text-dark-400 mb-1 block">Condition (JSON)</label>
+            <label className="text-sm text-light-600 mb-1 block">Condition (JSON)</label>
             <textarea
               value={condition}
               onChange={(e) => setCondition(e.target.value)}
@@ -172,7 +172,7 @@ function AddRuleModal({ isOpen, onClose, onAdd }) {
           </div>
 
           <div>
-            <label className="text-sm text-dark-400 mb-1 block">Action (JSON)</label>
+            <label className="text-sm text-light-600 mb-1 block">Action (JSON)</label>
             <textarea
               value={action}
               onChange={(e) => setAction(e.target.value)}
@@ -308,8 +308,8 @@ export default function Rules() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-dark-100">Rule Engine</h1>
-          <p className="text-dark-400 text-sm">{rules.length} rules configured</p>
+          <h1 className="text-xl font-semibold text-light-900">Rule Engine</h1>
+          <p className="text-light-500 text-sm">{rules.length} rules configured</p>
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
@@ -323,7 +323,7 @@ export default function Rules() {
       {/* Search & Filter */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-500" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-light-400" />
           <input
             type="text"
             value={searchQuery}
@@ -342,24 +342,24 @@ export default function Rules() {
       {testResult && (
         <div className={clsx(
           'card',
-          testResult.success ? 'border-green-500/30' : 'border-dark-700'
+          testResult.success ? 'border-green-200' : 'border-light-300'
         )}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {testResult.loading ? (
                 <div className="animate-spin w-4 h-4 border-2 border-accent-primary border-t-transparent rounded-full" />
               ) : (
-                <CheckCircle2 size={16} className="text-green-400" />
+                <CheckCircle2 size={16} className="text-green-500" />
               )}
-              <span className="font-medium text-dark-200">
+              <span className="font-medium text-light-700">
                 Test Result: {testResult.rule?.name}
               </span>
             </div>
             <button 
               onClick={() => setTestResult(null)}
-              className="p-1 hover:bg-dark-700 rounded"
+              className="p-1 hover:bg-light-200 rounded"
             >
-              <X size={16} className="text-dark-400" />
+              <X size={16} className="text-light-500" />
             </button>
           </div>
           {testResult.result && (
@@ -384,8 +384,8 @@ export default function Rules() {
 
         {filteredRules.length === 0 && (
           <div className="card text-center py-12">
-            <Database size={48} className="mx-auto mb-3 text-dark-600" />
-            <p className="text-dark-400">No rules found</p>
+            <Database size={48} className="mx-auto mb-3 text-light-300" />
+            <p className="text-light-500">No rules found</p>
             <button 
               onClick={() => setShowAddModal(true)}
               className="btn-primary mt-4"

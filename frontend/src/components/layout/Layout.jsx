@@ -30,7 +30,7 @@ export default function Layout() {
   const pageInfo = pageTitles[location.pathname] || { title: 'Physics AI', subtitle: '' };
 
   return (
-    <div className="min-h-screen bg-dark-950">
+    <div className="min-h-screen bg-light-100">
       <Sidebar 
         collapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
