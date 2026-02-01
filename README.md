@@ -28,21 +28,35 @@
 
 ## 🌌 Vision
 
-**Physics AI** is an ambitious open-source project to build an AI system that can:
+<p align="center">
+  <em>"The universe is comprehensible. Let's build the AI to comprehend it."</em>
+</p>
 
-> *"Break through the barriers of reality by building an integrated map of physics that can self-code and evolve."*
+**Physics AI** is a self-evolving artificial intelligence designed to explore, unify, and expand humanity's understanding of physics.
 
-We're creating an AI that doesn't just *use* physics equations—it **understands**, **reasons about**, and **discovers** physics principles through a combination of neural pattern recognition and symbolic logical reasoning.
+### The Problem
 
-### The Grand Challenge
+For a century, physics has been split: **Quantum Mechanics** describes the small, **General Relativity** describes the large—and they're incompatible. String theory is unverified. Loop quantum gravity is incomplete. The Standard Model has 19 unexplained parameters.
 
-Modern AI excels at pattern matching but struggles with:
-- **Deep reasoning** about physical laws
-- **Symbolic manipulation** of equations
-- **Self-improvement** based on physics constraints
-- **Uncertainty quantification** in predictions
+Current AI can't help because:
+- **Neural networks** recognize patterns but can't derive equations
+- **Symbolic systems** manipulate symbols but can't discover patterns
+- **Neither** can improve themselves based on physics constraints
 
-Physics AI addresses all of these through a **neurosymbolic architecture** that combines the best of both worlds.
+### Our Solution
+
+Physics AI combines what no existing system has together:
+
+| Capability | What It Does |
+|------------|--------------|
+| **Neurosymbolic Engine** | Fuses neural pattern recognition with symbolic equation manipulation |
+| **Unified Physics Graph** | Connects classical, quantum, and relativistic physics through symmetries |
+| **Self-Evolution** | Analyzes and improves its own code within physics-constrained boundaries |
+| **Human-AI Collaboration** | Augments physicists rather than replacing them |
+
+This isn't general AI. It's **narrow, physics-specific intelligence** that reasons like a physicist and evolves toward deeper understanding.
+
+📖 **[Read the full vision →](VISION.md)**
 
 ---
 
@@ -375,25 +389,33 @@ See [CONTRIBUTION_CHECKLIST.md](CONTRIBUTION_CHECKLIST.md) for detailed tasks.
 
 ## 🗺️ Roadmap
 
-### Phase 1: Foundation ✅
-- [x] Neurosymbolic engine
-- [x] Four reasoning types
+### Phase 1: Foundation ✅ *Complete*
+- [x] Neurosymbolic engine with hybrid reasoning
+- [x] Four reasoning types (deductive, inductive, abductive, analogical)
 - [x] Rule engine with pattern matching
-- [x] Physics equation solver
-- [x] Simulation models
-- [x] REST API
+- [x] Physics equation solver (SymPy integration)
+- [x] Simulation models with conservation validation
+- [x] REST API (41 endpoints) + WebSocket
+- [x] Modern web dashboard
 
-### Phase 2: Enhancement 🔄
-- [ ] Transformer-based embeddings
-- [ ] More physics domains (QFT, string theory)
-- [ ] Interactive dashboard
-- [ ] GPU acceleration
+### Phase 2: Enhancement 🔄 *In Progress*
+- [ ] Cross-domain reasoning (connect QM ↔ GR)
+- [ ] Hypothesis generation from knowledge gaps
+- [ ] arXiv paper ingestion pipeline
+- [ ] Uncertainty quantification (VECTOR framework)
+- [ ] Transformer-based physics embeddings
 
-### Phase 3: Scale 📋
-- [ ] Distributed computing
-- [ ] Real-time collaboration
-- [ ] Physics discovery pipeline
-- [ ] Paper-to-code automation
+### Phase 3: Synthesis 📋 *Planned*
+- [ ] Theory unification proposals
+- [ ] Anomaly detection in physical theories
+- [ ] Experimental guidance suggestions
+- [ ] Multi-agent physics debate system
+
+### Phase 4: Discovery 🔭 *Vision*
+- [ ] Novel prediction generation
+- [ ] Mathematical structure discovery
+- [ ] Autonomous research assistance
+- [ ] Physics breakthrough collaboration
 
 ---
 

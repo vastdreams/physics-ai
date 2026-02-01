@@ -29,7 +29,8 @@ import {
   LineChart,
   History,
   Terminal,
-  Zap
+  Zap,
+  Info
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -63,6 +64,7 @@ const navigationSections = [
       { name: 'Logs', path: '/logs', icon: Terminal },
       { name: 'Metrics', path: '/metrics', icon: LineChart },
       { name: 'Settings', path: '/settings', icon: Settings },
+      { name: 'About', path: '/about', icon: Info },
     ]
   }
 ];

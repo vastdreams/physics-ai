@@ -22,6 +22,7 @@ import Reasoning from './pages/Reasoning';
 import Logs from './pages/Logs';
 import Metrics from './pages/Metrics';
 import Settings from './pages/Settings';
+import About from './pages/About';
 import NotFound from './pages/NotFound';
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
           <Route path="logs" element={<Logs />} />
           <Route path="metrics" element={<Metrics />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
