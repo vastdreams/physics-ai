@@ -2,16 +2,16 @@
 
 <p align="center">
   <em>"The most incomprehensible thing about the universe is that it is comprehensible."</em><br/>
-  — Albert Einstein
+  - Albert Einstein
 </p>
 
 ---
 
 ## The Mission
 
-**Physics AI is building the unified open-source infrastructure for physics—a self-evolving system that accelerates discovery, validates experiments, challenges theories, and finds the unknown.**
+**Physics AI is building the unified open-source infrastructure for physics: a self-evolving system that accelerates discovery, validates experiments, challenges theories, and finds the unknown.**
 
-We're not building another calculator or AI chatbot. We're building **the operating system for physics research**—infrastructure that:
+We're not building another calculator or AI chatbot. We're building **the operating system for physics research**: infrastructure that:
 
 - **Unifies** all physics knowledge into one queryable, computable system
 - **Accelerates** calculations that would take humans weeks
@@ -20,7 +20,7 @@ We're not building another calculator or AI chatbot. We're building **the operat
 - **Challenges** existing concepts by systematic analysis
 - **Evolves** its own capabilities as physics advances
 
-This is physics infrastructure for the 21st century—open source, self-improving, and designed to help humanity solve the deepest mysteries of the universe.
+This is physics infrastructure for the 21st century: open source, self-improving, and designed to help humanity solve the deepest mysteries of the universe.
 
 ---
 
@@ -34,7 +34,7 @@ Every physicist reinvents the wheel:
 - **Validation** requires manual cross-checking across frameworks
 - **Discovery** is limited by human bandwidth and cognitive capacity
 
-There's no unified system where physics *lives*—where theories are encoded, validated, connected, and explored systematically.
+There's no unified system where physics *lives*, where theories are encoded, validated, connected, and explored systematically.
 
 ### Physics Has a Unification Problem
 
@@ -45,7 +45,7 @@ For a century, we've had two incompatible frameworks describing reality:
 | **Quantum Mechanics** | The very small | Breaks down at large scales |
 | **General Relativity** | The very large | Breaks down at small scales |
 
-Despite the efforts of brilliant minds—Einstein, Hawking, Witten—we haven't reconciled them. String theory remains unverified. Loop quantum gravity is incomplete. The Standard Model has 19 free parameters we can't derive from first principles.
+Despite the efforts of brilliant minds (Einstein, Hawking, Witten), we haven't reconciled them. String theory remains unverified. Loop quantum gravity is incomplete. The Standard Model has 19 free parameters we can't derive from first principles.
 
 ### Current Tools Can't Help
 
@@ -98,7 +98,7 @@ Physics AI is built as **layered infrastructure** that physicists can use at any
 ```
 
 ### Layer 1: 🔢 Computation Layer
-The foundation—high-performance physics computation:
+The foundation: high-performance physics computation:
 - **Symbolic solvers** for exact analytical solutions
 - **Numerical integration** (RK4, adaptive methods) for simulations
 - **Perturbation methods** for approximate solutions
@@ -124,7 +124,7 @@ Tools physicists use daily:
 - **Paper analysis**: Extract and encode knowledge from literature
 
 ### Layer 5: 🔭 Discovery Layer
-The frontier—finding the unknown:
+The frontier: finding the unknown:
 - **Gap analysis**: Where do our theories fail to predict?
 - **Theory proposal**: Generate candidate explanations
 - **Anomaly detection**: Find inconsistencies in current physics
@@ -207,7 +207,7 @@ The frontier—finding the unknown:
 
 ## The Grand Challenges We're Targeting
 
-Physics AI isn't just tools—it's infrastructure designed to help solve the biggest open problems in physics:
+Physics AI isn't just tools. It's infrastructure designed to help solve the biggest open problems in physics:
 
 ### 🔮 Quantum Gravity
 *Why can't we reconcile quantum mechanics and general relativity?*
@@ -272,7 +272,7 @@ Physics AI isn't just tools—it's infrastructure designed to help solve the big
 ## Principles
 
 ### 1. Infrastructure, Not Application
-Physics AI is **foundational infrastructure**—like Linux for operating systems or TCP/IP for networking. We build the layers that others build upon. Every physicist should be able to use this as their foundation.
+Physics AI is **foundational infrastructure**, like Linux for operating systems or TCP/IP for networking. We build the layers that others build upon. Every physicist should be able to use this as their foundation.
 
 ### 2. Physics-Constrained
 Every operation respects physical law. Outputs satisfy:
@@ -312,7 +312,7 @@ We **amplify** physicists, not replace them:
 
 ## Why This Matters
 
-Physics isn't just academic—it's the foundation of civilization:
+Physics isn't just academic. It's the foundation of civilization:
 
 | Discovery | Physics Behind It | Impact |
 |-----------|-------------------|--------|

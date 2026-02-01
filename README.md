@@ -32,7 +32,7 @@
   <em>"The operating system for physics research"</em>
 </p>
 
-**Physics AI** is unified open-source infrastructure for physics—a self-evolving system that accelerates discovery, validates experiments, proposes theories, and finds the unknown.
+**Physics AI** is unified open-source infrastructure for physics: a self-evolving system that accelerates discovery, validates experiments, proposes theories, and finds the unknown.
 
 ### The Problem
 

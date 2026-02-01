@@ -180,10 +180,10 @@ export default function About() {
         <div className="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200">
           <h4 className="font-medium text-amber-800 mb-2">Current tools can't help</h4>
           <div className="grid grid-cols-2 gap-2 text-sm text-amber-700">
-            <div>• <strong>Mathematica</strong> — No physics reasoning</div>
-            <div>• <strong>ChatGPT</strong> — No rigorous derivation</div>
-            <div>• <strong>COMSOL</strong> — No theoretical connection</div>
-            <div>• <strong>arXiv</strong> — Can't compute or validate</div>
+            <div>• <strong>Mathematica</strong>: No physics reasoning</div>
+            <div>• <strong>ChatGPT</strong>: No rigorous derivation</div>
+            <div>• <strong>COMSOL</strong>: No theoretical connection</div>
+            <div>• <strong>arXiv</strong>: Can't compute or validate</div>
           </div>
         </div>
       </section>
@@ -198,7 +198,7 @@ export default function About() {
         </div>
 
         <p className="text-light-600 mb-6">
-          Physics AI is built as layered infrastructure—use it at any level:
+          Physics AI is built as layered infrastructure. Use it at any level:
         </p>
 
         {/* Infrastructure Layers */}
@@ -463,7 +463,7 @@ export default function About() {
         </div>
 
         <p className="text-light-700 font-medium text-center">
-          Physics AI is infrastructure to remove that bottleneck—<br />
+          Physics AI is infrastructure to remove that bottleneck.<br />
           exploring physics at the speed of silicon, not the speed of grad students.
         </p>
       </section>
