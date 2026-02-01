@@ -1,18 +1,25 @@
 # api/
 """
 PATH: api/app.py
-PURPOSE: Main Flask application with WebSocket support.
+PURPOSE: Main Flask application with WebSocket support and hot reload.
 
 FLOW:
 ┌─────────────┐    ┌──────────────┐    ┌─────────────┐
 │ create_app  │───▶│ Register     │───▶│ Setup       │
 │             │    │ Blueprints   │    │ Middleware  │
 └─────────────┘    └──────────────┘    └─────────────┘
+                                              │
+                                              ▼
+                                       ┌─────────────┐
+                                       │ Hot Reload  │
+                                       │ (optional)  │
+                                       └─────────────┘
 
 DEPENDENCIES:
 - Flask: Web framework
 - flask_socketio: WebSocket support
 - api.v1: API endpoints
+- utilities.hot_reload: Auto-update system
 """
 
 from flask import Flask
@@ -33,14 +40,22 @@ logger = SystemLogger()
 # Initialize SocketIO
 socketio = SocketIO(cors_allowed_origins="*")
 
+# Global hot reloader reference
+_hot_reloader = None
 
-def create_app():
+
+def create_app(enable_hot_reload: bool = None):
     """
     Create and configure Flask application with WebSocket support.
+    
+    Args:
+        enable_hot_reload: Enable hot reload (default: True in debug mode)
     
     Returns:
         Flask application instance
     """
+    global _hot_reloader
+    
     app = Flask(__name__)
     
     # SECURITY: Use environment variable for secret key, with secure fallback
@@ -54,6 +69,10 @@ def create_app():
     
     # Register blueprints
     app.register_blueprint(api_v1)
+    
+    # Register hot reload API
+    from api.v1.hot_reload import hot_reload_bp, set_reloader
+    app.register_blueprint(hot_reload_bp)
 
     # Initialize core PhysicsAI and wire substrate API
     physics_ai = create_physics_ai()
@@ -74,7 +93,42 @@ def create_app():
     # Health check endpoint
     @app.route('/health', methods=['GET'])
     def health():
-        return {'status': 'healthy'}, 200
+        hot_reload_status = "enabled" if _hot_reloader and _hot_reloader._running else "disabled"
+        return {
+            'status': 'healthy',
+            'hot_reload': hot_reload_status,
+        }, 200
+    
+    # Initialize hot reload if enabled
+    if enable_hot_reload is None:
+        enable_hot_reload = os.getenv('ENABLE_HOT_RELOAD', 'true').lower() == 'true'
+    
+    if enable_hot_reload:
+        try:
+            from utilities.hot_reload import start_hot_reload
+            
+            def on_reload_callback(event):
+                # Emit WebSocket event when module reloads
+                if event.success:
+                    socketio.emit('module_reloaded', {
+                        'module': event.module_name,
+                        'timestamp': event.timestamp.isoformat(),
+                        'reload_time_ms': event.reload_time_ms,
+                    })
+                else:
+                    socketio.emit('module_reload_failed', {
+                        'module': event.module_name,
+                        'error': event.error[:200] if event.error else None,
+                    })
+            
+            _hot_reloader = start_hot_reload(
+                watch_dirs=['physics', 'substrate', 'api', 'core', 'rules', 'evolution', 'utilities'],
+                on_reload=on_reload_callback,
+            )
+            set_reloader(_hot_reloader)
+            logger.log("Hot reload enabled", level="INFO")
+        except Exception as e:
+            logger.log(f"Failed to enable hot reload: {e}", level="WARNING")
     
     logger.log("Flask application created with WebSocket support", level="INFO")
     

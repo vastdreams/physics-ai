@@ -16,6 +16,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { HotReloadIndicator } from '../HotReloadIndicator';
 
 export default function Header({ sidebarCollapsed, onToggleSidebar, title, subtitle, rightActions }) {
   const [isConnected, setIsConnected] = useState(true);
@@ -64,10 +65,14 @@ export default function Header({ sidebarCollapsed, onToggleSidebar, title, subti
           <span className="absolute top-1 right-1 w-2 h-2 bg-accent-primary rounded-full animate-pulse" />
         </button>
 
+        {/* Hot Reload Indicator */}
+        <HotReloadIndicator compact />
+
         {/* Refresh */}
         <button 
           onClick={handleRefresh}
           className="p-2 hover:bg-light-200 rounded-lg transition-colors text-light-500 hover:text-light-700"
+          title="Refresh page"
         >
           <RefreshCw size={18} className={clsx(isRefreshing && 'animate-spin')} />
         </button>
