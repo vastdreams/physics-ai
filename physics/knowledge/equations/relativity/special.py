@@ -1,68 +1,22 @@
 """
 PATH: physics/knowledge/equations/relativity/special.py
 PURPOSE: Special relativity equations
-
-FIRST PRINCIPLES:
-1. Laws of physics same in all inertial frames
-2. Speed of light c is constant in all frames
-These postulates lead to Lorentz transformations, time dilation,
-length contraction, and E=mc².
 """
 
-from physics.knowledge.base.node import EquationNode, PrincipleNode, NodeStatus
-
-# Principle of Relativity
-relativity_principle = PrincipleNode(
-    id="principle_of_relativity",
-    name="Principle of Relativity",
-    domain="special_relativity",
-    statement="The laws of physics are the same in all inertial reference frames.",
-    mathematical_form="Laws invariant under Lorentz transformations",
-    description="First postulate of special relativity. "
-                "No absolute rest frame can be detected.",
-    discoverer="Albert Einstein",
-    year=1905,
-    leads_to=("lorentz_transformation",),
-    tags=("postulate", "symmetry", "invariance"),
-)
-
-# Constancy of Light Speed
-light_speed_postulate = PrincipleNode(
-    id="light_speed_postulate",
-    name="Constancy of Speed of Light",
-    domain="special_relativity",
-    statement="The speed of light in vacuum is the same for all observers, "
-              "regardless of the motion of the source or observer.",
-    mathematical_form="c = constant",
-    description="Second postulate of special relativity. "
-                "Leads to breakdown of Newtonian absolute time.",
-    discoverer="Albert Einstein",
-    year=1905,
-    leads_to=("lorentz_transformation", "time_dilation"),
-    tags=("postulate", "light", "invariance"),
-)
+from physics.knowledge.base.node import EquationNode, NodeStatus
 
 # Lorentz Factor
 lorentz_factor = EquationNode(
     id="lorentz_factor",
     name="Lorentz Factor",
     domain="special_relativity",
-    latex=r"\gamma = \frac{1}{\sqrt{1 - v^2/c^2}} = \frac{1}{\sqrt{1 - \beta^2}}",
-    sympy="gamma = 1 / sqrt(1 - v**2 / c**2)",
-    variables=(
-        ("gamma", "Lorentz factor", "(dimensionless)"),
-        ("v", "Relative velocity", "m/s"),
-        ("c", "Speed of light", "m/s"),
-        ("beta", "v/c", "(dimensionless)"),
-    ),
-    description="Appears in all relativistic equations. γ → 1 as v → 0, "
-                "γ → ∞ as v → c.",
+    latex=r"\gamma = \frac{1}{\sqrt{1-v^2/c^2}} = \frac{1}{\sqrt{1-\beta^2}}",
+    sympy="gamma = 1/sqrt(1 - v**2/c**2)",
+    variables=(("gamma", "Lorentz factor", "dimensionless"), ("v", "Velocity", "m/s"), ("beta", "v/c", "dimensionless")),
+    description="Relativistic correction factor. γ = 1 at rest, → ∞ as v → c.",
     uses=("c",),
-    leads_to=("time_dilation", "length_contraction", "relativistic_momentum"),
-    discoverer="Hendrik Lorentz",
-    year=1904,
-    status=NodeStatus.PROVEN,
-    tags=("factor", "transformation"),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("relativity", "lorentz"),
 )
 
 # Time Dilation
@@ -70,20 +24,13 @@ time_dilation = EquationNode(
     id="time_dilation",
     name="Time Dilation",
     domain="special_relativity",
-    latex=r"\Delta t = \gamma \Delta t_0 = \frac{\Delta t_0}{\sqrt{1 - v^2/c^2}}",
-    sympy="delta_t = gamma * delta_t_0",
-    variables=(
-        ("delta_t", "Dilated time interval", "s"),
-        ("delta_t_0", "Proper time", "s"),
-        ("gamma", "Lorentz factor", "(dimensionless)"),
-    ),
-    description="Moving clocks run slow. Proper time is in rest frame. "
-                "Confirmed by muon decay, GPS satellites.",
+    latex=r"\Delta t = \gamma\Delta\tau = \frac{\Delta\tau}{\sqrt{1-v^2/c^2}}",
+    sympy="delta_t = gamma*delta_tau",
+    variables=(("delta_t", "Coordinate time interval", "s"), ("delta_tau", "Proper time interval", "s")),
+    description="Moving clocks run slow. Proper time τ is shortest.",
     derives_from=("lorentz_factor",),
-    discoverer="Albert Einstein",
-    year=1905,
-    status=NodeStatus.EXPERIMENTAL,
-    tags=("time", "dilation", "muon"),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("time", "dilation"),
 )
 
 # Length Contraction
@@ -91,20 +38,43 @@ length_contraction = EquationNode(
     id="length_contraction",
     name="Length Contraction",
     domain="special_relativity",
-    latex=r"L = \frac{L_0}{\gamma} = L_0\sqrt{1 - v^2/c^2}",
-    sympy="L = L_0 / gamma",
-    variables=(
-        ("L", "Contracted length", "m"),
-        ("L_0", "Proper length", "m"),
-        ("gamma", "Lorentz factor", "(dimensionless)"),
-    ),
-    description="Moving objects contract in direction of motion. "
-                "Proper length is in rest frame.",
+    latex=r"L = \frac{L_0}{\gamma} = L_0\sqrt{1-v^2/c^2}",
+    sympy="L = L_0/gamma",
+    variables=(("L", "Contracted length", "m"), ("L_0", "Proper length", "m")),
+    description="Moving objects are shortened in direction of motion.",
     derives_from=("lorentz_factor",),
-    discoverer="Hendrik Lorentz, George FitzGerald",
-    year=1892,
-    status=NodeStatus.PROVEN,
-    tags=("length", "contraction", "fitzgerald"),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("length", "contraction"),
+)
+
+# Lorentz Transformation
+lorentz_transform = EquationNode(
+    id="lorentz_transformation",
+    name="Lorentz Transformation",
+    domain="special_relativity",
+    latex=r"x' = \gamma(x - vt), \quad t' = \gamma(t - vx/c^2)",
+    sympy="x_prime = gamma*(x - v*t), t_prime = gamma*(t - v*x/c**2)",
+    variables=(("x_prime", "Transformed position", "m"), ("t_prime", "Transformed time", "s"), ("v", "Relative velocity", "m/s")),
+    description="Coordinates in moving frame. Preserves spacetime interval.",
+    derives_from=("lorentz_factor",),
+    uses=("c",),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("transformation", "lorentz"),
+)
+
+# Velocity Addition
+velocity_addition = EquationNode(
+    id="velocity_addition",
+    name="Relativistic Velocity Addition",
+    domain="special_relativity",
+    latex=r"u' = \frac{u - v}{1 - uv/c^2}",
+    sympy="u_prime = (u - v)/(1 - u*v/c**2)",
+    variables=(("u_prime", "Velocity in moving frame", "m/s"), ("u", "Velocity in lab frame", "m/s"), ("v", "Frame velocity", "m/s")),
+    description="Velocities don't simply add. No combination exceeds c.",
+    derives_from=("lorentz_transformation",),
+    uses=("c",),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("velocity", "addition"),
 )
 
 # Mass-Energy Equivalence
@@ -112,29 +82,28 @@ mass_energy = EquationNode(
     id="mass_energy_equivalence",
     name="Mass-Energy Equivalence",
     domain="special_relativity",
-    latex=r"E = mc^2 \quad E_0 = m_0 c^2 \quad E = \gamma m_0 c^2",
-    sympy="E = m * c**2",
-    variables=(
-        ("E", "Total energy", "J"),
-        ("E_0", "Rest energy", "J"),
-        ("m_0", "Rest mass", "kg"),
-        ("c", "Speed of light", "m/s"),
-    ),
-    description="Mass and energy are equivalent. Rest energy E₀ = m₀c². "
-                "Basis of nuclear energy.",
-    derivation_steps=(
-        "From relativistic momentum p = γm₀v",
-        "Work-energy: dE = v⋅dp",
-        "Integrate to get E = γm₀c²",
-        "At rest (γ=1): E₀ = m₀c²",
-    ),
-    derives_from=("lorentz_factor", "relativistic_momentum"),
+    latex=r"E = mc^2",
+    sympy="E = m*c**2",
+    variables=(("E", "Rest energy", "J"), ("m", "Rest mass", "kg")),
+    description="Most famous equation. m = 1 kg contains 9×10¹⁶ J.",
     uses=("c",),
-    leads_to=("nuclear_binding_energy", "pair_production"),
-    discoverer="Albert Einstein",
-    year=1905,
     status=NodeStatus.FUNDAMENTAL,
-    tags=("energy", "mass", "famous"),
+    tags=("energy", "mass"),
+)
+
+# Relativistic Energy
+relativistic_energy = EquationNode(
+    id="relativistic_energy",
+    name="Relativistic Total Energy",
+    domain="special_relativity",
+    latex=r"E = \gamma mc^2 = \frac{mc^2}{\sqrt{1-v^2/c^2}}",
+    sympy="E = gamma*m*c**2",
+    variables=(("E", "Total energy", "J"), ("m", "Rest mass", "kg")),
+    description="Total energy = rest energy + kinetic energy.",
+    derives_from=("lorentz_factor", "mass_energy_equivalence"),
+    uses=("c",),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("energy", "relativistic"),
 )
 
 # Relativistic Momentum
@@ -142,55 +111,104 @@ relativistic_momentum = EquationNode(
     id="relativistic_momentum",
     name="Relativistic Momentum",
     domain="special_relativity",
-    latex=r"\vec{p} = \gamma m_0 \vec{v}",
-    sympy="p = gamma * m_0 * v",
-    variables=(
-        ("p", "Momentum", "kg⋅m/s"),
-        ("gamma", "Lorentz factor", "(dimensionless)"),
-        ("m_0", "Rest mass", "kg"),
-        ("v", "Velocity", "m/s"),
-    ),
-    description="Momentum increases without bound as v → c. "
-                "Reduces to p = mv at low speeds.",
+    latex=r"p = \gamma mv = \frac{mv}{\sqrt{1-v^2/c^2}}",
+    sympy="p = gamma*m*v",
+    variables=(("p", "Momentum", "kg⋅m/s"), ("m", "Rest mass", "kg"), ("v", "Velocity", "m/s")),
+    description="Momentum → ∞ as v → c. Required infinite energy to accelerate to c.",
     derives_from=("lorentz_factor",),
-    leads_to=("mass_energy_equivalence",),
-    discoverer="Albert Einstein",
-    year=1905,
-    status=NodeStatus.PROVEN,
+    status=NodeStatus.FUNDAMENTAL,
     tags=("momentum", "relativistic"),
 )
 
 # Energy-Momentum Relation
-energy_momentum = EquationNode(
+energy_momentum_relation = EquationNode(
     id="energy_momentum_relation",
     name="Energy-Momentum Relation",
     domain="special_relativity",
-    latex=r"E^2 = (pc)^2 + (m_0 c^2)^2",
-    sympy="E**2 = (p*c)**2 + (m_0*c**2)**2",
-    variables=(
-        ("E", "Total energy", "J"),
-        ("p", "Momentum", "kg⋅m/s"),
-        ("m_0", "Rest mass", "kg"),
-        ("c", "Speed of light", "m/s"),
-    ),
-    description="Invariant mass-energy relation. For photons (m₀=0): E = pc. "
-                "For rest (p=0): E = m₀c².",
-    derives_from=("mass_energy_equivalence", "relativistic_momentum"),
+    latex=r"E^2 = (pc)^2 + (mc^2)^2",
+    sympy="E**2 = (p*c)**2 + (m*c**2)**2",
+    variables=(("E", "Total energy", "J"), ("p", "Momentum", "kg⋅m/s"), ("m", "Rest mass", "kg")),
+    description="Invariant relation. For m=0 (photon): E = pc.",
+    derives_from=("relativistic_energy", "relativistic_momentum"),
     uses=("c",),
-    discoverer="Albert Einstein",
-    year=1905,
-    status=NodeStatus.PROVEN,
-    tags=("invariant", "energy", "momentum"),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("energy", "momentum"),
 )
 
-# Export all nodes
+# Relativistic Kinetic Energy
+relativistic_ke = EquationNode(
+    id="relativistic_kinetic_energy",
+    name="Relativistic Kinetic Energy",
+    domain="special_relativity",
+    latex=r"KE = (\gamma - 1)mc^2 = mc^2\left(\frac{1}{\sqrt{1-v^2/c^2}} - 1\right)",
+    sympy="KE = (gamma - 1)*m*c**2",
+    variables=(("KE", "Kinetic energy", "J")),
+    description="Reduces to ½mv² for v << c (Taylor expansion).",
+    derives_from=("relativistic_energy", "mass_energy_equivalence"),
+    uses=("c",),
+    status=NodeStatus.PROVEN,
+    tags=("kinetic", "relativistic"),
+)
+
+# Spacetime Interval
+spacetime_interval = EquationNode(
+    id="spacetime_interval",
+    name="Spacetime Interval",
+    domain="special_relativity",
+    latex=r"(\Delta s)^2 = c^2(\Delta t)^2 - (\Delta x)^2 - (\Delta y)^2 - (\Delta z)^2",
+    sympy="ds**2 = c**2*dt**2 - dx**2 - dy**2 - dz**2",
+    variables=(("ds", "Spacetime interval", "m")),
+    description="Invariant under Lorentz transformation. ds² > 0: timelike, < 0: spacelike, = 0: lightlike.",
+    uses=("c",),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("interval", "invariant"),
+)
+
+# Four-Momentum
+four_momentum = EquationNode(
+    id="four_momentum",
+    name="Four-Momentum",
+    domain="special_relativity",
+    latex=r"p^\mu = (E/c, \vec{p}) = m\gamma(c, \vec{v})",
+    sympy="p_mu = (E/c, p_x, p_y, p_z)",
+    variables=(("p_mu", "Four-momentum", "(J/c, kg⋅m/s)")),
+    description="Lorentz covariant momentum. p·p = m²c².",
+    derives_from=("relativistic_energy", "relativistic_momentum"),
+    uses=("c",),
+    status=NodeStatus.FUNDAMENTAL,
+    tags=("four_vector", "momentum"),
+)
+
+# Doppler Effect (Relativistic)
+relativistic_doppler = EquationNode(
+    id="relativistic_doppler",
+    name="Relativistic Doppler Effect",
+    domain="special_relativity",
+    latex=r"f' = f\sqrt{\frac{1-\beta}{1+\beta}} \text{ (approaching)}",
+    sympy="f_prime = f*sqrt((1-beta)/(1+beta))",
+    variables=(("f_prime", "Observed frequency", "Hz"), ("f", "Source frequency", "Hz"), ("beta", "v/c", "dimensionless")),
+    description="Includes time dilation. Transverse Doppler: f' = f/γ.",
+    derives_from=("lorentz_factor",),
+    status=NodeStatus.PROVEN,
+    tags=("doppler", "relativistic"),
+)
+
+# Relativistic Beaming
+relativistic_beaming = EquationNode(
+    id="relativistic_beaming",
+    name="Relativistic Beaming",
+    domain="special_relativity",
+    latex=r"\theta' = \arctan\frac{\sin\theta}{\gamma(\cos\theta + \beta)}",
+    sympy="theta_prime = atan(sin(theta)/(gamma*(cos(theta) + beta)))",
+    variables=(("theta", "Emission angle in source frame", "rad"), ("theta_prime", "Observation angle", "rad")),
+    description="Radiation beamed forward. Used in astrophysical jets.",
+    derives_from=("lorentz_transformation",),
+    status=NodeStatus.PROVEN,
+    tags=("beaming", "jets"),
+)
+
 NODES = [
-    relativity_principle,
-    light_speed_postulate,
-    lorentz_factor,
-    time_dilation,
-    length_contraction,
-    mass_energy,
-    relativistic_momentum,
-    energy_momentum,
+    lorentz_factor, time_dilation, length_contraction, lorentz_transform, velocity_addition,
+    mass_energy, relativistic_energy, relativistic_momentum, energy_momentum_relation,
+    relativistic_ke, spacetime_interval, four_momentum, relativistic_doppler, relativistic_beaming
 ]
