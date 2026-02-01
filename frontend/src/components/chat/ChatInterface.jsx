@@ -184,9 +184,28 @@ export default function ChatInterface() {
 
       const data = await response.json();
       
-      // Extract response from DREAM agent format
+      // Extract response from DREAM agent format - handle various response structures
       const agentResponse = data.response || {};
-      const content = agentResponse.content || data.message || "I've processed your request.";
+      
+      // Content could be nested in various ways - extract the string
+      let content = "I've processed your request.";
+      if (typeof agentResponse.content === 'string') {
+        content = agentResponse.content;
+      } else if (typeof agentResponse === 'string') {
+        content = agentResponse;
+      } else if (typeof data.message === 'string') {
+        content = data.message;
+      } else if (agentResponse.content?.content) {
+        // Nested content object
+        content = typeof agentResponse.content.content === 'string' 
+          ? agentResponse.content.content 
+          : JSON.stringify(agentResponse.content.content, null, 2);
+      } else if (agentResponse.result) {
+        // Result field
+        content = typeof agentResponse.result === 'string'
+          ? agentResponse.result
+          : JSON.stringify(agentResponse.result, null, 2);
+      }
       
       // Remove loading message and add response
       setMessages(prev => [
@@ -198,10 +217,10 @@ export default function ChatInterface() {
           simulation: data.simulation,
           reasoning: data.reasoning,
           // Add agent metadata
-          model: agentResponse.model,
-          provider: agentResponse.provider,
-          latency: agentResponse.latency_ms,
-          tokens: agentResponse.usage?.total_tokens,
+          model: agentResponse.model || data.model,
+          provider: agentResponse.provider || data.provider,
+          latency: agentResponse.latency_ms || data.latency_ms,
+          tokens: agentResponse.usage?.total_tokens || data.tokens,
         }
       ]);
     } catch (error) {
