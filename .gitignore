@@ -24,6 +24,7 @@ wheels/
 venv/
 env/
 ENV/
+.venv/
 .venv
 
 # IDE
@@ -32,10 +33,9 @@ ENV/
 *.swp
 *.swo
 *~
-.DS_Store
 
 # Jupyter Notebook
-.ipynb_checkpoints
+.ipynb_checkpoints/
 *.ipynb
 
 # Testing
@@ -43,6 +43,7 @@ ENV/
 .coverage
 htmlcov/
 .tox/
+.nox/
 
 # Logs
 *.log
@@ -51,19 +52,19 @@ logs/
 # Environment variables
 .env
 .env.local
+.env.production
 
 # Model files (large)
 *.pkl
 *.h5
 *.pt
 *.pth
+*.onnx
 models/
 
 # Data files
 data/raw/
 data/processed/
-*.csv
-*.json
 *.parquet
 
 # Temporary files
@@ -74,8 +75,16 @@ temp/
 # OS
 .DS_Store
 Thumbs.db
+Desktop.ini
 
-# Cytoscape outputs
+# Physics AI specific
+.physics_ai_data/
 cytoscape_outputs/
 flowcharts/
+
+# Mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
 
