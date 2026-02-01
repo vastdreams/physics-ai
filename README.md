@@ -29,32 +29,40 @@
 ## 🌌 Vision
 
 <p align="center">
-  <em>"The universe is comprehensible. Let's build the AI to comprehend it."</em>
+  <em>"The operating system for physics research"</em>
 </p>
 
-**Physics AI** is a self-evolving artificial intelligence designed to explore, unify, and expand humanity's understanding of physics.
+**Physics AI** is unified open-source infrastructure for physics—a self-evolving system that accelerates discovery, validates experiments, proposes theories, and finds the unknown.
 
 ### The Problem
 
-For a century, physics has been split: **Quantum Mechanics** describes the small, **General Relativity** describes the large—and they're incompatible. String theory is unverified. Loop quantum gravity is incomplete. The Standard Model has 19 unexplained parameters.
+Physics has no unified infrastructure. Calculations scatter across tools. Knowledge lives in papers. Discovery is bottlenecked by human bandwidth.
 
-Current AI can't help because:
-- **Neural networks** recognize patterns but can't derive equations
-- **Symbolic systems** manipulate symbols but can't discover patterns
-- **Neither** can improve themselves based on physics constraints
+Current tools can't help:
+| Tool | Does | Can't Do |
+|------|------|----------|
+| Mathematica | Symbolic math | Reason about physics |
+| ChatGPT | Natural language | Rigorous derivation |
+| COMSOL | Simulation | Connect to theory |
+| arXiv | Store papers | Compute or validate |
 
-### Our Solution
+### Our Solution: Layered Infrastructure
 
-Physics AI combines what no existing system has together:
+```
+┌─────────────────────────────────────────────────────────┐
+│  DISCOVERY    │ Theory proposal, gap analysis, anomalies │
+├───────────────┼─────────────────────────────────────────┤
+│  RESEARCH     │ Validation, calculations, paper analysis │
+├───────────────┼─────────────────────────────────────────┤
+│  REASONING    │ Neural + Symbolic + Self-Evolution       │
+├───────────────┼─────────────────────────────────────────┤
+│  KNOWLEDGE    │ Unified physics graph, equations, data   │
+├───────────────┼─────────────────────────────────────────┤
+│  COMPUTATION  │ Symbolic solvers, numerical integration  │
+└───────────────┴─────────────────────────────────────────┘
+```
 
-| Capability | What It Does |
-|------------|--------------|
-| **Neurosymbolic Engine** | Fuses neural pattern recognition with symbolic equation manipulation |
-| **Unified Physics Graph** | Connects classical, quantum, and relativistic physics through symmetries |
-| **Self-Evolution** | Analyzes and improves its own code within physics-constrained boundaries |
-| **Human-AI Collaboration** | Augments physicists rather than replacing them |
-
-This isn't general AI. It's **narrow, physics-specific intelligence** that reasons like a physicist and evolves toward deeper understanding.
+Use it at any layer. Build on top. Accelerate physics at the speed of silicon.
 
 📖 **[Read the full vision →](VISION.md)**
 

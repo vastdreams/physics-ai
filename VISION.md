@@ -9,15 +9,36 @@
 
 ## The Mission
 
-**Physics AI is building a self-evolving artificial intelligence to explore, unify, and expand humanity's understanding of physics.**
+**Physics AI is building the unified open-source infrastructure for physics—a self-evolving system that accelerates discovery, validates experiments, challenges theories, and finds the unknown.**
 
-We're not building an AI that merely *uses* physics. We're building an AI that **thinks** like a physicist—one that can reason symbolically, discover patterns, propose hypotheses, and evolve its own capabilities in pursuit of deeper understanding.
+We're not building another calculator or AI chatbot. We're building **the operating system for physics research**—infrastructure that:
+
+- **Unifies** all physics knowledge into one queryable, computable system
+- **Accelerates** calculations that would take humans weeks
+- **Validates** experimental results against theoretical predictions
+- **Proposes** new theories by finding gaps in current understanding
+- **Challenges** existing concepts by systematic analysis
+- **Evolves** its own capabilities as physics advances
+
+This is physics infrastructure for the 21st century—open source, self-improving, and designed to help humanity solve the deepest mysteries of the universe.
 
 ---
 
 ## The Problem
 
-Physics has a unification problem. For a century, we've had two incompatible frameworks describing reality:
+### Physics Has No Unified Infrastructure
+
+Every physicist reinvents the wheel:
+- **Calculations** are done in scattered tools (Mathematica, MATLAB, Python scripts)
+- **Knowledge** lives in papers, textbooks, and individual minds
+- **Validation** requires manual cross-checking across frameworks
+- **Discovery** is limited by human bandwidth and cognitive capacity
+
+There's no unified system where physics *lives*—where theories are encoded, validated, connected, and explored systematically.
+
+### Physics Has a Unification Problem
+
+For a century, we've had two incompatible frameworks describing reality:
 
 | Framework | Describes | Limitation |
 |-----------|-----------|------------|
@@ -26,162 +47,294 @@ Physics has a unification problem. For a century, we've had two incompatible fra
 
 Despite the efforts of brilliant minds—Einstein, Hawking, Witten—we haven't reconciled them. String theory remains unverified. Loop quantum gravity is incomplete. The Standard Model has 19 free parameters we can't derive from first principles.
 
-**Why hasn't AI helped?**
+### Current Tools Can't Help
 
-Current AI systems are either:
-- **Neural-only**: Great at patterns, terrible at symbolic reasoning (can't derive equations)
-- **Symbolic-only**: Rigid, can't generalize or discover novel patterns
-- **Static**: They don't improve themselves based on physics constraints
+| Tool | What It Does | What It Can't Do |
+|------|--------------|------------------|
+| **Mathematica/Maple** | Symbolic math | Reason about physics meaning |
+| **COMSOL/ANSYS** | Numerical simulation | Connect to theoretical frameworks |
+| **ChatGPT/Claude** | Natural language | Rigorous derivation, validation |
+| **arXiv/Papers** | Store knowledge | Compute, validate, discover |
 
-We need something different.
-
----
-
-## Our Approach: Neurosymbolic Self-Evolution
-
-Physics AI combines three capabilities no existing system has together:
-
-### 1. 🧠 Neurosymbolic Reasoning
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                   Hybrid Intelligence                    │
-├────────────────────────┬────────────────────────────────┤
-│     Neural Component   │     Symbolic Component         │
-├────────────────────────┼────────────────────────────────┤
-│ Pattern recognition    │ Logical inference              │
-│ Similarity matching    │ Equation manipulation          │
-│ Embedding-based search │ Conservation law checking      │
-│ Learns from examples   │ Derives from first principles  │
-├────────────────────────┴────────────────────────────────┤
-│          Confidence-Weighted Integration                 │
-│  "What the data suggests" + "What the math requires"    │
-└─────────────────────────────────────────────────────────┘
-```
-
-### 2. 🔬 Unified Physics Knowledge
-
-We encode physics not as isolated equations, but as an **integrated knowledge graph**:
-
-- **Classical Mechanics** → Lagrangians, Hamiltonians, Conservation Laws
-- **Quantum Mechanics** → Schrödinger, Path Integrals, Uncertainty
-- **Field Theory** → Maxwell, Yang-Mills, General Relativity
-- **Statistical Mechanics** → Entropy, Phase Transitions
-
-Each domain is connected by **symmetries**, **correspondences**, and **limiting cases**. The AI can traverse this graph to find unexpected connections.
-
-### 3. 🧬 Self-Evolution
-
-The system can analyze, critique, and improve its own code:
-
-```python
-# The AI examines its own performance
-analysis = self_evolution.analyze_component("reasoning_engine")
-
-# Proposes improvements based on physics constraints
-improvement = self_evolution.propose_modification(
-    target="inference_speed",
-    constraint="must_preserve_conservation_laws"
-)
-
-# Validates before applying
-if validator.verify_safety(improvement):
-    self_evolution.apply(improvement)
-```
-
-This isn't AGI. It's **narrow self-improvement** constrained to physics-relevant capabilities, with human oversight at every step.
+**We need unified infrastructure that does it all.**
 
 ---
 
-## What Physics AI Can Do
+## Our Approach: Unified Physics Infrastructure
 
-### Today (v1.0)
+Physics AI is built as **layered infrastructure** that physicists can use at any level:
 
-| Capability | Status | Example |
-|------------|--------|---------|
-| **Solve symbolic equations** | ✅ Live | "Solve F = ma for a given F=100N, m=10kg" |
-| **Run physics simulations** | ✅ Live | Harmonic oscillator, pendulum, two-body |
-| **Apply reasoning types** | ✅ Live | Deductive, inductive, abductive, analogical |
-| **Self-analyze code** | ✅ Live | AST-based code understanding |
-| **Validate physics constraints** | ✅ Live | Conservation law checking |
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    PHYSICS AI INFRASTRUCTURE                         │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                    DISCOVERY LAYER                           │    │
+│  │  Theory Proposal │ Gap Analysis │ Anomaly Detection          │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                              ▲                                       │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                    RESEARCH LAYER                            │    │
+│  │  Experiment Validation │ Calculation Engine │ Paper Analysis │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                              ▲                                       │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                    REASONING LAYER                           │    │
+│  │  Neural (patterns) + Symbolic (proofs) + Self-Evolution      │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                              ▲                                       │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                    KNOWLEDGE LAYER                           │    │
+│  │  Unified Physics Graph │ Equations │ Constants │ Experiments │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                              ▲                                       │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │                    COMPUTATION LAYER                         │    │
+│  │  Symbolic Solvers │ Numerical Integration │ Perturbation     │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
-### Near-Term (v2.0)
+### Layer 1: 🔢 Computation Layer
+The foundation—high-performance physics computation:
+- **Symbolic solvers** for exact analytical solutions
+- **Numerical integration** (RK4, adaptive methods) for simulations
+- **Perturbation methods** for approximate solutions
+- **Dimensional analysis** and unit validation
 
-| Capability | Status | Impact |
-|------------|--------|--------|
-| **Cross-domain reasoning** | 🔄 In Progress | Find connections between QM and GR |
-| **Hypothesis generation** | 🔄 In Progress | Propose testable predictions |
-| **Paper ingestion** | 🔄 In Progress | Learn from arXiv automatically |
-| **Uncertainty quantification** | 🔄 In Progress | Know what we don't know |
+### Layer 2: 📚 Knowledge Layer
+Physics encoded as a **computable knowledge graph**:
+- **Every major equation** from Newton to the Standard Model
+- **Physical constants** with uncertainties and relationships
+- **Experimental results** with confidence intervals
+- **Domain connections** via symmetries and correspondences
 
-### Long-Term Vision
+### Layer 3: 🧠 Reasoning Layer
+Hybrid intelligence that thinks like a physicist:
+- **Neural component**: Pattern recognition, similarity matching
+- **Symbolic component**: Rigorous derivation, proof verification
+- **Self-evolution**: Continuously improves its own capabilities
 
-| Capability | Timeline | Description |
-|------------|----------|-------------|
-| **Theory synthesis** | Year 2-3 | Combine partial theories into unified frameworks |
-| **Anomaly detection** | Year 2-3 | Find inconsistencies in current physics |
-| **Experimental guidance** | Year 3-5 | Suggest what experiments would resolve ambiguities |
-| **Novel predictions** | Year 3-5 | Generate predictions that humans haven't considered |
+### Layer 4: 🔬 Research Layer
+Tools physicists use daily:
+- **Calculation engine**: "Derive the energy levels of hydrogen in a magnetic field"
+- **Experiment validation**: Compare theoretical predictions to data
+- **Paper analysis**: Extract and encode knowledge from literature
+
+### Layer 5: 🔭 Discovery Layer
+The frontier—finding the unknown:
+- **Gap analysis**: Where do our theories fail to predict?
+- **Theory proposal**: Generate candidate explanations
+- **Anomaly detection**: Find inconsistencies in current physics
 
 ---
 
-## The Hard Problems We're Targeting
+## Use Cases: Who Uses Physics AI and How
 
-### Phase 1: Foundational Unification
-- Encode all major physics frameworks in a unified representation
-- Build reasoning pathways between frameworks
-- Identify known correspondences (classical limits, etc.)
+### 🎓 For Researchers
+| Task | How Physics AI Helps |
+|------|---------------------|
+| **Literature Review** | Automatically extract equations, results, and methods from papers |
+| **Calculations** | "Derive the scattering cross-section for electron-positron annihilation" |
+| **Validation** | Check if your derivation violates any conservation laws |
+| **Exploration** | "What happens to this system if we vary parameter X?" |
 
-### Phase 2: Gap Analysis
-- Find logical gaps in current theories
-- Identify where different frameworks make incompatible predictions
-- Catalog assumptions that lack experimental support
+### 🔬 For Experimentalists
+| Task | How Physics AI Helps |
+|------|---------------------|
+| **Prediction** | "What should we measure if theory X is correct?" |
+| **Comparison** | Compare experimental data against multiple theoretical models |
+| **Anomaly Detection** | Flag results that don't match any known theory |
+| **Error Analysis** | Propagate uncertainties through complex calculations |
 
-### Phase 3: Synthesis
-- Propose modifications that resolve inconsistencies
-- Generate predictions that could distinguish between theories
-- Collaborate with human physicists on refinements
+### 📖 For Students & Educators
+| Task | How Physics AI Helps |
+|------|---------------------|
+| **Learning** | Step-by-step derivations with explanations |
+| **Homework Help** | Solve problems while showing the reasoning |
+| **Visualization** | Interactive simulations of physical systems |
+| **Connections** | "How does this topic connect to what I learned before?" |
 
-### Phase 4: Discovery
-- Explore the mathematical landscape for overlooked structures
-- Find patterns that connect seemingly unrelated phenomena
-- Suggest experiments that could test novel predictions
+### 🔭 For Theorists
+| Task | How Physics AI Helps |
+|------|---------------------|
+| **Theory Building** | Check consistency of proposed theories |
+| **Gap Analysis** | "What phenomena can't current theories explain?" |
+| **Unification** | Find mathematical structures that connect domains |
+| **Prediction Generation** | Derive testable predictions from new theories |
+
+---
+
+## Current Capabilities vs. Roadmap
+
+### Today (v1.0) ✅
+
+| Layer | Capability | Status |
+|-------|------------|--------|
+| Computation | Symbolic equation solving | ✅ Live |
+| Computation | Numerical simulation (RK4) | ✅ Live |
+| Knowledge | Classical mechanics encoded | ✅ Live |
+| Knowledge | Basic quantum mechanics | ✅ Live |
+| Reasoning | Four reasoning types | ✅ Live |
+| Reasoning | Self-evolution (code analysis) | ✅ Live |
+| Research | REST API (41 endpoints) | ✅ Live |
+| Research | Web dashboard | ✅ Live |
+
+### Building Now (v2.0) 🔄
+
+| Layer | Capability | Impact |
+|-------|------------|--------|
+| Knowledge | Complete Standard Model | Full particle physics |
+| Knowledge | General Relativity | Gravitational physics |
+| Reasoning | Cross-domain inference | Find QM↔GR connections |
+| Research | arXiv ingestion | Auto-learn from papers |
+| Research | Experiment database | Connect to real data |
+| Discovery | Gap analysis | Find unexplained phenomena |
+
+### Future Vision (v3.0+) 🔭
+
+| Layer | Capability | Description |
+|-------|------------|-------------|
+| Knowledge | Complete physics graph | All known physics computable |
+| Reasoning | Multi-agent debate | AIs challenge each other's theories |
+| Discovery | Theory synthesis | Propose unification candidates |
+| Discovery | Novel predictions | Generate testable predictions |
+| Discovery | Experimental guidance | Suggest decisive experiments |
+
+---
+
+## The Grand Challenges We're Targeting
+
+Physics AI isn't just tools—it's infrastructure designed to help solve the biggest open problems in physics:
+
+### 🔮 Quantum Gravity
+*Why can't we reconcile quantum mechanics and general relativity?*
+- Encode both frameworks in our knowledge graph
+- Systematically find where they conflict
+- Explore mathematical structures that might bridge them
+
+### 🌑 Dark Matter & Dark Energy
+*What is 95% of the universe made of?*
+- Compile all observational constraints
+- Test proposed theories against data
+- Generate new candidates that satisfy all constraints
+
+### ⚛️ Standard Model Completion
+*Why these particles? Why these masses? Why these coupling constants?*
+- Encode the 19 unexplained parameters
+- Search for patterns and relationships
+- Propose deeper theories that explain them
+
+### 🌌 Cosmological Puzzles
+*Why did the Big Bang happen? Why is there more matter than antimatter?*
+- Model early universe conditions
+- Test baryogenesis theories
+- Find inconsistencies in current models
+
+### 🔬 Measurement Problem
+*What actually happens when we observe a quantum system?*
+- Formalize different interpretations
+- Find predictions that distinguish them
+- Guide experimental tests
+
+---
+
+## Building Strategy
+
+### Phase 1: Foundation (Complete ✅)
+- Core computation infrastructure
+- Basic physics knowledge graph
+- Neurosymbolic reasoning engine
+- API and interface layer
+
+### Phase 2: Knowledge Expansion (In Progress 🔄)
+- Encode complete Standard Model
+- Add general relativity
+- Build experiment database
+- Create arXiv ingestion pipeline
+
+### Phase 3: Research Production (Planned 📋)
+- Calculation workflows for researchers
+- Experiment validation tools
+- Paper analysis and extraction
+- Collaboration features
+
+### Phase 4: Discovery Infrastructure (Vision 🔭)
+- Theory proposal generation
+- Anomaly detection systems
+- Automated gap analysis
+- Multi-agent theory debate
 
 ---
 
 ## Principles
 
-### 1. Physics First
-Every capability is grounded in physical constraints. The AI doesn't just generate text—it generates equations that satisfy conservation laws, dimensional analysis, and known limits.
+### 1. Infrastructure, Not Application
+Physics AI is **foundational infrastructure**—like Linux for operating systems or TCP/IP for networking. We build the layers that others build upon. Every physicist should be able to use this as their foundation.
 
-### 2. Transparent Reasoning
-No black boxes. Every conclusion has a chain-of-thought explanation that physicists can verify and critique.
+### 2. Physics-Constrained
+Every operation respects physical law. Outputs satisfy:
+- Conservation laws (energy, momentum, charge)
+- Dimensional analysis
+- Known symmetries and limits
+- Experimental bounds
 
-### 3. Human-AI Collaboration
-Physics AI is a **tool for physicists**, not a replacement. The best discoveries will come from humans and AI working together, each contributing what they do best.
+### 3. Transparent & Verifiable
+No black boxes. Every result includes:
+- Full derivation chain
+- Assumptions made
+- Confidence levels
+- Alternative approaches
 
-### 4. Safe Evolution
-Self-modification is powerful but dangerous. Every change is:
+### 4. Self-Evolving
+The system improves itself within safe bounds:
 - Validated against physics constraints
 - Tested before deployment
 - Reversible if problems emerge
+- Human oversight on significant changes
 
-### 5. Open Science
-This is an MIT-licensed open-source project. The future of physics shouldn't be locked in a corporate lab.
+### 5. Open Source Forever
+MIT licensed. The infrastructure for physics discovery should be:
+- Accessible to everyone
+- Verifiable by anyone
+- Improvable by the community
+- Never locked behind corporate walls
+
+### 6. Human-AI Symbiosis
+We **amplify** physicists, not replace them:
+- AI handles computation and pattern-finding
+- Humans provide intuition and interpretation
+- Together, we go further than either alone
 
 ---
 
 ## Why This Matters
 
-Physics isn't just an academic pursuit. Understanding the fundamental laws of nature has given us:
-- **Electronics** (quantum mechanics)
-- **GPS** (general relativity corrections)
-- **Nuclear energy** (E=mc²)
-- **MRI machines** (quantum spin)
+Physics isn't just academic—it's the foundation of civilization:
 
-The next breakthrough—whether it's quantum gravity, dark matter, or something we haven't imagined—could transform civilization.
+| Discovery | Physics Behind It | Impact |
+|-----------|-------------------|--------|
+| Electronics | Quantum mechanics | $3 trillion industry |
+| GPS | Relativity corrections | Global navigation |
+| Nuclear energy | E=mc² | 10% of world electricity |
+| MRI machines | Quantum spin | Medical diagnostics |
+| Lasers | Stimulated emission | Communications, medicine, manufacturing |
 
-**We're building the AI to help find it.**
+Every physics breakthrough has transformed society. The next ones could give us:
+- **Fusion energy** → Unlimited clean power
+- **Quantum computing** → Solve currently impossible problems
+- **Faster-than-light understanding** → Interstellar possibilities
+- **Dark energy manipulation** → Technologies we can't imagine
+
+**The bottleneck is discovery speed.**
+
+Humanity produces more physics papers than any person can read. Calculations that could reveal insights go uncomputed. Connections between fields go unnoticed.
+
+**Physics AI is infrastructure to remove that bottleneck.**
+
+We're building the system that lets humanity explore physics at the speed of silicon, not the speed of grad students.
 
 ---
 

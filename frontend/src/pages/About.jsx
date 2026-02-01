@@ -124,22 +124,24 @@ export default function About() {
       <section className="text-center py-12">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-primary/10 text-accent-primary text-sm mb-6">
           <Infinity size={16} />
-          Open Source Project
+          Open Source Infrastructure
         </div>
         <h1 className="text-4xl font-bold text-light-900 mb-4">
-          Building AI to Explore the<br />
+          The Operating System for<br />
           <span className="bg-gradient-to-r from-accent-primary to-accent-purple bg-clip-text text-transparent">
-            Frontiers of Physics
+            Physics Research
           </span>
         </h1>
         <p className="text-xl text-light-500 max-w-2xl mx-auto mb-8">
-          Physics AI is a self-evolving neurosymbolic intelligence designed to explore, 
-          unify, and expand humanity's understanding of the physical universe.
+          Physics AI is unified open-source infrastructure that accelerates discovery, 
+          validates experiments, proposes theories, and finds the unknown.
         </p>
-        <blockquote className="italic text-light-600 border-l-4 border-accent-primary pl-4 inline-block text-left">
-          "The most incomprehensible thing about the universe is that it is comprehensible."
-          <footer className="text-sm text-light-400 mt-1">— Albert Einstein</footer>
-        </blockquote>
+        <div className="flex flex-wrap justify-center gap-4 text-sm text-light-600">
+          <span className="flex items-center gap-1"><Zap size={14} className="text-yellow-500" /> Accelerate</span>
+          <span className="flex items-center gap-1"><Check size={14} className="text-green-500" /> Validate</span>
+          <span className="flex items-center gap-1"><Lightbulb size={14} className="text-purple-500" /> Propose</span>
+          <span className="flex items-center gap-1"><Telescope size={14} className="text-blue-500" /> Discover</span>
+        </div>
       </section>
 
       {/* The Problem */}
@@ -151,9 +153,10 @@ export default function About() {
           <h2 className="text-2xl font-semibold text-light-900">The Problem</h2>
         </div>
         
-        <p className="text-light-600 mb-6">
-          Physics has a unification problem. For a century, we've had two incompatible 
-          frameworks describing reality:
+        <h3 className="font-medium text-light-800 mb-3">Physics Has No Unified Infrastructure</h3>
+        <p className="text-light-600 mb-4">
+          Every physicist reinvents the wheel. Calculations scatter across tools. Knowledge lives 
+          in papers and minds. Discovery is bottlenecked by human bandwidth.
         </p>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">
@@ -169,19 +172,19 @@ export default function About() {
           />
         </div>
 
-        <p className="text-light-600">
-          Despite the efforts of brilliant minds—Einstein, Hawking, Witten—we haven't reconciled them. 
-          String theory remains unverified. Loop quantum gravity is incomplete. The Standard Model 
-          has 19 free parameters we can't derive from first principles.
+        <p className="text-light-600 mb-4">
+          For a century, we've had incompatible frameworks. String theory is unverified. 
+          The Standard Model has 19 unexplained parameters.
         </p>
 
-        <div className="mt-6 p-4 rounded-xl bg-amber-50 border border-amber-200">
-          <h4 className="font-medium text-amber-800 mb-2">Why hasn't AI helped?</h4>
-          <ul className="text-sm text-amber-700 space-y-1">
-            <li>• <strong>Neural networks</strong> recognize patterns but can't derive equations</li>
-            <li>• <strong>Symbolic systems</strong> manipulate symbols but can't discover patterns</li>
-            <li>• <strong>Neither</strong> can improve themselves based on physics constraints</li>
-          </ul>
+        <div className="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200">
+          <h4 className="font-medium text-amber-800 mb-2">Current tools can't help</h4>
+          <div className="grid grid-cols-2 gap-2 text-sm text-amber-700">
+            <div>• <strong>Mathematica</strong> — No physics reasoning</div>
+            <div>• <strong>ChatGPT</strong> — No rigorous derivation</div>
+            <div>• <strong>COMSOL</strong> — No theoretical connection</div>
+            <div>• <strong>arXiv</strong> — Can't compute or validate</div>
+          </div>
         </div>
       </section>
 
@@ -191,36 +194,63 @@ export default function About() {
           <div className="w-10 h-10 rounded-lg bg-accent-primary/10 flex items-center justify-center">
             <Lightbulb size={20} className="text-accent-primary" />
           </div>
-          <h2 className="text-2xl font-semibold text-light-900">Our Approach</h2>
+          <h2 className="text-2xl font-semibold text-light-900">Layered Infrastructure</h2>
         </div>
 
-        <p className="text-light-600 mb-8">
-          Physics AI combines three capabilities no existing system has together:
+        <p className="text-light-600 mb-6">
+          Physics AI is built as layered infrastructure—use it at any level:
         </p>
+
+        {/* Infrastructure Layers */}
+        <div className="space-y-3 mb-8">
+          <div className="p-4 rounded-xl bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200">
+            <div className="flex items-center gap-3 mb-2">
+              <Telescope size={20} className="text-orange-600" />
+              <h4 className="font-medium text-orange-800">Discovery Layer</h4>
+            </div>
+            <p className="text-sm text-orange-700">Theory proposal • Gap analysis • Anomaly detection • Finding the unknown</p>
+          </div>
+          <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200">
+            <div className="flex items-center gap-3 mb-2">
+              <FlaskConical size={20} className="text-purple-600" />
+              <h4 className="font-medium text-purple-800">Research Layer</h4>
+            </div>
+            <p className="text-sm text-purple-700">Experiment validation • Calculation engine • Paper analysis • Research production</p>
+          </div>
+          <div className="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200">
+            <div className="flex items-center gap-3 mb-2">
+              <Brain size={20} className="text-blue-600" />
+              <h4 className="font-medium text-blue-800">Reasoning Layer</h4>
+            </div>
+            <p className="text-sm text-blue-700">Neural patterns + Symbolic proofs + Self-evolution • Thinks like a physicist</p>
+          </div>
+          <div className="p-4 rounded-xl bg-gradient-to-r from-green-50 to-green-100 border border-green-200">
+            <div className="flex items-center gap-3 mb-2">
+              <Network size={20} className="text-green-600" />
+              <h4 className="font-medium text-green-800">Knowledge Layer</h4>
+            </div>
+            <p className="text-sm text-green-700">Unified physics graph • Equations • Constants • Experimental results</p>
+          </div>
+          <div className="p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200">
+            <div className="flex items-center gap-3 mb-2">
+              <Cpu size={20} className="text-gray-600" />
+              <h4 className="font-medium text-gray-800">Computation Layer</h4>
+            </div>
+            <p className="text-sm text-gray-700">Symbolic solvers • Numerical integration • Perturbation methods • Validation</p>
+          </div>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <CapabilityCard
-            icon={Brain}
-            title="Neurosymbolic Reasoning"
-            description="Fuses neural pattern recognition with symbolic equation manipulation. The AI sees patterns like a neural network but reasons like a mathematician."
-            color="blue"
-          />
-          <CapabilityCard
-            icon={Network}
-            title="Unified Physics Graph"
-            description="Connects classical, quantum, relativistic, and statistical physics through symmetries, correspondences, and limiting cases."
-            color="purple"
-          />
-          <CapabilityCard
             icon={GitBranch}
-            title="Self-Evolution"
-            description="Analyzes and improves its own code within physics-constrained boundaries. Safe, validated modifications with human oversight."
+            title="Self-Evolving"
+            description="The system improves its own capabilities within physics-constrained boundaries. Safe, validated, human-overseen evolution."
             color="green"
           />
           <CapabilityCard
             icon={Users}
-            title="Human-AI Collaboration"
-            description="Augments physicists rather than replacing them. The best discoveries will come from humans and AI working together."
+            title="Human-AI Symbiosis"
+            description="AI handles computation and pattern-finding. Humans provide intuition and interpretation. Together, we go further."
             color="orange"
           />
         </div>
@@ -339,46 +369,45 @@ export default function About() {
             title="Foundation"
             status="complete"
             items={[
-              'Neurosymbolic engine with hybrid reasoning',
-              'Four reasoning types (deductive, inductive, abductive, analogical)',
-              'Physics equation solver with SymPy integration',
-              'Simulation models with conservation validation',
-              'REST API (41 endpoints) + WebSocket',
-              'Modern web dashboard'
+              'Core computation infrastructure (symbolic + numerical)',
+              'Basic physics knowledge graph (classical, quantum)',
+              'Neurosymbolic reasoning engine',
+              'REST API (41 endpoints) + Web dashboard'
             ]}
           />
           <RoadmapPhase
             phase={2}
-            title="Enhancement"
+            title="Knowledge Expansion"
             status="progress"
             items={[
-              'Cross-domain reasoning (connect QM ↔ GR)',
-              'Hypothesis generation from knowledge gaps',
+              'Complete Standard Model encoding',
+              'General Relativity framework',
               'arXiv paper ingestion pipeline',
-              'Uncertainty quantification (VECTOR framework)',
-              'Transformer-based physics embeddings'
+              'Experiment database integration',
+              'Cross-domain inference (QM ↔ GR connections)'
             ]}
           />
           <RoadmapPhase
             phase={3}
-            title="Synthesis"
+            title="Research Production"
             status="planned"
             items={[
-              'Theory unification proposals',
-              'Anomaly detection in physical theories',
-              'Experimental guidance suggestions',
-              'Multi-agent physics debate system'
+              'Calculation workflows for researchers',
+              'Experiment validation tools',
+              'Paper analysis and knowledge extraction',
+              'Collaboration features'
             ]}
           />
           <RoadmapPhase
             phase={4}
-            title="Discovery"
+            title="Discovery Infrastructure"
             status="vision"
             items={[
+              'Theory proposal generation',
+              'Automated gap analysis',
+              'Multi-agent theory debate',
               'Novel prediction generation',
-              'Mathematical structure discovery',
-              'Autonomous research assistance',
-              'Physics breakthrough collaboration'
+              'Experimental guidance for decisive tests'
             ]}
           />
         </div>
@@ -394,35 +423,48 @@ export default function About() {
         </div>
         
         <p className="text-light-600 mb-4">
-          Physics isn't just an academic pursuit. Understanding fundamental laws has given us:
+          Every physics breakthrough has transformed civilization:
         </p>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="text-center p-3">
             <div className="text-2xl mb-1">⚡</div>
             <div className="text-sm text-light-700">Electronics</div>
-            <div className="text-xs text-light-400">Quantum mechanics</div>
+            <div className="text-xs text-light-400">$3T industry</div>
           </div>
           <div className="text-center p-3">
             <div className="text-2xl mb-1">📡</div>
             <div className="text-sm text-light-700">GPS</div>
-            <div className="text-xs text-light-400">Relativity corrections</div>
+            <div className="text-xs text-light-400">Global navigation</div>
           </div>
           <div className="text-center p-3">
             <div className="text-2xl mb-1">⚛️</div>
-            <div className="text-sm text-light-700">Nuclear Energy</div>
-            <div className="text-xs text-light-400">E=mc²</div>
+            <div className="text-sm text-light-700">Nuclear</div>
+            <div className="text-xs text-light-400">10% of electricity</div>
           </div>
           <div className="text-center p-3">
             <div className="text-2xl mb-1">🏥</div>
             <div className="text-sm text-light-700">MRI</div>
-            <div className="text-xs text-light-400">Quantum spin</div>
+            <div className="text-xs text-light-400">Medical imaging</div>
+          </div>
+          <div className="text-center p-3">
+            <div className="text-2xl mb-1">💡</div>
+            <div className="text-sm text-light-700">Lasers</div>
+            <div className="text-xs text-light-400">Communication</div>
           </div>
         </div>
 
+        <div className="bg-light-50 rounded-xl p-4 mb-4">
+          <h4 className="font-medium text-light-800 mb-2">The bottleneck is discovery speed</h4>
+          <p className="text-sm text-light-600">
+            Humanity produces more physics papers than any person can read. Calculations that could 
+            reveal insights go uncomputed. Connections between fields go unnoticed.
+          </p>
+        </div>
+
         <p className="text-light-700 font-medium text-center">
-          The next breakthrough—whether it's quantum gravity, dark matter, or something we haven't 
-          imagined—could transform civilization. We're building the AI to help find it.
+          Physics AI is infrastructure to remove that bottleneck—<br />
+          exploring physics at the speed of silicon, not the speed of grad students.
         </p>
       </section>
 
