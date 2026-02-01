@@ -84,11 +84,10 @@ def create_app(enable_hot_reload: bool = None):
     # Setup middleware
     from api.middleware.logging import LoggingMiddleware
     from api.middleware.validation import ValidationMiddleware
-    from api.middleware.auth import AuthMiddleware
     
     LoggingMiddleware.setup(app)
     ValidationMiddleware.setup(app)
-    AuthMiddleware.setup(app)
+    # Note: Auth is now handled via decorators (@require_auth) in api/v1/auth.py
     
     # Health check endpoint
     @app.route('/health', methods=['GET'])
