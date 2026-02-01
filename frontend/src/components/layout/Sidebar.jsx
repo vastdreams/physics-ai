@@ -45,6 +45,7 @@ const navigationSections = [
   {
     title: 'Physics',
     items: [
+      { name: 'Knowledge Base', path: '/knowledge', icon: Database, badge: '522' },
       { name: 'Simulations', path: '/simulations', icon: Atom },
       { name: 'Equations', path: '/equations', icon: BookOpen },
       { name: 'Models', path: '/models', icon: Workflow },

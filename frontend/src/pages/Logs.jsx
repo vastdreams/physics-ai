@@ -1,9 +1,9 @@
 /**
  * PATH: frontend/src/pages/Logs.jsx
- * PURPOSE: System logs and chain-of-thought visualization
+ * PURPOSE: Real-time system logs with WebSocket streaming
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Terminal,
   Filter,
@@ -16,15 +16,21 @@ import {
   Info,
   AlertTriangle,
   Bug,
-  Clock
+  Wifi,
+  WifiOff,
+  Pause,
+  Play
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { io } from 'socket.io-client';
+
+const API_BASE = 'http://localhost:5002';
 
 const logLevels = {
-  debug: { icon: Bug, color: 'text-gray-500', bg: 'bg-gray-50' },
-  info: { icon: Info, color: 'text-blue-500', bg: 'bg-blue-50' },
-  warn: { icon: AlertTriangle, color: 'text-yellow-500', bg: 'bg-yellow-50' },
-  error: { icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
+  debug: { icon: Bug, color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-300' },
+  info: { icon: Info, color: 'text-blue-500', bg: 'bg-blue-50', border: 'border-blue-400' },
+  warn: { icon: AlertTriangle, color: 'text-yellow-500', bg: 'bg-yellow-50', border: 'border-yellow-400' },
+  error: { icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50', border: 'border-red-400' },
 };
 
 function LogEntry({ log }) {
@@ -36,10 +42,7 @@ function LogEntry({ log }) {
     <div 
       className={clsx(
         'border-l-2 pl-4 py-2 hover:bg-light-100 cursor-pointer transition-colors',
-        log.level === 'error' && 'border-red-400',
-        log.level === 'warn' && 'border-yellow-400',
-        log.level === 'info' && 'border-blue-400',
-        log.level === 'debug' && 'border-gray-300',
+        level.border
       )}
       onClick={() => setExpanded(!expanded)}
     >
@@ -48,14 +51,16 @@ function LogEntry({ log }) {
           <Icon size={14} className={level.color} />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-0.5">
+          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
             <span className="text-xs text-light-400 font-mono">{log.timestamp}</span>
-            <span className={clsx('text-xs font-medium', level.color)}>[{log.level.toUpperCase()}]</span>
-            <span className="text-xs text-light-400">{log.source}</span>
+            <span className={clsx('text-xs font-medium px-1.5 py-0.5 rounded', level.bg, level.color)}>
+              {log.level.toUpperCase()}
+            </span>
+            <span className="text-xs text-light-500 font-medium">{log.source}</span>
           </div>
-          <p className="text-sm text-light-700 font-mono">{log.message}</p>
+          <p className="text-sm text-light-700 font-mono break-words">{log.message}</p>
           {expanded && log.details && (
-            <pre className="mt-2 p-2 bg-light-900 text-light-100 rounded text-xs overflow-x-auto">
+            <pre className="mt-2 p-3 bg-light-900 text-light-100 rounded-lg text-xs overflow-x-auto">
               {JSON.stringify(log.details, null, 2)}
             </pre>
           )}
@@ -79,29 +84,101 @@ export default function Logs() {
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isStreaming, setIsStreaming] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [stats, setStats] = useState({ total: 0, by_level: {} });
+  
+  const socketRef = useRef(null);
+  const logsEndRef = useRef(null);
 
-  useEffect(() => {
-    // Mock logs
-    const mockLogs = [
-      { id: 1, timestamp: '2026-02-02 10:30:15', level: 'info', source: 'NeurosymboticEngine', message: 'Processing input with hybrid mode', details: { mode: 'hybrid', confidence: 0.85 } },
-      { id: 2, timestamp: '2026-02-02 10:30:14', level: 'debug', source: 'RuleEngine', message: 'Rule "kinetic_energy" matched successfully' },
-      { id: 3, timestamp: '2026-02-02 10:30:12', level: 'info', source: 'Simulation', message: 'Harmonic oscillator simulation completed', details: { duration: '0.45s', steps: 1001 } },
-      { id: 4, timestamp: '2026-02-02 10:30:10', level: 'warn', source: 'Evolution', message: 'Code modification requires approval', details: { file: 'core/engine.py', change_type: 'optimization' } },
-      { id: 5, timestamp: '2026-02-02 10:30:08', level: 'error', source: 'API', message: 'WebSocket connection failed', details: { error: 'ECONNREFUSED', retry: true } },
-      { id: 6, timestamp: '2026-02-02 10:30:05', level: 'info', source: 'EquationSolver', message: 'Solved F = ma symbolically', details: { solution: 'a = F/m' } },
-      { id: 7, timestamp: '2026-02-02 10:30:00', level: 'debug', source: 'NeuralComponent', message: 'Pattern stored with similarity 0.92' },
-    ];
-    setLogs(mockLogs);
+  // Fetch initial logs
+  const fetchLogs = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/logs?limit=200`);
+      const data = await res.json();
+      if (data.success) {
+        setLogs(data.logs.reverse()); // Oldest first for display
+      }
+    } catch (err) {
+      console.error('Failed to fetch logs:', err);
+    }
   }, []);
 
-  const filteredLogs = logs.filter(log => {
+  // Fetch stats
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/logs/stats`);
+      const data = await res.json();
+      if (data.success) {
+        setStats(data.stats);
+      }
+    } catch (err) {
+      console.error('Failed to fetch stats:', err);
+    }
+  }, []);
+
+  // Setup WebSocket connection
+  useEffect(() => {
+    fetchLogs();
+    fetchStats();
+
+    const socket = io(API_BASE, {
+      transports: ['websocket'],
+      autoConnect: true,
+    });
+
+    socket.on('connect', () => {
+      setIsConnected(true);
+      console.log('Connected to log stream');
+    });
+
+    socket.on('disconnect', () => {
+      setIsConnected(false);
+      console.log('Disconnected from log stream');
+    });
+
+    socket.on('log_entry', (entry) => {
+      if (isStreaming) {
+        setLogs((prev) => [...prev.slice(-499), entry]); // Keep last 500
+        setStats((prev) => ({
+          ...prev,
+          total: prev.total + 1,
+          by_level: {
+            ...prev.by_level,
+            [entry.level]: (prev.by_level[entry.level] || 0) + 1,
+          },
+        }));
+      }
+    });
+
+    socketRef.current = socket;
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [fetchLogs, fetchStats, isStreaming]);
+
+  // Auto-scroll to bottom when new logs arrive
+  useEffect(() => {
+    if (isStreaming && logsEndRef.current) {
+      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [logs, isStreaming]);
+
+  // Filter logs
+  const filteredLogs = logs.filter((log) => {
     if (filter !== 'all' && log.level !== filter) return false;
     if (searchQuery && !log.message.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
-  const handleClear = () => {
-    setLogs([]);
+  const handleClear = async () => {
+    try {
+      await fetch(`${API_BASE}/api/v1/logs/clear`, { method: 'POST' });
+      setLogs([]);
+      setStats({ total: 0, by_level: {} });
+    } catch (err) {
+      console.error('Failed to clear logs:', err);
+    }
   };
 
   const handleExport = () => {
@@ -110,46 +187,100 @@ export default function Logs() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'physics-ai-logs.json';
+    a.download = `physics-ai-logs-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
+  };
+
+  const handleRefresh = () => {
+    fetchLogs();
+    fetchStats();
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-light-900">System Logs</h1>
-          <p className="text-light-500 text-sm">{filteredLogs.length} log entries</p>
+          <h1 className="text-xl font-semibold text-light-900 flex items-center gap-2">
+            <Terminal size={24} className="text-accent-primary" />
+            System Logs
+          </h1>
+          <p className="text-light-500 text-sm">
+            {stats.total} total entries | {filteredLogs.length} showing
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Connection Status */}
+          <div className={clsx(
+            'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm',
+            isConnected ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+          )}>
+            {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
+            <span className="text-xs font-medium">
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </span>
+          </div>
+
+          {/* Stream Toggle */}
           <button 
             onClick={() => setIsStreaming(!isStreaming)}
             className={clsx(
               'btn-secondary flex items-center gap-2',
-              isStreaming && 'border-green-400'
+              isStreaming && 'border-green-400 bg-green-50'
             )}
           >
+            {isStreaming ? <Pause size={14} /> : <Play size={14} />}
             <div className={clsx(
               'w-2 h-2 rounded-full',
               isStreaming ? 'bg-green-400 animate-pulse' : 'bg-light-400'
             )} />
             {isStreaming ? 'Live' : 'Paused'}
           </button>
+
+          <button onClick={handleRefresh} className="btn-secondary flex items-center gap-2">
+            <RefreshCw size={16} />
+            Refresh
+          </button>
           <button onClick={handleExport} className="btn-secondary flex items-center gap-2">
             <Download size={16} />
             Export
           </button>
-          <button onClick={handleClear} className="btn-secondary flex items-center gap-2 text-red-500 hover:text-red-600">
+          <button 
+            onClick={handleClear} 
+            className="btn-secondary flex items-center gap-2 text-red-500 hover:text-red-600 hover:border-red-300"
+          >
             <Trash2 size={16} />
             Clear
           </button>
         </div>
       </div>
 
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="card py-3">
+          <p className="text-2xl font-bold text-light-800">{stats.total}</p>
+          <p className="text-xs text-light-500">Total</p>
+        </div>
+        {['debug', 'info', 'warn', 'error'].map((level) => {
+          const config = logLevels[level];
+          const Icon = config.icon;
+          return (
+            <div key={level} className={clsx('card py-3', config.bg)}>
+              <div className="flex items-center gap-2">
+                <Icon size={16} className={config.color} />
+                <p className={clsx('text-2xl font-bold', config.color)}>
+                  {stats.by_level?.[level] || 0}
+                </p>
+              </div>
+              <p className="text-xs text-light-500 capitalize">{level}</p>
+            </div>
+          );
+        })}
+      </div>
+
       {/* Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1">
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-light-400" />
           <input
             type="text"
@@ -179,18 +310,28 @@ export default function Logs() {
 
       {/* Logs */}
       <div className="card p-0 overflow-hidden">
-        <div className="bg-light-100 px-4 py-2 border-b border-light-200 flex items-center gap-2">
-          <Terminal size={16} className="text-light-500" />
-          <span className="text-sm text-light-500">Log Stream</span>
+        <div className="bg-light-100 px-4 py-2 border-b border-light-200 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Terminal size={16} className="text-light-500" />
+            <span className="text-sm text-light-500">Log Stream</span>
+          </div>
+          {isStreaming && (
+            <span className="flex items-center gap-1 text-xs text-green-600">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+              Streaming
+            </span>
+          )}
         </div>
         <div className="max-h-[600px] overflow-y-auto divide-y divide-light-100">
           {filteredLogs.map((log) => (
             <LogEntry key={log.id} log={log} />
           ))}
+          <div ref={logsEndRef} />
           {filteredLogs.length === 0 && (
             <div className="py-12 text-center text-light-400">
               <Terminal size={48} className="mx-auto mb-3 opacity-50" />
               <p>No logs to display</p>
+              <p className="text-sm mt-1">Logs will appear here in real-time</p>
             </div>
           )}
         </div>

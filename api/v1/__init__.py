@@ -16,6 +16,7 @@ Includes:
 - substrate: PhysicsAI substrate
 - knowledge: Physics knowledge base (constants, equations, relationships)
 - reasoning: PageIndex-style reasoning-based retrieval
+- logs: Real-time system logging
 """
 
 from flask import Blueprint
@@ -29,9 +30,12 @@ from .substrate import substrate_bp
 from .knowledge import knowledge_bp
 # Import reasoning blueprint (PageIndex-inspired)
 from .reasoning import reasoning_bp
+# Import logs blueprint
+from .logs import logs_bp
 
 # Register nested blueprints under api_v1
 api_v1.register_blueprint(substrate_bp)
 api_v1.register_blueprint(knowledge_bp, url_prefix='/knowledge')
 api_v1.register_blueprint(reasoning_bp, url_prefix='/reasoning')
+api_v1.register_blueprint(logs_bp)
 

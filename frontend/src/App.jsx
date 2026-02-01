@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
 import Simulations from './pages/Simulations';
 import Equations from './pages/Equations';
+import Knowledge from './pages/Knowledge';
 import Models from './pages/Models';
 import Rules from './pages/Rules';
 import Evolution from './pages/Evolution';
@@ -34,6 +35,7 @@ function App() {
           <Route path="chat" element={<Chat />} />
           <Route path="simulations" element={<Simulations />} />
           <Route path="equations" element={<Equations />} />
+          <Route path="knowledge" element={<Knowledge />} />
           <Route path="models" element={<Models />} />
           <Route path="rules" element={<Rules />} />
           <Route path="evolution" element={<Evolution />} />
