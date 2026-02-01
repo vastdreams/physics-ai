@@ -1,0 +1,217 @@
+/**
+ * PATH: frontend/src/pages/Metrics.jsx
+ * PURPOSE: Performance and usage metrics dashboard
+ */
+
+import { useState } from 'react';
+import {
+  Activity,
+  Cpu,
+  Clock,
+  TrendingUp,
+  TrendingDown,
+  Database,
+  Zap,
+  BarChart3
+} from 'lucide-react';
+import { clsx } from 'clsx';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+
+// Generate mock data
+const generateTimeData = () => {
+  return Array.from({ length: 24 }, (_, i) => ({
+    time: `${i}:00`,
+    requests: Math.floor(Math.random() * 100) + 20,
+    latency: Math.floor(Math.random() * 50) + 10,
+    errors: Math.floor(Math.random() * 5),
+  }));
+};
+
+const generateComponentData = () => [
+  { name: 'Engine', cpu: 45, memory: 62 },
+  { name: 'Rules', cpu: 23, memory: 38 },
+  { name: 'Solver', cpu: 67, memory: 45 },
+  { name: 'Evolution', cpu: 12, memory: 28 },
+  { name: 'API', cpu: 34, memory: 41 },
+];
+
+function MetricCard({ title, value, change, icon: Icon, trend, unit = '' }) {
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm text-dark-400 mb-1">{title}</p>
+          <p className="text-2xl font-semibold text-dark-100">
+            {value}{unit}
+          </p>
+          {change && (
+            <div className={clsx(
+              'flex items-center gap-1 mt-2 text-sm',
+              trend === 'up' ? 'text-green-400' : 'text-red-400'
+            )}>
+              {trend === 'up' ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+              {change}
+            </div>
+          )}
+        </div>
+        <div className="w-10 h-10 rounded-lg bg-dark-700 flex items-center justify-center">
+          <Icon size={20} className="text-dark-400" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Metrics() {
+  const [timeData] = useState(generateTimeData);
+  const [componentData] = useState(generateComponentData);
+  const [timeRange, setTimeRange] = useState('24h');
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-dark-100">System Metrics</h1>
+          <p className="text-dark-400 text-sm">Performance and usage analytics</p>
+        </div>
+        <div className="flex items-center gap-1 p-1 bg-dark-800 rounded-lg">
+          {['1h', '6h', '24h', '7d'].map((range) => (
+            <button
+              key={range}
+              onClick={() => setTimeRange(range)}
+              className={clsx(
+                'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                timeRange === range
+                  ? 'bg-dark-700 text-dark-100'
+                  : 'text-dark-400 hover:text-dark-200'
+              )}
+            >
+              {range}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          title="Avg Response Time"
+          value="23"
+          unit="ms"
+          change="-12% from last hour"
+          icon={Clock}
+          trend="up"
+        />
+        <MetricCard
+          title="Requests/Min"
+          value="156"
+          change="+8% from last hour"
+          icon={Activity}
+          trend="up"
+        />
+        <MetricCard
+          title="CPU Usage"
+          value="34"
+          unit="%"
+          icon={Cpu}
+        />
+        <MetricCard
+          title="Active Rules"
+          value="24"
+          change="+3 this week"
+          icon={Database}
+          trend="up"
+        />
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Request Volume */}
+        <div className="card">
+          <h3 className="font-medium text-dark-100 mb-4">Request Volume</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={timeData}>
+                <defs>
+                  <linearGradient id="colorRequests" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10a37f" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#10a37f" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#343541" />
+                <XAxis dataKey="time" stroke="#6e6e80" fontSize={12} />
+                <YAxis stroke="#6e6e80" fontSize={12} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#202123', 
+                    border: '1px solid #343541',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="requests" 
+                  stroke="#10a37f" 
+                  fillOpacity={1} 
+                  fill="url(#colorRequests)" 
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Latency */}
+        <div className="card">
+          <h3 className="font-medium text-dark-100 mb-4">Response Latency (ms)</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={timeData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#343541" />
+                <XAxis dataKey="time" stroke="#6e6e80" fontSize={12} />
+                <YAxis stroke="#6e6e80" fontSize={12} />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#202123', 
+                    border: '1px solid #343541',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="latency" 
+                  stroke="#5436da" 
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Component Usage */}
+      <div className="card">
+        <h3 className="font-medium text-dark-100 mb-4">Component Resource Usage</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={componentData} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#343541" />
+              <XAxis type="number" stroke="#6e6e80" fontSize={12} />
+              <YAxis dataKey="name" type="category" stroke="#6e6e80" fontSize={12} width={80} />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: '#202123', 
+                  border: '1px solid #343541',
+                  borderRadius: '8px'
+                }}
+              />
+              <Bar dataKey="cpu" fill="#10a37f" name="CPU %" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="memory" fill="#5436da" name="Memory %" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
+}
