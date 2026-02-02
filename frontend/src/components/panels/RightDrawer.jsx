@@ -39,8 +39,26 @@ function MiniMessage({ message }) {
   const isUser = message.role === 'user';
   const [copied, setCopied] = useState(false);
 
+  // Ensure content is always a string (safety check for React rendering)
+  const getDisplayContent = () => {
+    if (typeof message.content === 'string') return message.content;
+    if (message.content === null || message.content === undefined) return '';
+    if (typeof message.content === 'object') {
+      if (message.content.content && typeof message.content.content === 'string') {
+        return message.content.content;
+      }
+      if (message.content.result && typeof message.content.result === 'string') {
+        return message.content.result;
+      }
+      return JSON.stringify(message.content, null, 2);
+    }
+    return String(message.content);
+  };
+
+  const displayContent = getDisplayContent();
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
+    navigator.clipboard.writeText(displayContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -70,7 +88,7 @@ function MiniMessage({ message }) {
             </div>
           ) : (
             <div className="text-sm text-light-700 whitespace-pre-wrap break-words">
-              {message.content}
+              {displayContent}
             </div>
           )}
         </div>
@@ -113,7 +131,10 @@ export default function RightDrawer({ onClose, onMaximize, isMaximized }) {
     setMessages(prev => [...prev, { role: 'assistant', isLoading: true }]);
 
     try {
-      const response = await fetch('http://localhost:5002/api/v1/substrate/chat', {
+      const apiBase = window.location.hostname === 'localhost' 
+        ? 'http://localhost:5002' 
+        : `http://${window.location.hostname}`;
+      const response = await fetch(`${apiBase}/api/v1/agents/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input.trim() }),
@@ -123,11 +144,31 @@ export default function RightDrawer({ onClose, onMaximize, isMaximized }) {
 
       const data = await response.json();
       
+      // Robust content extraction
+      const extractContent = (obj) => {
+        if (typeof obj === 'string') return obj;
+        if (!obj || typeof obj !== 'object') return String(obj || '');
+        if (typeof obj.content === 'string') return obj.content;
+        if (typeof obj.result === 'string') return obj.result;
+        if (typeof obj.message === 'string') return obj.message;
+        if (obj.content && typeof obj.content === 'object') {
+          if (typeof obj.content.content === 'string') return obj.content.content;
+        }
+        return JSON.stringify(obj, null, 2);
+      };
+
+      let content = "I've processed your request.";
+      if (typeof data.message === 'string') {
+        content = data.message;
+      } else if (data.response) {
+        content = extractContent(data.response);
+      }
+      
       setMessages(prev => [
         ...prev.slice(0, -1),
         {
           role: 'assistant',
-          content: data.response || data.message || "I've processed your request.",
+          content: content,
         }
       ]);
     } catch (error) {
