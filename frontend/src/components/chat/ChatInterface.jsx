@@ -37,8 +37,31 @@ function MessageBubble({ message, isLast }) {
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
 
+  // Ensure content is always a string (safety check for React rendering)
+  const getDisplayContent = () => {
+    if (typeof message.content === 'string') {
+      return message.content;
+    }
+    if (message.content === null || message.content === undefined) {
+      return '';
+    }
+    // Handle object content - extract nested content or stringify
+    if (typeof message.content === 'object') {
+      if (message.content.content && typeof message.content.content === 'string') {
+        return message.content.content;
+      }
+      if (message.content.result && typeof message.content.result === 'string') {
+        return message.content.result;
+      }
+      return JSON.stringify(message.content, null, 2);
+    }
+    return String(message.content);
+  };
+
+  const displayContent = getDisplayContent();
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
+    navigator.clipboard.writeText(displayContent);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -60,24 +83,24 @@ function MessageBubble({ message, isLast }) {
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="font-medium text-light-800 text-sm">
-            {isUser ? 'You' : 'Physics AI'}
-          </span>
-          {!isUser && message.reasoning && (
-            <span className="badge-blue text-[10px]">Reasoning</span>
-          )}
-        </div>
-        
-        <div className="text-light-700 prose prose-sm max-w-none">
-          {message.isLoading ? (
-            <div className="flex items-center gap-2 text-light-500">
-              <Loader2 size={16} className="animate-spin" />
-              <span>Thinking...</span>
-            </div>
-          ) : (
-            <div className="whitespace-pre-wrap">{message.content}</div>
-          )}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-medium text-light-800 text-sm">
+              {isUser ? 'You' : 'Physics AI'}
+            </span>
+            {!isUser && message.reasoning && (
+              <span className="badge-blue text-[10px]">Reasoning</span>
+            )}
+          </div>
+          
+          <div className="text-light-700 prose prose-sm max-w-none">
+            {message.isLoading ? (
+              <div className="flex items-center gap-2 text-light-500">
+                <Loader2 size={16} className="animate-spin" />
+                <span>Thinking...</span>
+              </div>
+            ) : (
+              <div className="whitespace-pre-wrap">{displayContent}</div>
+            )}
           
           {message.code && (
             <div className="mt-3 relative">
@@ -187,24 +210,35 @@ export default function ChatInterface() {
       // Extract response from DREAM agent format - handle various response structures
       const agentResponse = data.response || {};
       
-      // Content could be nested in various ways - extract the string
+      // Robust content extraction - ensure we always get a string
+      const extractContent = (obj) => {
+        if (typeof obj === 'string') return obj;
+        if (!obj || typeof obj !== 'object') return String(obj || '');
+        
+        // Try various possible content locations
+        if (typeof obj.content === 'string') return obj.content;
+        if (typeof obj.result === 'string') return obj.result;
+        if (typeof obj.message === 'string') return obj.message;
+        if (typeof obj.text === 'string') return obj.text;
+        
+        // Nested content
+        if (obj.content && typeof obj.content === 'object') {
+          if (typeof obj.content.content === 'string') return obj.content.content;
+          if (typeof obj.content.result === 'string') return obj.content.result;
+        }
+        
+        // Last resort: stringify
+        return JSON.stringify(obj, null, 2);
+      };
+      
+      // Try multiple sources for content
       let content = "I've processed your request.";
-      if (typeof agentResponse.content === 'string') {
-        content = agentResponse.content;
-      } else if (typeof agentResponse === 'string') {
-        content = agentResponse;
-      } else if (typeof data.message === 'string') {
+      if (data.message && typeof data.message === 'string') {
         content = data.message;
-      } else if (agentResponse.content?.content) {
-        // Nested content object
-        content = typeof agentResponse.content.content === 'string' 
-          ? agentResponse.content.content 
-          : JSON.stringify(agentResponse.content.content, null, 2);
-      } else if (agentResponse.result) {
-        // Result field
-        content = typeof agentResponse.result === 'string'
-          ? agentResponse.result
-          : JSON.stringify(agentResponse.result, null, 2);
+      } else if (agentResponse) {
+        content = extractContent(agentResponse);
+      } else if (data.content) {
+        content = extractContent(data);
       }
       
       // Remove loading message and add response
