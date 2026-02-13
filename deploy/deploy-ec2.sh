@@ -1,6 +1,6 @@
 #!/bin/bash
 # PATH: deploy/deploy-ec2.sh
-# PURPOSE: Deploy Physics AI to AWS EC2
+# PURPOSE: Deploy Beyond Frontier to AWS EC2
 #
 # USAGE:
 #   1. Run: aws configure (enter your credentials)
@@ -9,15 +9,15 @@
 set -e
 
 echo "=========================================="
-echo "  Physics AI - EC2 Deployment Script"
+echo "  Beyond Frontier - EC2 Deployment Script"
 echo "=========================================="
 
 # Configuration
 INSTANCE_TYPE="t2.micro"
 AMI_ID="ami-0c7217cdde317cfec"  # Ubuntu 22.04 LTS in us-east-1
-KEY_NAME="physics-ai-key"
-SECURITY_GROUP_NAME="physics-ai-sg"
-INSTANCE_NAME="physics-ai-server"
+KEY_NAME="beyondfrontier-key"
+SECURITY_GROUP_NAME="beyondfrontier-sg"
+INSTANCE_NAME="beyondfrontier-server"
 REGION="us-east-1"
 
 # Set region
@@ -51,7 +51,7 @@ if aws ec2 describe-security-groups --group-names $SECURITY_GROUP_NAME > /dev/nu
 else
     SG_ID=$(aws ec2 create-security-group \
         --group-name $SECURITY_GROUP_NAME \
-        --description "Security group for Physics AI" \
+        --description "Security group for Beyond Frontier" \
         --vpc-id $VPC_ID \
         --query 'GroupId' --output text)
     
@@ -88,8 +88,8 @@ apt-get install -y nodejs
 
 # Clone repository
 cd /opt
-git clone https://github.com/vastdreams/physics-ai.git
-cd physics-ai
+git clone https://github.com/beyondfrontier/beyondfrontier.git
+cd beyondfrontier
 
 # Setup Python backend
 python3 -m venv venv
@@ -102,14 +102,14 @@ npm install
 npm run build
 
 # Configure Nginx
-cat > /etc/nginx/sites-available/physics-ai <<'NGINX'
+cat > /etc/nginx/sites-available/beyondfrontier <<'NGINX'
 server {
     listen 80;
     server_name _;
 
     # Frontend
     location / {
-        root /opt/physics-ai/frontend/dist;
+        root /opt/beyondfrontier/frontend/dist;
         try_files $uri $uri/ /index.html;
     }
 
@@ -134,22 +134,22 @@ server {
 }
 NGINX
 
-ln -sf /etc/nginx/sites-available/physics-ai /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/beyondfrontier /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl restart nginx
 
 # Create systemd service for backend
-cat > /etc/systemd/system/physics-ai-api.service <<'SERVICE'
+cat > /etc/systemd/system/beyondfrontier-api.service <<'SERVICE'
 [Unit]
-Description=Physics AI API Server
+Description=Beyond Frontier API Server
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/physics-ai
-Environment=PATH=/opt/physics-ai/venv/bin
-ExecStart=/opt/physics-ai/venv/bin/python -m api.app
+WorkingDirectory=/opt/beyondfrontier
+Environment=PATH=/opt/beyondfrontier/venv/bin
+ExecStart=/opt/beyondfrontier/venv/bin/python -m api.app
 Restart=always
 
 [Install]
@@ -157,10 +157,10 @@ WantedBy=multi-user.target
 SERVICE
 
 systemctl daemon-reload
-systemctl enable physics-ai-api
-systemctl start physics-ai-api
+systemctl enable beyondfrontier-api
+systemctl start beyondfrontier-api
 
-echo "Physics AI deployment complete!" > /var/log/physics-ai-deploy.log
+echo "Beyond Frontier deployment complete!" > /var/log/beyondfrontier-deploy.log
 USERDATA
 )
 

@@ -1,6 +1,6 @@
 # integration/
 """
-Integration tests for unified Physics AI system.
+Integration tests for unified Beyond Frontier system.
 
 Tests the integration of all components:
 - Nodal vectorization

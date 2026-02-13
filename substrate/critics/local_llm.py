@@ -66,8 +66,8 @@ class LLMConfig:
     repeat_penalty: float = 1.1
     
     # Server settings (for VLLM/OpenAI-compatible)
-    server_url: str = "http://localhost:8000"
-    api_key: Optional[str] = None
+    server_url: str = os.getenv("LLM_SERVER_URL", "http://localhost:8000")
+    api_key: Optional[str] = os.getenv("LLM_API_KEY")
     
     # Subprocess settings
     executable_path: Optional[str] = None  # Path to llama.cpp main, ollama, etc.

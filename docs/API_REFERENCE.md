@@ -1,8 +1,8 @@
-# Physics AI - API Reference
+# Beyond Frontier - API Reference
 
 ## Overview
 
-Physics AI provides a comprehensive REST API for physics simulations, reasoning, and AI-powered analysis.
+Beyond Frontier provides a comprehensive REST API for physics simulations, reasoning, and AI-powered analysis.
 
 **Base URL**: `http://localhost:5002`
 

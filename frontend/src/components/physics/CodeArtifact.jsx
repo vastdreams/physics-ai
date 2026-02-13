@@ -3,14 +3,14 @@
  * PURPOSE: Jupyter-like code artifact with execution and output display
  * 
  * FEATURES:
- * - Syntax highlighted code blocks
- * - Execute Python/JavaScript code
+ * - Syntax highlighted code blocks via Shiki
+ * - Execute Python/JavaScript code (via Pyodide)
  * - Display outputs (text, plots, data)
  * - Collapsible cells
  * - Copy/Download functionality
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Play,
   Copy,
@@ -29,56 +29,55 @@ import {
   Minimize2
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useShiki } from '../../hooks/useShiki';
 
 const languageConfig = {
   python: {
     name: 'Python',
     icon: '🐍',
     color: 'from-blue-500 to-yellow-500',
-    keywords: ['def', 'class', 'import', 'from', 'return', 'if', 'else', 'elif', 'for', 'while', 'try', 'except', 'with', 'as', 'lambda', 'yield', 'async', 'await'],
   },
   javascript: {
     name: 'JavaScript',
     icon: '📜',
     color: 'from-yellow-400 to-yellow-600',
-    keywords: ['function', 'const', 'let', 'var', 'return', 'if', 'else', 'for', 'while', 'try', 'catch', 'async', 'await', 'class', 'export', 'import'],
+  },
+  typescript: {
+    name: 'TypeScript',
+    icon: '📘',
+    color: 'from-blue-500 to-blue-700',
   },
   latex: {
     name: 'LaTeX',
     icon: '📐',
     color: 'from-green-500 to-teal-500',
-    keywords: ['begin', 'end', 'frac', 'sqrt', 'sum', 'int', 'partial', 'nabla'],
   },
   sympy: {
     name: 'SymPy',
     icon: '∫',
     color: 'from-purple-500 to-pink-500',
-    keywords: ['symbols', 'solve', 'diff', 'integrate', 'simplify', 'expand', 'factor', 'limit', 'series'],
+  },
+  bash: {
+    name: 'Bash',
+    icon: '💻',
+    color: 'from-gray-600 to-gray-800',
+  },
+  json: {
+    name: 'JSON',
+    icon: '{}',
+    color: 'from-orange-400 to-orange-600',
+  },
+  markdown: {
+    name: 'Markdown',
+    icon: '📝',
+    color: 'from-slate-500 to-slate-700',
+  },
+  sql: {
+    name: 'SQL',
+    icon: '🗃️',
+    color: 'from-cyan-500 to-cyan-700',
   },
 };
-
-function syntaxHighlight(code, language) {
-  const config = languageConfig[language] || languageConfig.python;
-  let highlighted = code;
-  
-  // Simple keyword highlighting
-  config.keywords.forEach(keyword => {
-    const regex = new RegExp(`\\b(${keyword})\\b`, 'g');
-    highlighted = highlighted.replace(regex, `<span class="text-purple-600 font-semibold">$1</span>`);
-  });
-  
-  // String highlighting
-  highlighted = highlighted.replace(/(["'])(.*?)\1/g, '<span class="text-green-600">$&</span>');
-  
-  // Comment highlighting
-  highlighted = highlighted.replace(/(#.*)$/gm, '<span class="text-slate-400 italic">$1</span>');
-  highlighted = highlighted.replace(/(\/\/.*)$/gm, '<span class="text-slate-400 italic">$1</span>');
-  
-  // Number highlighting
-  highlighted = highlighted.replace(/\b(\d+\.?\d*)\b/g, '<span class="text-amber-600">$1</span>');
-  
-  return highlighted;
-}
 
 function CodeCell({ 
   code, 
@@ -95,8 +94,18 @@ function CodeCell({
   const [copied, setCopied] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [highlightedCode, setHighlightedCode] = useState('');
   
+  const { highlight, isReady: shikiReady } = useShiki();
   const config = languageConfig[language] || languageConfig.python;
+  
+  // Update highlighted code when Shiki is ready or code changes
+  useEffect(() => {
+    if (shikiReady && code) {
+      const html = highlight(code, language, 'dark');
+      setHighlightedCode(html);
+    }
+  }, [code, language, shikiReady, highlight]);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
@@ -215,20 +224,21 @@ function CodeCell({
       {/* Code */}
       {!collapsed && (
         <div className={clsx(
-          'overflow-x-auto',
+          'overflow-x-auto shiki-container',
           expanded ? 'max-h-none' : 'max-h-96'
         )}>
-          <pre className="p-4 text-sm font-mono leading-relaxed bg-slate-900 text-slate-100 overflow-x-auto">
-            <code 
-              dangerouslySetInnerHTML={{ 
-                __html: syntaxHighlight(code, language)
-                  .replace(/text-purple-600/g, 'text-purple-400')
-                  .replace(/text-green-600/g, 'text-green-400')
-                  .replace(/text-amber-600/g, 'text-amber-400')
-                  .replace(/text-slate-400/g, 'text-slate-500')
-              }} 
+          {highlightedCode ? (
+            // Shiki-highlighted code
+            <div 
+              className="shiki-code text-sm leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: highlightedCode }} 
             />
-          </pre>
+          ) : (
+            // Fallback while Shiki loads
+            <pre className="p-4 text-sm font-mono leading-relaxed bg-slate-900 text-slate-100 overflow-x-auto">
+              <code>{code}</code>
+            </pre>
+          )}
         </div>
       )}
       
@@ -331,4 +341,4 @@ function NotebookContainer({ cells, onExecute, onAddCell }) {
 }
 
 export default CodeCell;
-export { NotebookContainer, syntaxHighlight };
+export { NotebookContainer };

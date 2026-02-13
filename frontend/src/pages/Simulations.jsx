@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { API_BASE } from '../config';
 
 const models = [
   { 
@@ -129,7 +130,7 @@ export default function Simulations() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:5002/api/v1/simulate', {
+      const response = await fetch(`${API_BASE}/api/v1/simulate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,6 +1,6 @@
 # PATH: substrate/main.py
 # PURPOSE:
-#   - Main entry point for the Physics AI substrate
+#   - Main entry point for the Beyond Frontier substrate
 #   - Wires all components together
 #   - Provides initialization and startup functions
 #
@@ -44,16 +44,16 @@ from substrate.execution.executor import FormulaExecutor
 
 @dataclass
 class PhysicsAIConfig:
-    """Configuration for the Physics AI system."""
+    """Configuration for the Beyond Frontier system."""
     
     # Paths
-    data_dir: str = ".physics_ai_data"
+    data_dir: str = ".beyondfrontier_data"
     graph_path: str = "formula_graph.json"
     
-    # LLM configuration
-    llm_backend_type: str = "throttled_openai"  # mock|subprocess|openai_compatible|throttled_openai
-    llm_model_name: str = "lmstudio-deepseek"   # LM Studio model name
-    llm_server_url: str = "http://127.0.0.1:8080"  # LM Studio / llama-server URL
+    # LLM configuration (resolved from env vars at instantiation)
+    llm_backend_type: str = field(default_factory=lambda: os.getenv("LLM_BACKEND", "throttled_openai"))
+    llm_model_name: str = field(default_factory=lambda: os.getenv("LM_STUDIO_MODEL", "lmstudio-deepseek"))
+    llm_server_url: str = field(default_factory=lambda: os.getenv("LM_STUDIO_URL", "http://127.0.0.1:8080"))
     llm_model_path: Optional[str] = None
     llm_executable_path: Optional[str] = None
     
@@ -87,7 +87,7 @@ class PhysicsAIConfig:
 
 class PhysicsAI:
     """
-    Main Physics AI system.
+    Main Beyond Frontier system.
     
     This class orchestrates all components:
     - FormulaGraph (reality substrate)
@@ -218,7 +218,7 @@ class PhysicsAI:
     # =========================================================================
     
     def start(self):
-        """Start the Physics AI system."""
+        """Start the Beyond Frontier system."""
         if self._running:
             return
         
@@ -228,13 +228,13 @@ class PhysicsAI:
         if self.config.evolution_enabled:
             self.evolution.start()
         
-        print("Physics AI started")
+        print("Beyond Frontier started")
         print(f"  - Graph has {len(self.graph)} formulas")
         print(f"  - Evolution: {'enabled' if self.config.evolution_enabled else 'disabled'}")
         print(f"  - LLM backend: {self.config.llm_backend_type}")
     
     def stop(self):
-        """Stop the Physics AI system."""
+        """Stop the Beyond Frontier system."""
         if not self._running:
             return
         
@@ -246,7 +246,7 @@ class PhysicsAI:
         # Save graph
         self.graph.save()
         
-        print("Physics AI stopped")
+        print("Beyond Frontier stopped")
     
     # =========================================================================
     # Main interface
@@ -259,7 +259,7 @@ class PhysicsAI:
         context: Optional[Dict[str, Any]] = None
     ):
         """
-        Send a message to the Physics AI.
+        Send a message to the Beyond Frontier.
         
         Args:
             message: Natural language message
@@ -353,7 +353,7 @@ class PhysicsAI:
     
     @classmethod
     def create(cls, config: Optional[PhysicsAIConfig] = None) -> PhysicsAI:
-        """Create a new Physics AI instance."""
+        """Create a new Beyond Frontier instance."""
         config = config or PhysicsAIConfig()
         return cls(config)
     
@@ -372,7 +372,7 @@ def create_physics_ai(
     **kwargs
 ) -> PhysicsAI:
     """
-    Factory function to create a Physics AI instance.
+    Factory function to create a Beyond Frontier instance.
     
     Args:
         llm_backend: "mock", "subprocess", or "openai_compatible"
@@ -395,10 +395,10 @@ def create_physics_ai(
 # =========================================================================
 
 def main():
-    """Command-line entry point for Physics AI."""
+    """Command-line entry point for Beyond Frontier."""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Physics AI - Self-evolving physics reasoning system")
+    parser = argparse.ArgumentParser(description="Beyond Frontier - Self-evolving physics reasoning system")
     parser.add_argument("--config", type=str, help="Path to config file")
     parser.add_argument("--llm-backend", type=str, default="mock", 
                        choices=["mock", "subprocess", "openai_compatible"],
@@ -428,7 +428,7 @@ def main():
     
     if args.interactive:
         print("\n" + "=" * 60)
-        print("Physics AI Interactive Mode")
+        print("Beyond Frontier Interactive Mode")
         print("Type 'quit' to exit, 'stats' for statistics")
         print("=" * 60 + "\n")
         

@@ -77,7 +77,8 @@ temp/
 Thumbs.db
 Desktop.ini
 
-# Physics AI specific
+# Beyond Frontier specific
+.beyondfrontier_data/
 .physics_ai_data/
 cytoscape_outputs/
 flowcharts/

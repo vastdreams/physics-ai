@@ -2,7 +2,7 @@
 # setup_github.sh
 # Script to help set up GitHub repository
 
-echo "Physics AI - GitHub Repository Setup"
+echo "Beyond Frontier - GitHub Repository Setup"
 echo "====================================="
 echo ""
 
@@ -13,8 +13,8 @@ if [ ! -d ".git" ]; then
 fi
 
 # Get repository name from user or use default
-read -p "Enter GitHub repository name (default: physics-ai): " repo_name
-repo_name=${repo_name:-physics-ai}
+read -p "Enter GitHub repository name (default: beyondfrontier): " repo_name
+repo_name=${repo_name:-beyondfrontier}
 
 # Get GitHub username
 read -p "Enter your GitHub username: " github_username
@@ -32,7 +32,7 @@ echo ""
 git add .
 
 # Create initial commit
-git commit -m "Initial commit: Physics AI - Neurosymbotic Rule-Based Modular AI
+git commit -m "Initial commit: Beyond Frontier - Neurosymbotic Rule-Based Modular AI
 
 - Core neurosymbotic engine
 - Rule-based system

@@ -20,6 +20,7 @@ import {
   X
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../config';
 
 function RuleCard({ rule, onEdit, onDelete, onTest }) {
   const [expanded, setExpanded] = useState(false);
@@ -206,7 +207,7 @@ export default function Rules() {
     // Fetch rules from API
     const fetchRules = async () => {
       try {
-        const response = await fetch('http://localhost:5002/api/v1/rules');
+        const response = await fetch(`${API_BASE}/api/v1/rules`);
         if (response.ok) {
           const data = await response.json();
           setRules(data.rules || []);
@@ -249,7 +250,7 @@ export default function Rules() {
 
   const handleAddRule = async (rule) => {
     try {
-      const response = await fetch('http://localhost:5002/api/v1/rules', {
+      const response = await fetch(`${API_BASE}/api/v1/rules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(rule),
@@ -266,7 +267,7 @@ export default function Rules() {
 
   const handleDeleteRule = async (rule) => {
     try {
-      await fetch(`http://localhost:5002/api/v1/rules/${rule.name}`, {
+      await fetch(`${API_BASE}/api/v1/rules/${rule.name}`, {
         method: 'DELETE',
       });
     } catch (error) {
@@ -278,7 +279,7 @@ export default function Rules() {
   const handleTestRule = async (rule) => {
     setTestResult({ loading: true, rule });
     try {
-      const response = await fetch('http://localhost:5002/api/v1/rules/execute', {
+      const response = await fetch(`${API_BASE}/api/v1/rules/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

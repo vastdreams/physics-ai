@@ -1,5 +1,5 @@
 # tests/
 """
-Test suite for Physics AI system.
+Test suite for Beyond Frontier system.
 """
 

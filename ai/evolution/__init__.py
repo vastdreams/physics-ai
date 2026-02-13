@@ -1,6 +1,6 @@
 """
 PATH: ai/evolution/__init__.py
-PURPOSE: Self-evolution system for Physics AI
+PURPOSE: Self-evolution system for Beyond Frontier
 
 The AI can:
 1. Propose improvements to its own codebase

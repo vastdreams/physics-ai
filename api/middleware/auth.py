@@ -20,6 +20,7 @@ import os
 import hashlib
 import hmac
 import json
+import secrets as _secrets
 import time
 from datetime import datetime, timedelta
 from functools import wraps
@@ -29,9 +30,16 @@ import base64
 from flask import request, jsonify, g, current_app
 
 
-# Configuration
+# Configuration — JWT_SECRET is resolved from env vars with a secure random fallback.
+# In production set JWT_SECRET (or SECRET_KEY) explicitly so tokens survive server restarts.
+_jwt_secret = (
+    os.environ.get("JWT_SECRET")
+    or os.environ.get("SECRET_KEY")
+    or _secrets.token_hex(32)
+)
+
 AUTH_CONFIG = {
-    "jwt_secret": os.environ.get("JWT_SECRET", "physics-ai-secret-key-change-in-production"),
+    "jwt_secret": _jwt_secret,
     "jwt_algorithm": "HS256",
     "access_token_expiry": 3600,  # 1 hour
     "refresh_token_expiry": 86400 * 7,  # 7 days

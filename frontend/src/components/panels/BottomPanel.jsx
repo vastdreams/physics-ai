@@ -30,6 +30,7 @@ import {
   Zap
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../../config';
 
 const tabs = [
   { id: 'console', label: 'Console', icon: Terminal },
@@ -49,7 +50,7 @@ const logLevels = {
 function ConsoleTab({ onCommand }) {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState([
-    { type: 'system', content: 'Physics AI Console v1.0.0' },
+    { type: 'system', content: 'Beyond Frontier Console v1.0.0' },
     { type: 'system', content: 'Type "help" for available commands' },
   ]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -92,7 +93,7 @@ function ConsoleTab({ onCommand }) {
     }
 
     if (trimmed === 'version') {
-      setHistory(prev => [...prev, { type: 'output', content: 'Physics AI v1.0.0 - Neurosymbolic Engine' }]);
+      setHistory(prev => [...prev, { type: 'output', content: 'Beyond Frontier v1.0.0 - Neurosymbolic Engine' }]);
       return;
     }
 
@@ -105,7 +106,7 @@ function ConsoleTab({ onCommand }) {
       else if (trimmed === 'equations') endpoint = '/api/v1/knowledge/equations?limit=10';
       else if (trimmed === 'status') endpoint = '/health';
       
-      const response = await fetch(`http://localhost:5002${endpoint}`);
+      const response = await fetch(`${API_BASE}${endpoint}`);
       const data = await response.json();
       
       setHistory(prev => [
@@ -181,10 +182,10 @@ function ConsoleTab({ onCommand }) {
 
 function OutputTab() {
   const [output, setOutput] = useState([
-    { time: '10:23:45', message: 'Physics AI initialized', level: 'info' },
+    { time: '10:23:45', message: 'Beyond Frontier initialized', level: 'info' },
     { time: '10:23:46', message: 'Loaded 122 equations', level: 'success' },
     { time: '10:23:46', message: 'Loaded 45 physical constants', level: 'success' },
-    { time: '10:23:47', message: 'API server ready on port 5002', level: 'info' },
+    { time: '10:23:47', message: 'API server ready', level: 'info' },
   ]);
 
   return (
@@ -212,7 +213,7 @@ function LogsTab() {
     // Fetch logs from API
     const fetchLogs = async () => {
       try {
-        const response = await fetch('http://localhost:5002/api/v1/cot/logs');
+        const response = await fetch(`${API_BASE}/api/v1/cot/logs`);
         if (response.ok) {
           const data = await response.json();
           setLogs(data.logs || []);

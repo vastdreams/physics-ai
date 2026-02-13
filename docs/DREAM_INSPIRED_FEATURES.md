@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes additional features inspired by the DREAM medical architecture that enhance the Physics AI system with advanced uncertainty handling, data imputation, and validation mechanisms.
+This document describes additional features inspired by the DREAM medical architecture that enhance the Beyond Frontier system with advanced uncertainty handling, data imputation, and validation mechanisms.
 
 ## 1. VECTOR Framework (`utilities/vector_framework.py`)
 

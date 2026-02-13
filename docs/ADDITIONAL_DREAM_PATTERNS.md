@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes additional sophisticated patterns extracted from the DREAM architecture that enhance the Physics AI system with advanced state management, workflow orchestration, and traceability.
+This document describes additional sophisticated patterns extracted from the DREAM architecture that enhance the Beyond Frontier system with advanced state management, workflow orchestration, and traceability.
 
 ## New Patterns Implemented
 

@@ -99,7 +99,7 @@ class EvolutionTracker:
         Args:
             storage_path: Path to store evolution history
         """
-        self.storage_path = storage_path or "/tmp/physics_ai_evolution"
+        self.storage_path = storage_path or os.getenv("EVOLUTION_STORAGE_PATH", "/tmp/beyondfrontier_evolution")
         self.proposals: Dict[str, EvolutionProposal] = {}
         self.metrics = EvolutionMetrics()
         

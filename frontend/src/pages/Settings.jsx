@@ -16,6 +16,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../config';
 
 function SettingSection({ title, description, icon: Icon, children }) {
   return (
@@ -97,7 +98,7 @@ function Select({ label, description, value, onChange, options }) {
 
 export default function Settings() {
   const [settings, setSettings] = useState({
-    apiUrl: 'http://localhost:5002',
+    apiUrl: API_BASE || 'http://localhost:5002',
     autoConnect: true,
     enableWebSocket: true,
     logLevel: 'info',
@@ -119,14 +120,14 @@ export default function Settings() {
 
   const handleSave = () => {
     // Save to localStorage or API
-    localStorage.setItem('physics-ai-settings', JSON.stringify(settings));
+    localStorage.setItem('beyondfrontier-settings', JSON.stringify(settings));
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
 
   const handleReset = () => {
     const defaultSettings = {
-      apiUrl: 'http://localhost:5002',
+      apiUrl: API_BASE || 'http://localhost:5002',
       autoConnect: true,
       enableWebSocket: true,
       logLevel: 'info',
@@ -148,7 +149,7 @@ export default function Settings() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-light-900">Settings</h1>
-          <p className="text-light-500 text-sm">Configure your Physics AI environment</p>
+          <p className="text-light-500 text-sm">Configure your Beyond Frontier environment</p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={handleReset} className="btn-secondary flex items-center gap-2">
@@ -170,10 +171,10 @@ export default function Settings() {
       >
         <Input
           label="API URL"
-          description="The URL of the Physics AI backend server"
+          description="The URL of the Beyond Frontier backend server"
           value={settings.apiUrl}
           onChange={(v) => updateSetting('apiUrl', v)}
-          placeholder="http://localhost:5002"
+          placeholder={API_BASE || "http://localhost:5002"}
         />
         <Toggle
           label="Auto Connect"

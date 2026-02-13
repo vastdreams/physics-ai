@@ -22,6 +22,12 @@ from .auth import (
 )
 from .validation import ValidationMiddleware
 from .logging import LoggingMiddleware
+from .rate_limit import (
+    RateLimitMiddleware,
+    rate_limit,
+    rate_limit_auth,
+    get_rate_limiter,
+)
 
 __all__ = [
     'require_auth',
@@ -32,6 +38,10 @@ __all__ = [
     'login_user',
     'AUTH_CONFIG',
     'ValidationMiddleware',
-    'LoggingMiddleware'
+    'LoggingMiddleware',
+    'RateLimitMiddleware',
+    'rate_limit',
+    'rate_limit_auth',
+    'get_rate_limiter',
 ]
 

@@ -1,7 +1,7 @@
 # Physics First-Principles Computational Framework
 
 **Last Updated**: 2025  
-**Project**: Physics AI - First-Principles Physics Modeling System
+**Project**: Beyond Frontier - First-Principles Physics Modeling System
 
 ## Overview
 

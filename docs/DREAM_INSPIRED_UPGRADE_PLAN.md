@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-This document outlines a comprehensive upgrade plan for the Physics AI system, inspired by the DREAM (MedTwin.AI) architecture. The upgrades focus on implementing intelligent context memory, micro-agentic structures, equational AI, and real-time Dash dashboards while maintaining API modularity.
+This document outlines a comprehensive upgrade plan for the Beyond Frontier system, inspired by the DREAM (MedTwin.AI) architecture. The upgrades focus on implementing intelligent context memory, micro-agentic structures, equational AI, and real-time Dash dashboards while maintaining API modularity.
 
 ## Current State Analysis
 
@@ -473,7 +473,7 @@ class TrafficManager:
 
 ## Conclusion
 
-This upgrade plan transforms the Physics AI system into a DREAM-inspired intelligent framework with:
+This upgrade plan transforms the Beyond Frontier system into a DREAM-inspired intelligent framework with:
 - Intelligent context memory with micro-agents
 - Equational AI for research ingestion
 - Real-time Dash dashboards

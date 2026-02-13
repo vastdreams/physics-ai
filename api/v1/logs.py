@@ -128,10 +128,12 @@ def list_logs():
 @logs_bp.route('/stream', methods=['GET'])
 def stream_info():
     """Info about log streaming via WebSocket."""
+    ws_host = request.host  # Use the same host the client connected to
+    ws_scheme = 'wss' if request.is_secure else 'ws'
     return jsonify({
         'success': True,
         'websocket': {
-            'url': 'ws://localhost:5002',
+            'url': f'{ws_scheme}://{ws_host}',
             'event': 'log_entry',
             'description': 'Connect to WebSocket and listen for log_entry events'
         }
@@ -207,7 +209,7 @@ def generate_sample_logs():
         ('info', 'KnowledgeBase', 'Knowledge graph built with 12 physics domains'),
         ('debug', 'HotReload', 'Watching 7 directories for changes'),
         ('info', 'WebSocket', 'Real-time log streaming enabled'),
-        ('info', 'API', 'REST API ready on port 5002'),
+        ('info', 'API', 'REST API ready'),
     ]
     
     for level, source, message in samples:

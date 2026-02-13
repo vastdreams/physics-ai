@@ -24,6 +24,7 @@ import {
   Play
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../config';
 
 function StatCard({ title, value, change, icon: Icon, color }) {
   const colors = {
@@ -178,7 +179,7 @@ export default function Dashboard() {
     // Fetch stats from API
     const fetchStats = async () => {
       try {
-        const response = await fetch('http://localhost:5002/api/v1/rules/statistics');
+        const response = await fetch(`${API_BASE}/api/v1/rules/statistics`);
         if (response.ok) {
           const data = await response.json();
           setStats(prev => ({ ...prev, rules: data.total_rules || 0 }));
@@ -206,7 +207,7 @@ export default function Dashboard() {
         <div className="relative flex items-center justify-between">
           <div>
             <h1 className="text-xl font-semibold text-light-900 mb-1">
-              Welcome back to Physics AI
+              Welcome back to Beyond Frontier
             </h1>
             <p className="text-light-500">
               Your neurosymbolic engine is ready for exploration

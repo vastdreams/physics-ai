@@ -1,4 +1,4 @@
-# 🌌 Physics AI Vision
+# 🌌 Beyond Frontier Vision
 
 <p align="center">
   <em>"The most incomprehensible thing about the universe is that it is comprehensible."</em><br/>
@@ -9,7 +9,7 @@
 
 ## The Mission
 
-**Physics AI is building the unified open-source infrastructure for physics: a self-evolving system that accelerates discovery, validates experiments, challenges theories, and finds the unknown.**
+**Beyond Frontier is building the unified open-source infrastructure for physics: a self-evolving system that accelerates discovery, validates experiments, challenges theories, and finds the unknown.**
 
 We're not building another calculator or AI chatbot. We're building **the operating system for physics research**: infrastructure that:
 
@@ -62,7 +62,7 @@ Despite the efforts of brilliant minds (Einstein, Hawking, Witten), we haven't r
 
 ## Our Approach: Unified Physics Infrastructure
 
-Physics AI is built as **layered infrastructure** that physicists can use at any level:
+Beyond Frontier is built as **layered infrastructure** that physicists can use at any level:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -131,10 +131,10 @@ The frontier: finding the unknown:
 
 ---
 
-## Use Cases: Who Uses Physics AI and How
+## Use Cases: Who Uses Beyond Frontier and How
 
 ### 🎓 For Researchers
-| Task | How Physics AI Helps |
+| Task | How Beyond Frontier Helps |
 |------|---------------------|
 | **Literature Review** | Automatically extract equations, results, and methods from papers |
 | **Calculations** | "Derive the scattering cross-section for electron-positron annihilation" |
@@ -142,7 +142,7 @@ The frontier: finding the unknown:
 | **Exploration** | "What happens to this system if we vary parameter X?" |
 
 ### 🔬 For Experimentalists
-| Task | How Physics AI Helps |
+| Task | How Beyond Frontier Helps |
 |------|---------------------|
 | **Prediction** | "What should we measure if theory X is correct?" |
 | **Comparison** | Compare experimental data against multiple theoretical models |
@@ -150,7 +150,7 @@ The frontier: finding the unknown:
 | **Error Analysis** | Propagate uncertainties through complex calculations |
 
 ### 📖 For Students & Educators
-| Task | How Physics AI Helps |
+| Task | How Beyond Frontier Helps |
 |------|---------------------|
 | **Learning** | Step-by-step derivations with explanations |
 | **Homework Help** | Solve problems while showing the reasoning |
@@ -158,7 +158,7 @@ The frontier: finding the unknown:
 | **Connections** | "How does this topic connect to what I learned before?" |
 
 ### 🔭 For Theorists
-| Task | How Physics AI Helps |
+| Task | How Beyond Frontier Helps |
 |------|---------------------|
 | **Theory Building** | Check consistency of proposed theories |
 | **Gap Analysis** | "What phenomena can't current theories explain?" |
@@ -207,7 +207,7 @@ The frontier: finding the unknown:
 
 ## The Grand Challenges We're Targeting
 
-Physics AI isn't just tools. It's infrastructure designed to help solve the biggest open problems in physics:
+Beyond Frontier isn't just tools. It's infrastructure designed to help solve the biggest open problems in physics:
 
 ### 🔮 Quantum Gravity
 *Why can't we reconcile quantum mechanics and general relativity?*
@@ -272,7 +272,7 @@ Physics AI isn't just tools. It's infrastructure designed to help solve the bigg
 ## Principles
 
 ### 1. Infrastructure, Not Application
-Physics AI is **foundational infrastructure**, like Linux for operating systems or TCP/IP for networking. We build the layers that others build upon. Every physicist should be able to use this as their foundation.
+Beyond Frontier is **foundational infrastructure**, like Linux for operating systems or TCP/IP for networking. We build the layers that others build upon. Every physicist should be able to use this as their foundation.
 
 ### 2. Physics-Constrained
 Every operation respects physical law. Outputs satisfy:
@@ -332,7 +332,7 @@ Every physics breakthrough has transformed society. The next ones could give us:
 
 Humanity produces more physics papers than any person can read. Calculations that could reveal insights go uncomputed. Connections between fields go unnoticed.
 
-**Physics AI is infrastructure to remove that bottleneck.**
+**Beyond Frontier is infrastructure to remove that bottleneck.**
 
 We're building the system that lets humanity explore physics at the speed of silicon, not the speed of grad students.
 
@@ -340,7 +340,7 @@ We're building the system that lets humanity explore physics at the speed of sil
 
 ## How to Contribute
 
-Physics AI needs:
+Beyond Frontier needs:
 
 | Role | Contribution | Impact |
 |------|--------------|--------|
@@ -357,15 +357,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
 **Abhishek Sehgal** - Creator & Lead Developer
 
-*"I believe AI should amplify human intelligence, not replace it. Physics AI is my attempt to build a tool worthy of humanity's greatest intellectual challenge."*
+*"I believe AI should amplify human intelligence, not replace it. Beyond Frontier is my attempt to build a tool worthy of humanity's greatest intellectual challenge."*
 
 ---
 
 ## Contact & Community
 
-- **GitHub**: [vastdreams/physics-ai](https://github.com/vastdreams/physics-ai)
-- **Issues**: [Report bugs or request features](https://github.com/vastdreams/physics-ai/issues)
-- **Discussions**: [Join the conversation](https://github.com/vastdreams/physics-ai/discussions)
+- **GitHub**: [beyondfrontier/beyondfrontier](https://github.com/beyondfrontier/beyondfrontier)
+- **Issues**: [Report bugs or request features](https://github.com/beyondfrontier/beyondfrontier/issues)
+- **Discussions**: [Join the conversation](https://github.com/beyondfrontier/beyondfrontier/discussions)
 
 ---
 

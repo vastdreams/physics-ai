@@ -1,6 +1,6 @@
-# Physics AI Frontend
+# Beyond Frontier Frontend
 
-A modern web interface for managing and interacting with the Physics AI system, inspired by Notion, Cursor, and ChatGPT.
+A modern web interface for managing and interacting with the Beyond Frontier system, inspired by Notion, Cursor, and ChatGPT.
 
 ## Features
 
@@ -90,7 +90,7 @@ frontend/
 
 ## API Connection
 
-The frontend connects to the Physics AI backend API at `http://localhost:5002` by default.
+The frontend connects to the Beyond Frontier backend API at `http://localhost:5002` by default.
 
 To start the backend:
 

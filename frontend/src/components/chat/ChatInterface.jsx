@@ -1,6 +1,6 @@
 /**
  * PATH: frontend/src/components/chat/ChatInterface.jsx
- * PURPOSE: Wolfram-style conversational interface for Physics AI
+ * PURPOSE: Wolfram-style conversational interface for Beyond Frontier
  * 
  * FEATURES:
  * - Mathematical proof display with theorems/lemmas
@@ -39,6 +39,10 @@ import {
 import { clsx } from 'clsx';
 import CodeCell from '../physics/CodeArtifact';
 import { TheoremBlock, DerivationChain, MathBlock } from '../physics/ProofDisplay';
+import MarkdownRenderer from './MarkdownRenderer';
+import ReasoningFlowChart from './ReasoningFlowChart';
+import QualityBadge from './QualityBadge';
+import { API_BASE } from '../../config';
 
 const suggestedPrompts = [
   { icon: Atom, text: "Derive the wave equation from first principles", category: "Theory" },
@@ -49,67 +53,13 @@ const suggestedPrompts = [
   { icon: Code, text: "Simulate a quantum harmonic oscillator", category: "Simulation" },
 ];
 
-// Parse content for mathematical expressions and code blocks
-function parseContent(content) {
-  if (!content) return { text: '', math: [], code: [], proofs: [] };
-  
-  const text = typeof content === 'string' ? content : JSON.stringify(content, null, 2);
-  
-  // Extract LaTeX expressions (between $...$ or $$...$$)
-  const mathRegex = /\$\$(.*?)\$\$|\$(.*?)\$/gs;
-  const math = [...text.matchAll(mathRegex)].map(m => ({
-    full: m[0],
-    expression: m[1] || m[2],
-    display: m[0].startsWith('$$')
-  }));
-  
-  // Extract code blocks (```...```)
-  const codeRegex = /```(\w+)?\n([\s\S]*?)```/g;
-  const code = [...text.matchAll(codeRegex)].map(m => ({
-    full: m[0],
-    language: m[1] || 'python',
-    code: m[2].trim()
-  }));
-  
-  return { text, math, code, proofs: [] };
-}
-
-// Render mathematical content with proper formatting
-function MathContent({ content }) {
-  const parsed = parseContent(content);
-  
-  // Simple rendering - replace math expressions inline
-  let displayText = parsed.text;
-  
-  // Render code blocks
-  const codeBlocks = parsed.code.map((block, i) => (
-    <div key={i} className="my-4">
-      <CodeCell 
-        code={block.code} 
-        language={block.language}
-        executionCount={i + 1}
-      />
-    </div>
-  ));
-  
-  // Remove code blocks from text for display
-  parsed.code.forEach(block => {
-    displayText = displayText.replace(block.full, '');
-  });
+// Render content with markdown and LaTeX support via MarkdownRenderer
+function ContentDisplay({ content }) {
+  if (!content) return null;
   
   return (
-    <div className="math-content">
-      {/* Text content with improved typography */}
-      <div className="text-base leading-relaxed text-slate-700 whitespace-pre-wrap font-serif">
-        {displayText.trim()}
-      </div>
-      
-      {/* Code artifacts */}
-      {codeBlocks.length > 0 && (
-        <div className="mt-4 space-y-4">
-          {codeBlocks}
-        </div>
-      )}
+    <div className="content-display">
+      <MarkdownRenderer content={content} />
     </div>
   );
 }
@@ -117,6 +67,7 @@ function MathContent({ content }) {
 function MessageBubble({ message, isLast }) {
   const [copied, setCopied] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [showReasoning, setShowReasoning] = useState(false);
   const isUser = message.role === 'user';
 
   // Ensure content is always a string (safety check for React rendering)
@@ -172,12 +123,25 @@ function MessageBubble({ message, isLast }) {
         {/* Header */}
         <div className="flex items-center gap-3 mb-3">
           <span className="font-semibold text-slate-900 text-lg">
-            {isUser ? 'Input' : 'Physics AI'}
+            {isUser ? 'Input' : 'Beyond Frontier'}
           </span>
           {!isUser && message.reasoning && (
-            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+            <button
+              onClick={() => setShowReasoning(!showReasoning)}
+              className={clsx(
+                "px-2 py-0.5 text-xs font-medium rounded-full flex items-center gap-1 transition-colors",
+                showReasoning 
+                  ? "bg-purple-100 text-purple-700" 
+                  : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+              )}
+            >
               Chain of Thought
-            </span>
+              {showReasoning ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+            </button>
+          )}
+          {/* Quality Badge */}
+          {!isUser && !message.isLoading && message.quality && (
+            <QualityBadge quality={message.quality} compact={true} />
           )}
           {!isUser && !message.isLoading && (
             <button
@@ -203,7 +167,18 @@ function MessageBubble({ message, isLast }) {
               </div>
             </div>
           ) : (
-            <MathContent content={displayContent} />
+            <ContentDisplay content={displayContent} />
+          )}
+          
+          {/* Chain of Thought Visualization */}
+          {!isUser && !message.isLoading && showReasoning && message.reasoning && (
+            <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl border border-purple-200">
+              <ReasoningFlowChart
+                reasoning={message.reasoning}
+                title="Reasoning Process"
+                expandAll={false}
+              />
+            </div>
           )}
           
           {/* Code Artifact */}
@@ -326,9 +301,7 @@ export default function ChatInterface() {
 
     try {
       // Call the DREAM Agents API
-      const apiBase = window.location.hostname === 'localhost' 
-        ? 'http://localhost:5002' 
-        : `http://${window.location.hostname}`;
+      const apiBase = API_BASE;
       
       const response = await fetch(`${apiBase}/api/v1/agents/chat`, {
         method: 'POST',
@@ -379,6 +352,33 @@ export default function ChatInterface() {
         content = extractContent(data);
       }
       
+      // Extract reasoning chain if available
+      let reasoning = null;
+      if (data.reasoning) {
+        reasoning = data.reasoning;
+      } else if (data.chain_of_thought) {
+        reasoning = data.chain_of_thought;
+      } else if (agentResponse?.reasoning) {
+        reasoning = agentResponse.reasoning;
+      } else if (data.derivation_plan) {
+        // Convert derivation plan to reasoning steps
+        reasoning = data.derivation_plan.map((step, i) => ({
+          type: i === 0 ? 'understanding' : i === data.derivation_plan.length - 1 ? 'conclusion' : 'derivation',
+          title: step.step || `Step ${i + 1}`,
+          content: step.explanation || step.content || step,
+          plainLanguage: step.plain_language,
+        }));
+      } else if (agentResponse?.derivation_plan) {
+        reasoning = agentResponse.derivation_plan.map((step, i) => ({
+          type: i === 0 ? 'understanding' : 'derivation',
+          title: step.step || `Step ${i + 1}`,
+          content: step.explanation || step,
+        }));
+      }
+      
+      // Extract quality gate data if present
+      const qualityData = data.quality || agentResponse.quality || null;
+      
       // Remove loading message and add response
       setMessages(prev => [
         ...prev.slice(0, -1),
@@ -387,7 +387,8 @@ export default function ChatInterface() {
           content: content,
           code: data.code,
           simulation: data.simulation,
-          reasoning: data.reasoning,
+          reasoning: reasoning,
+          quality: qualityData,
           // Add agent metadata
           model: agentResponse.model || data.model,
           provider: agentResponse.provider || data.provider,
@@ -402,7 +403,7 @@ export default function ChatInterface() {
         ...prev.slice(0, -1),
         {
           role: 'assistant',
-          content: `I apologize, but I'm having trouble connecting to the Physics AI backend.\n\nError: ${error.message}\n\nPlease ensure the server is running. The Physics AI system includes:\n\n- **DREAM Agents**: Multi-layer AI (Gatekeeper, Workhorse, Orchestrator)\n- **522 Physics Equations** across 19 domains\n- **Simulations**: Quantum, Classical, Astrophysics\n- **Knowledge Graph**: Relational physics concepts`,
+          content: `I apologize, but I'm having trouble connecting to the Beyond Frontier backend.\n\nError: ${error.message}\n\nPlease ensure the server is running. The Beyond Frontier system includes:\n\n- **DREAM Agents**: Multi-layer AI (Gatekeeper, Workhorse, Orchestrator)\n- **522 Physics Equations** across 19 domains\n- **Simulations**: Quantum, Classical, Astrophysics\n- **Knowledge Graph**: Relational physics concepts`,
         }
       ]);
     } finally {
@@ -435,7 +436,7 @@ export default function ChatInterface() {
             
             {/* Title */}
             <h1 className="text-4xl font-bold text-slate-900 mb-3 tracking-tight">
-              Physics AI
+              Beyond Frontier
             </h1>
             <p className="text-xl text-slate-500 text-center max-w-2xl mb-2 font-light">
               Computational Physics Engine
@@ -546,7 +547,7 @@ export default function ChatInterface() {
               Press <kbd className="px-1.5 py-0.5 bg-slate-100 rounded text-slate-500 font-mono">Enter</kbd> to compute
             </span>
             <span>
-              Powered by Physics AI Knowledge Graph • 561 equations • 19 domains
+              Powered by Beyond Frontier Knowledge Graph • 561 equations • 19 domains
             </span>
           </div>
         </div>

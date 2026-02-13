@@ -9,7 +9,7 @@ The engine:
 4. Tracks and learns from history
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional
 import json
@@ -33,7 +33,7 @@ class EvolutionConfig:
     auto_apply_threshold: float = 0.95  # Confidence needed for auto-apply
     max_pending_proposals: int = 10
     enable_rollback: bool = True
-    storage_path: str = "/tmp/physics_ai_evolution"
+    storage_path: str = field(default_factory=lambda: os.getenv("EVOLUTION_STORAGE_PATH", "/tmp/beyondfrontier_evolution"))
 
 
 class SelfEvolutionEngine:

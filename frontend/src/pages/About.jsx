@@ -133,7 +133,7 @@ export default function About() {
           </span>
         </h1>
         <p className="text-xl text-light-500 max-w-2xl mx-auto mb-8">
-          Physics AI is unified open-source infrastructure that accelerates discovery, 
+          Beyond Frontier is unified open-source infrastructure that accelerates discovery, 
           validates experiments, proposes theories, and finds the unknown.
         </p>
         <div className="flex flex-wrap justify-center gap-4 text-sm text-light-600">
@@ -198,7 +198,7 @@ export default function About() {
         </div>
 
         <p className="text-light-600 mb-6">
-          Physics AI is built as layered infrastructure. Use it at any level:
+          Beyond Frontier is built as layered infrastructure. Use it at any level:
         </p>
 
         {/* Infrastructure Layers */}
@@ -272,7 +272,7 @@ export default function About() {
                 <th className="text-left py-3 px-4 text-light-500 font-medium">Capability</th>
                 <th className="text-center py-3 px-4 text-light-500 font-medium">ChatGPT</th>
                 <th className="text-center py-3 px-4 text-light-500 font-medium">Wolfram</th>
-                <th className="text-center py-3 px-4 text-light-500 font-medium">Physics AI</th>
+                <th className="text-center py-3 px-4 text-light-500 font-medium">Beyond Frontier</th>
               </tr>
             </thead>
             <tbody>
@@ -334,7 +334,7 @@ export default function About() {
           <PrincipleCard
             icon={Users}
             title="Human-AI Collaboration"
-            description="Physics AI is a tool for physicists, not a replacement. The best discoveries will come from working together."
+            description="Beyond Frontier is a tool for physicists, not a replacement. The best discoveries will come from working together."
           />
           <PrincipleCard
             icon={Shield}
@@ -463,7 +463,7 @@ export default function About() {
         </div>
 
         <p className="text-light-700 font-medium text-center">
-          Physics AI is infrastructure to remove that bottleneck.<br />
+          Beyond Frontier is infrastructure to remove that bottleneck.<br />
           exploring physics at the speed of silicon, not the speed of grad students.
         </p>
       </section>
@@ -476,7 +476,7 @@ export default function About() {
         </h2>
         <div className="flex items-center justify-center gap-4">
           <a
-            href="https://github.com/vastdreams/physics-ai"
+            href="https://github.com/beyondfrontier/beyondfrontier"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary flex items-center gap-2"
@@ -486,7 +486,7 @@ export default function About() {
             <ExternalLink size={14} />
           </a>
           <a
-            href="https://github.com/vastdreams/physics-ai/blob/main/CONTRIBUTING.md"
+            href="https://github.com/beyondfrontier/beyondfrontier/blob/main/CONTRIBUTING.md"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 rounded-lg border border-light-300 text-light-700 hover:bg-light-100 transition-colors flex items-center gap-2"

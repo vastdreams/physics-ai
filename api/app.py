@@ -84,10 +84,13 @@ def create_app(enable_hot_reload: bool = None):
     # Setup middleware
     from api.middleware.logging import LoggingMiddleware
     from api.middleware.validation import ValidationMiddleware
+    from api.middleware.rate_limit import RateLimitMiddleware
     
     LoggingMiddleware.setup(app)
     ValidationMiddleware.setup(app)
+    RateLimitMiddleware.setup(app, global_limit=120, global_window=60)
     # Note: Auth is now handled via decorators (@require_auth) in api/v1/auth.py
+    # Note: Per-route rate limits available via @rate_limit() and @rate_limit_auth decorators
     
     # Health check endpoint
     @app.route('/health', methods=['GET'])
@@ -96,6 +99,8 @@ def create_app(enable_hot_reload: bool = None):
         return {
             'status': 'healthy',
             'hot_reload': hot_reload_status,
+            'version': os.getenv('APP_VERSION', 'dev'),
+            'build': os.getenv('BUILD_SHA', 'local'),
         }, 200
     
     # Initialize hot reload if enabled
@@ -141,5 +146,5 @@ def get_socketio():
 
 if __name__ == '__main__':
     app = create_app()
-    socketio.run(app, debug=True, host='0.0.0.0', port=5002, allow_unsafe_werkzeug=True)
+    socketio.run(app, debug=True, host='0.0.0.0', port=int(os.getenv('PORT', '5002')), allow_unsafe_werkzeug=True)
 

@@ -23,10 +23,7 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { io } from 'socket.io-client';
-
-const API_BASE = typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
-  ? `http://${window.location.hostname}` 
-  : 'http://localhost:5002';
+import { API_BASE } from '../config';
 
 const logLevels = {
   debug: { icon: Bug, color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-300' },
@@ -118,46 +115,71 @@ export default function Logs() {
     }
   }, []);
 
-  // Setup WebSocket connection
+  // Use ref for isStreaming so socket handler doesn't need it as a dependency
+  const isStreamingRef = useRef(isStreaming);
+  useEffect(() => { isStreamingRef.current = isStreaming; }, [isStreaming]);
+
+  // Setup WebSocket connection — only if backend is reachable
   useEffect(() => {
+    let cancelled = false;
     fetchLogs();
     fetchStats();
 
-    const socket = io(API_BASE, {
-      transports: ['websocket'],
-      autoConnect: true,
-    });
-
-    socket.on('connect', () => {
-      setIsConnected(true);
-      console.log('Connected to log stream');
-    });
-
-    socket.on('disconnect', () => {
-      setIsConnected(false);
-      console.log('Disconnected from log stream');
-    });
-
-    socket.on('log_entry', (entry) => {
-      if (isStreaming) {
-        setLogs((prev) => [...prev.slice(-499), entry]); // Keep last 500
-        setStats((prev) => ({
-          ...prev,
-          total: prev.total + 1,
-          by_level: {
-            ...prev.by_level,
-            [entry.level]: (prev.by_level[entry.level] || 0) + 1,
-          },
-        }));
+    async function connectSocket() {
+      // Probe backend before creating socket
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(`${API_BASE}/health`, { signal: controller.signal });
+        clearTimeout(timeout);
+        if (!res.ok || cancelled) return;
+      } catch {
+        return; // Backend not reachable — skip socket entirely
       }
-    });
 
-    socketRef.current = socket;
+      const socket = io(API_BASE, {
+        transports: ['websocket'],
+        reconnectionAttempts: 3,
+        reconnectionDelay: 3000,
+        reconnectionDelayMax: 10000,
+        timeout: 5000,
+      });
+
+      socket.on('connect', () => {
+        setIsConnected(true);
+      });
+
+      socket.on('disconnect', () => {
+        setIsConnected(false);
+      });
+
+      socket.on('log_entry', (entry) => {
+        if (isStreamingRef.current) {
+          setLogs((prev) => [...prev.slice(-499), entry]);
+          setStats((prev) => ({
+            ...prev,
+            total: prev.total + 1,
+            by_level: {
+              ...prev.by_level,
+              [entry.level]: (prev.by_level[entry.level] || 0) + 1,
+            },
+          }));
+        }
+      });
+
+      socketRef.current = socket;
+    }
+
+    connectSocket();
 
     return () => {
-      socket.disconnect();
+      cancelled = true;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, [fetchLogs, fetchStats, isStreaming]);
+  }, [fetchLogs, fetchStats]);
 
   // Auto-scroll to bottom when new logs arrive
   useEffect(() => {
@@ -189,7 +211,7 @@ export default function Logs() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `physics-ai-logs-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `beyondfrontier-logs-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
   };
 

@@ -163,7 +163,7 @@ class Formula:
     A physical law, equation, principle, or model.
     
     This is the atomic unit of the reality substrate. Everything the
-    Physics AI "knows" about the universe is encoded as Formula objects
+    Beyond Frontier "knows" about the universe is encoded as Formula objects
     and their relationships in the FormulaGraph.
     """
     

@@ -2,12 +2,12 @@
 
 **Last Updated**: 2024
 
-This document maintains the current directory structure of the Physics AI project.
+This document maintains the current directory structure of the Beyond Frontier project.
 
 ## Root Directory
 
 ```
-Physics AI/
+Beyond Frontier/
 ├── core/                    # Core neurosymbotic engine
 │   ├── __init__.py
 │   ├── engine.py           # Main engine

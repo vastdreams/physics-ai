@@ -1,6 +1,6 @@
 # Open Source Setup Complete ✅
 
-Your Physics AI repository has been fully configured for open source collaboration with best practices!
+Your Beyond Frontier repository has been fully configured for open source collaboration with best practices!
 
 ## What Has Been Set Up
 
@@ -71,8 +71,8 @@ Your Physics AI repository has been fully configured for open source collaborati
 
 2. **Clone Your Fork**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/physics-ai.git
-   cd physics-ai
+   git clone https://github.com/YOUR_USERNAME/beyondfrontier.git
+   cd beyondfrontier
    ```
 
 3. **Create Feature Branch**
@@ -121,7 +121,7 @@ Your Physics AI repository has been fully configured for open source collaborati
 
 ## Repository Settings Summary
 
-- **URL**: https://github.com/vastdreams/physics-ai
+- **URL**: https://github.com/beyondfrontier/beyondfrontier
 - **Visibility**: Public
 - **License**: MIT
 - **Default Branch**: main
@@ -179,5 +179,5 @@ You can now:
 
 ---
 
-**Repository**: https://github.com/vastdreams/physics-ai
+**Repository**: https://github.com/beyondfrontier/beyondfrontier
 

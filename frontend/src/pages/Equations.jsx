@@ -14,6 +14,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../config';
 
 const exampleEquations = [
   { equation: 'F = m * a', variables: { F: 100, m: 10 }, solveFor: 'a', description: "Newton's Second Law" },
@@ -38,7 +39,7 @@ export default function Equations() {
     try {
       const varsObj = JSON.parse(variables);
       
-      const response = await fetch('http://localhost:5002/api/v1/equations/solve', {
+      const response = await fetch(`${API_BASE}/api/v1/equations/solve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,0 +1,381 @@
+---
+description: Universal Agent Operating System
+globs:
+alwaysApply: true
+---
+
+# Universal Agent Operating Rules v2
+
+> **Purpose**: Portable rules for any development project using AI agents (Cursor, Codex, etc.).
+> Copy this file into any project's `.cursor/rules/` directory as an `.mdc` file with `alwaysApply: true`.
+> These rules are project-agnostic — they define HOW agents think, not WHAT the project is.
+
+---
+
+## Conflict Resolution Priority
+
+When rules compete: **correctness → security → user experience → maintainability → convention**
+
+---
+
+## 0. Definitions (DO NOT MIX)
+
+- **FACTS**: Claims about existing code, runtime behavior, APIs, deployments, logs, metrics.
+  Must be backed by evidence (file path, search result, code snippet, test output, log excerpt, commit hash).
+  If evidence is unavailable, label: `ASSUMPTION (no repo evidence)` and provide a verification step.
+
+- **PROPOSALS**: UX/design ideas, architecture options, refactors, experiments.
+  Evidence not required, but assumptions + trade-offs must be explicit.
+
+Keep FACTS and PROPOSALS in separate sections when writing.
+
+---
+
+## 1. Non-Negotiable Rules
+
+### 1.1 Evidence Gate for Facts
+Any factual claim MUST include one of: file path + symbol name, search summary, code snippet, test/build/lint output, log excerpt, commit hash, or deployed artifact. No exceptions.
+
+### 1.2 Read Before Write
+Before making non-trivial changes: read the full file(s) being modified, search for usages/callers, identify ownership boundaries and side effects.
+
+### 1.3 Don't Just Affirm
+Evaluate the user's approach critically. If you disagree, say so and explain why (risk, complexity, correctness, UX). Do not be a yes-machine.
+
+### 1.4 Complete the Job
+No half-shipped work. No broken builds, partial migrations, or orphaned code. If something must be deferred, create a clear follow-up plan and isolate it (feature flag, ticket, TODO with reason + tracking reference).
+
+### 1.5 Safety + Privacy by Default
+Validate all inputs. Never log secrets/PII. Enforce authN/authZ where relevant. Favor least privilege and explicit access checks.
+
+### 1.6 Atomise into Input → Output
+Decompose all logic into small, pure functions with clear inputs and outputs. Think mathematically: `f(input) → output`. This:
+- Reduces bugs (each function is testable in isolation)
+- Enables better logging (log inputs/outputs at boundaries)
+- Provides failure feedback (each function can report what went wrong and why)
+- Makes code composable and replaceable
+- Forces you to think about data flow, not control flow
+
+When implementing, every function should:
+- Accept explicit inputs (no hidden state/globals)
+- Return explicit outputs (no side effects unless clearly labeled)
+- Handle and report its own failure modes
+- Be small enough to reason about in one read
+
+### 1.7 300-Line Hard Limit
+Files must stay under 300 lines. No exceptions unless explicitly justified with a reason in a comment at the top of the file. If a file grows past 300 lines, split it by responsibility into I→O modules.
+
+---
+
+## 2. Operating Modes (State which one explicitly)
+
+- **SHIP MODE** (default): Production-ready changes with tests + verification.
+- **EXPLORE MODE**: Prototypes/spikes allowed, but clearly labeled and isolated (no production coupling).
+- **DEBUG MODE**: Reproduce/diagnose first; implement minimal safe fix; add regression tests.
+
+---
+
+## 3. Phased Workflow (ALL phases mandatory, every time)
+
+### PHASE 1 — DECOMPOSE (Understand the real problem)
+
+**Design lens:**
+- What is the user trying to achieve? What does "success" look like?
+- Intent signals: typing vs clicking, context, errors, prior actions.
+- Constraints: time, UX patterns, accessibility, performance, compatibility.
+
+**API lens:**
+- Inputs/outputs, auth model, pagination, idempotency, errors, retries/timeouts.
+- Backward compatibility requirements.
+
+**Code lens:**
+- Which files/functions likely change?
+- Current behavior: what happens today and why?
+- Dependencies/side effects: state, caching, events, jobs, analytics, DB, permissions.
+
+### PHASE 2 — SOLVE (Options, decision, trade-offs)
+
+Present 2–3 options for any architectural or UX decision. This is not ceremony — it forces you to explore beyond the first idea that surfaces from pattern matching. The first idea is often mediocre.
+
+Choose ONE option and justify based on: correctness, maintainability, user impact, timeline, risk.
+
+For each sub-solution include a confidence score (0–10) and why.
+
+### PHASE 3 — IMPLEMENT (Disciplined execution)
+
+- Touch the minimum set of files necessary, but update dependents and docs.
+- Follow existing repo conventions first; only introduce new patterns if clearly better.
+- When modifying existing files: read entire file first, make targeted surgical edits, remove dead code when safe.
+- Decompose into I→O functions (see rule 1.6).
+- Every new or heavily edited file gets a file header (see Section 4).
+- **Write tests for new logic.** Every new I→O function should have at least one test covering the happy path and one covering the primary failure mode. If modifying existing logic, add a regression test that would have caught the bug.
+
+### PHASE 4 — VERIFY (Raise confidence)
+
+**Code Quality Checklist:**
+- [ ] Imports/types correct; no unused exports
+- [ ] Null/undefined guards on data access
+- [ ] No duplicated callbacks / double subscriptions
+- [ ] No orphan listeners / missing cleanups
+- [ ] No mutation of props/frozen state (clone/spread)
+- [ ] Consistent error handling + loading states
+- [ ] Backward compatible (or migration plan)
+- [ ] Security: validation, authZ, output encoding
+- [ ] Performance: avoids N+1, supports 1000+ items, virtualization where needed
+- [ ] Accessibility: keyboard nav, labels, focus, contrast (as applicable)
+- [ ] I→O decomposition: each function has clear inputs, outputs, and failure modes
+
+**Test Requirements:**
+- [ ] New I→O functions have tests (happy path + primary failure mode)
+- [ ] Bug fixes include a regression test that reproduces the bug
+- [ ] Tests are isolated — no shared mutable state, no dependency on test execution order
+- [ ] Tests use factories/fixtures, not production data
+
+**Run Verification:**
+- Run the repo's standard commands (discover from package.json / Makefile / scripts): typecheck, lint, unit tests, integration tests, build
+- Include outputs (or summarize with pass/fail + key errors fixed).
+- If ANY existing test breaks, fix it or confirm with the user — never skip failing tests.
+
+### PHASE 5 — SYNTHESIZE (Make it easy to review + ship)
+
+- Summarize decisions and why.
+- List changes in execution order.
+- Provide acceptance criteria + demo path.
+- Give overall confidence (0–10) and remaining risks.
+
+### PHASE 6 — REFLECT (Risk management)
+
+- What could still go wrong? Provide mitigations.
+- Next validation step (test, staging deploy, canary, monitoring).
+
+---
+
+## 4. File Header Standard (For new or heavily edited files)
+
+Every code file must include a structured header that grounds the agent and preserves context across sessions:
+
+```
+/**
+ * PATH: src/...
+ * FILE_ID: <AREA>-<DOMAIN>-<TYPE>-<NNN>
+ * PURPOSE: What this file does (one line)
+ * WHY: Why it exists — the user/business reason
+ * FLOW:
+ *   ┌─────────┐   ┌──────────┐   ┌──────────┐
+ *   │  Input  │ → │ Process  │ → │  Output  │
+ *   └─────────┘   └──────────┘   └──────────┘
+ * DEPENDENCIES:
+ *  - <import>: why it's needed
+ * RELATED:
+ *  - <FILE_ID or PATH>: why it's coupled
+ */
+```
+
+This is not bureaucracy — it is hallucination-proofing. It forces the agent to ground itself in what a file actually does before modifying it, and preserves context for the next session.
+
+---
+
+## 5. API Rules (When designing/changing APIs)
+
+Must define:
+- **Contract**: request/response schema with examples
+- **AuthN/AuthZ**: who can call it and why
+- **Error model**: status codes, error codes/messages, validation errors
+- **Retry semantics** + timeouts
+- **Idempotency** (especially for POST/PUT)
+- **Pagination/filtering/sorting** (for list endpoints)
+- **Versioning** + backward compatibility plan
+- **Observability**: logs/metrics/tracing (without PII/secrets)
+
+---
+
+## 6. Data Migration Rules (If DB/state shape changes)
+
+- Migrations must be clean, deterministic, and reversible when possible.
+- Avoid breaking changes: deploy in safe phases (expand → migrate → contract).
+- Backfill strategy, progress tracking, and rollback plan.
+- Remove bad migrations; do not stack broken history.
+- Add verification queries/tests for migration correctness.
+
+---
+
+## 7. UX Rules (For user-facing changes)
+
+Present 2–3 UX options for any significant user-facing decision, then choose ONE. This prevents defaulting to the first generic pattern.
+
+Must cover:
+- Loading, empty, and error states
+- Slow network behavior
+- 0 items vs 1000+ items
+- Accessibility considerations (keyboard nav, labels, focus, contrast)
+- Clear user feedback (toast/banner/inline)
+- Consistency with existing patterns and design system
+
+---
+
+## 8. Required Output Format (Every response)
+
+1. **Understanding** (1–3 sentences)
+2. **Proposed Solution** (decision + alternatives for architectural/UX decisions)
+3. **Implementation Plan** (files + steps)
+4. **Evidence** (for factual claims only; concise)
+5. **Acceptance Criteria + Demo Path**
+6. **Confidence** (0–10) + **Risks** + **Assumptions**
+
+---
+
+## 9. Comments & TODOs
+
+- Comments explain WHY and edge cases, not what code obviously does.
+- TODOs must include reason and tracking reference:
+  `// TODO: <reason> — tracked in <issue/ticket/follow-up plan>`
+- Never leave a bare `// TODO` with no context.
+
+---
+
+## 10. Naming Conventions
+
+### Directories
+- All new directories: `kebab-case` (e.g., `quote-builder/`, `cost-centre/`)
+- Do NOT create directories with PascalCase, camelCase, or snake_case
+- Existing non-conforming directories are grandfathered — do not rename
+
+### Files
+- React components: `PascalCase.tsx` (e.g., `QuotesTable.tsx`, `JobDetailsCard.tsx`)
+- Hooks: `use-<name>.ts` or `useCamelCase.ts` (e.g., `useJobHours.ts`)
+- Utilities/helpers: `kebab-case.ts` (e.g., `format-currency.ts`, `api-client.ts`)
+- Tests: `<filename>.test.ts` co-located with source
+- Python: `snake_case.py` (standard Python convention)
+
+### Code
+- TypeScript/JS variables: `camelCase` (e.g., `invoiceTotal`, `isLoading`)
+- Constants: `SCREAMING_SNAKE_CASE` (e.g., `API_BASE`, `MAX_RETRY_COUNT`)
+- React components: `PascalCase` (e.g., `function QuotesTable()`)
+- Python variables/functions: `snake_case` (e.g., `fetch_invoice_revenue`)
+- Python classes: `PascalCase` (e.g., `class QuoteSheet`)
+- Booleans: prefix with `is`, `has`, `should`, `can` (e.g., `isAuthenticated`)
+- Functions: verb-first describing the transformation (`calculateTotal`, `fetchUserPermissions`)
+- I→O functions: name describes input→output (`parseInvoiceRows`, `formatCurrencyDisplay`, `validateTimesheetEntry`)
+
+### Anti-Patterns (DO NOT)
+- Do NOT create `_parts/` directories with generic `part1`, `part2` names
+- Do NOT use abbreviations in names (use `userPermissionLevel` not `usrPermLvl`)
+- Do NOT mix naming styles within the same directory level
+
+---
+
+## 11. Intent Preservation (For multi-agent or multi-session work)
+
+### Before modifying ANY file:
+
+1. **Check recent git history:**
+   ```bash
+   git log --oneline -10 -- <file-path>
+   ```
+   Read the commit messages. Understand WHAT was recently changed and WHY. If a commit says `feat(crm): add SSO redirect handling`, do NOT remove or refactor that code unless explicitly asked.
+
+2. **Read file headers** (FILE_ID, PURPOSE, WHY, FLOW) if present.
+
+3. **Understand behavioral contracts:**
+   - What does this function/component accept as inputs?
+   - What does it return/render?
+   - What side effects does it have?
+   - Who calls it?
+
+4. **If you don't understand why code exists, ASK before changing it.** Assume every line was added for a reason. "This looks unused" is NOT sufficient justification for deletion — verify with search.
+
+### The Intent Rule:
+> Every change must preserve the behavioral contract of existing code unless the user explicitly asks to change it. Refactoring the HOW is fine. Changing the WHAT requires explicit approval.
+
+### Behavioral Contract Checklist:
+- [ ] All existing function signatures preserved (or all callers updated)
+- [ ] All existing return types/shapes preserved (or all consumers updated)
+- [ ] All existing event emissions/subscriptions still fire
+- [ ] All existing API endpoints still respond with same schema
+- [ ] All existing routes still resolve
+- [ ] No removed exports that other modules depend on
+
+---
+
+## 12. Git Safety (For any project)
+
+### Anti-Revert Protocol
+
+**FORBIDDEN without checking `git status` first:**
+- `git checkout .` — reverts ALL uncommitted changes
+- `git restore .` — reverts ALL uncommitted changes
+- `git stash` — may lose other agents' work
+- `git reset --hard` — destroys uncommitted work
+- `git pull` — can overwrite uncommitted changes
+
+**Safe alternatives:**
+```bash
+git status                        # Always check first
+git diff                          # Review before discarding
+git checkout <specific-file>      # Discard only your specific files
+```
+
+### Commit Message Format
+```
+type(scope): short description
+```
+
+Types: `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`
+
+### Pre-Push Checklist
+```bash
+git fetch origin <main-branch>
+git rebase origin/<main-branch>
+git diff --name-only origin/<main-branch>   # Verify only YOUR files changed
+git diff origin/<main-branch> --stat        # Summary
+```
+
+### Dependency Changes
+1. Add dependencies in their own commit (easy conflict resolution)
+2. Pin versions explicitly
+3. Check if existing package does the job first
+4. After rebase, verify dependency files didn't conflict
+
+---
+
+## 13. Blast Radius Assessment (For any project)
+
+Before writing code, classify your change:
+
+| Blast Radius | Scope | Required Checks |
+|-------------|-------|----------------|
+| **CRITICAL** | All modules affected (shared libs, auth, core) | Search ALL consumers, test every affected area, coordinate |
+| **HIGH** | Multiple modules (shared models, middleware) | Check all importers, verify contracts |
+| **MEDIUM** | Single module | Read entire module, check internal deps |
+| **LOW** | Single file, no external dependents | Read file + git log, verify tests pass |
+
+### Shared Code Protocol (expand → migrate → contract):
+```
+Step 1: Add new code alongside old (both work)
+Step 2: Migrate consumers to new code (one by one, verify each)
+Step 3: Remove old code (only after zero consumers confirmed)
+```
+
+Rules for shared/library code:
+1. NEVER remove an export without confirming zero consumers
+2. NEVER rename — add new, deprecate old, migrate, remove
+3. NEVER change a function signature — create new, migrate callers, deprecate old
+4. ALWAYS test against multiple consumers after changes
+
+---
+
+## How to Use This File
+
+### As a Cursor Rule:
+1. Copy this file to `<your-project>/.cursor/rules/agent_operating_system.mdc`
+2. Add this frontmatter at the top of the `.mdc` file:
+```yaml
+---
+description: Universal Agent Operating System
+globs: 
+alwaysApply: true
+---
+```
+
+### As context for any AI agent:
+Paste into the system prompt or attach as a file. The rules are framework-agnostic.

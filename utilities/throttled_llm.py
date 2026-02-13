@@ -13,6 +13,7 @@
 
 from __future__ import annotations
 
+import os
 import threading
 import time
 from typing import Any, Dict, List, Optional
@@ -25,13 +26,18 @@ class ThrottledLLMClient:
 
     def __init__(
         self,
-        base_url: str = "http://127.0.0.1:8080/v1",
+        base_url: str = None,
         api_key: str = "not-needed",
-        model: str = "DeepSeek-R1-Distill-Qwen-14B",
-        max_concurrent: int = 1,
-        min_delay: float = 0.5,
-        default_max_tokens: int = 512,
+        model: str = None,
+        max_concurrent: int = None,
+        min_delay: float = None,
+        default_max_tokens: int = None,
     ) -> None:
+        base_url = base_url or os.getenv("LM_STUDIO_URL", "http://127.0.0.1:8080") + "/v1"
+        model = model or os.getenv("LM_STUDIO_MODEL", "DeepSeek-R1-Distill-Qwen-14B")
+        max_concurrent = max_concurrent if max_concurrent is not None else int(os.getenv("LM_STUDIO_MAX_CONCURRENT", "1"))
+        min_delay = min_delay if min_delay is not None else float(os.getenv("LM_STUDIO_MIN_DELAY", "0.5"))
+        default_max_tokens = default_max_tokens if default_max_tokens is not None else int(os.getenv("LM_STUDIO_MAX_TOKENS", "512"))
         self.client = OpenAI(base_url=base_url, api_key=api_key)
         self.model = model
         self._sem = threading.Semaphore(max_concurrent)

@@ -1,8 +1,8 @@
-# Complete Feature List - Self-Evolving Physics AI
+# Complete Feature List - Self-Evolving Beyond Frontier
 
 ## Overview
 
-This document provides a comprehensive list of all features implemented in the Physics AI system, including core components, DREAM-inspired enhancements, and VECTOR framework integrations.
+This document provides a comprehensive list of all features implemented in the Beyond Frontier system, including core components, DREAM-inspired enhancements, and VECTOR framework integrations.
 
 ## Core Components
 

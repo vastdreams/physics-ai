@@ -465,7 +465,7 @@ def gaussian_wavepacket(x0: float = 0.0, p0: float = 0.0, sigma: float = 1.0) ->
     return psi
 
 
-# Integration with Physics AI knowledge base
+# Integration with Beyond Frontier knowledge base
 def get_schrodinger_solutions(equation_id: str = "schrodinger_time_independent") -> Dict[str, Any]:
     """
     Get analytical solutions that can be compared with numerical results.

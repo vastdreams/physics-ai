@@ -27,12 +27,12 @@ git config --global user.email "your.email@example.com"
 ```
 
 ### 2. Enable Dependabot Security Updates
-Go to: https://github.com/vastdreams/physics-ai/settings/security_analysis
+Go to: https://github.com/beyondfrontier/beyondfrontier/settings/security_analysis
 - Enable "Dependabot security updates"
 - Enable "Dependabot version updates" (already configured via .github/dependabot.yml)
 
 ### 3. Add Repository Topics
-Go to: https://github.com/vastdreams/physics-ai/settings
+Go to: https://github.com/beyondfrontier/beyondfrontier/settings
 - Scroll to "Topics"
 - Add: `ai`, `machine-learning`, `physics`, `neurosymbotic`, `self-evolving`, `python`, `open-source`
 
@@ -52,7 +52,7 @@ When you want to grant write access to trusted contributors:
 - Add by username or email
 
 ### 7. Review and Test CI/CD
-- Check Actions tab: https://github.com/vastdreams/physics-ai/actions
+- Check Actions tab: https://github.com/beyondfrontier/beyondfrontier/actions
 - Make a test commit to trigger workflows
 - Verify tests run correctly
 
@@ -66,11 +66,11 @@ When you want to grant write access to trusted contributors:
    ```
 
 2. **Enable Dependabot** (automatic security updates)
-   - Visit: https://github.com/vastdreams/physics-ai/settings/security_analysis
+   - Visit: https://github.com/beyondfrontier/beyondfrontier/settings/security_analysis
    - Toggle "Dependabot security updates" ON
 
 3. **Add Topics** (helps discoverability)
-   - Visit: https://github.com/vastdreams/physics-ai
+   - Visit: https://github.com/beyondfrontier/beyondfrontier
    - Click the gear icon next to "About"
    - Add topics: `ai`, `physics`, `neurosymbotic`, `python`, `open-source`
 
@@ -82,7 +82,7 @@ When you want to grant write access to trusted contributors:
 
 ## 📊 Current Status
 
-**Repository**: https://github.com/vastdreams/physics-ai
+**Repository**: https://github.com/beyondfrontier/beyondfrontier
 
 **Status**: ✅ **Fully functional and ready for contributions!**
 

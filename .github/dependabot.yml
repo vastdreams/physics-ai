@@ -18,9 +18,9 @@ updates:
       prefix: "chore"
       include: "scope"
     reviewers:
-      - "vastdreams"
+      - "beyondfrontier"
     assignees:
-      - "vastdreams"
+      - "beyondfrontier"
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"

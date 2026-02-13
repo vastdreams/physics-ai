@@ -307,8 +307,10 @@ def disable_user(user_id):
 
 
 # Create default admin user on module load
-_DEFAULT_ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@physics-ai.local')
-_DEFAULT_ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
+# SECURITY: Set ADMIN_EMAIL and ADMIN_PASSWORD in .env for production.
+# The default password is only suitable for local development.
+_DEFAULT_ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'admin@beyondfrontier.local')
+_DEFAULT_ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', os.getenv('SECRET_KEY', 'change-me-in-production'))
 
 if _DEFAULT_ADMIN_EMAIL not in USERS:
     register_user(

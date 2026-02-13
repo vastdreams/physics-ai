@@ -148,7 +148,7 @@ def get_config() -> LLMConfig:
     global _config
     if _config is None:
         _config = LLMConfig(
-            deepseek_api_key=os.getenv("DEEPSEEK_API_KEY", "sk-6de05c4339ab41c4bbeb177c8cddc6a3"),
+            deepseek_api_key=os.getenv("DEEPSEEK_API_KEY", ""),
             ollama_host=os.getenv("OLLAMA_HOST", "http://localhost:11434"),
         )
     return _config

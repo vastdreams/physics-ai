@@ -1,6 +1,6 @@
 # api/
 """
-REST API layer for Physics AI system.
+REST API layer for Beyond Frontier system.
 
 First Principle Analysis:
 - API provides interface: I = {endpoints, methods, data_format}

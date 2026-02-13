@@ -1,11 +1,11 @@
 # DeepSeek-Inspired Architecture Implementation
 
 **Last Updated**: 2025  
-**Project**: Physics AI - DeepSeek-V3.2 Architecture Patterns
+**Project**: Beyond Frontier - DeepSeek-V3.2 Architecture Patterns
 
 ## Overview
 
-This document describes the implementation of DeepSeek-V3.2 architectural patterns into the Physics AI codebase. The implementation follows DeepSeek's clean separation between encoding (problem representation) and inference (computation), along with template-based systems and optimized kernels.
+This document describes the implementation of DeepSeek-V3.2 architectural patterns into the Beyond Frontier codebase. The implementation follows DeepSeek's clean separation between encoding (problem representation) and inference (computation), along with template-based systems and optimized kernels.
 
 ## Implementation Status
 

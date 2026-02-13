@@ -1,8 +1,8 @@
-# Physics AI Substrate Architecture
+# Beyond Frontier Substrate Architecture
 
 ## Overview
 
-The Physics AI Substrate is a self-evolving, physics-grounded reasoning system. It uses a **Formula Graph** as its reality substrate, with continuous self-modification driven by a multi-LLM critic stack.
+The Beyond Frontier Substrate is a self-evolving, physics-grounded reasoning system. It uses a **Formula Graph** as its reality substrate, with continuous self-modification driven by a multi-LLM critic stack.
 
 **Key Design Principles:**
 - Physics as foundational substrate (not just pattern matching)

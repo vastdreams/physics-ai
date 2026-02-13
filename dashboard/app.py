@@ -34,7 +34,7 @@ logger = SystemLogger()
 
 # Initialize Flask app
 flask_app = Flask(__name__)
-flask_app.config['SECRET_KEY'] = 'physics-ai-dashboard-secret-key'
+flask_app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY') or os.getenv('SECRET_KEY') or __import__('secrets').token_hex(32)
 
 # Initialize Dash app
 app = dash.Dash(
@@ -58,7 +58,7 @@ app.layout = dbc.Container([
             dbc.NavItem(dbc.NavLink("Performance", href="/dashboard/performance")),
             dbc.NavItem(dbc.NavLink("Evolution", href="/dashboard/evolution")),
         ],
-        brand="Physics AI Dashboard",
+        brand="Beyond Frontier Dashboard",
         brand_href="/dashboard",
         color="primary",
         dark=True,
@@ -98,12 +98,12 @@ def display_page(pathname):
     """Route to appropriate page based on URL."""
     if pathname in [None, '/', '/dashboard', '/dashboard/']:
         return html.Div([
-            html.H1("Physics AI Dashboard"),
-            html.P("Welcome to the Physics AI Dashboard. Select a view from the navigation bar."),
+            html.H1("Beyond Frontier Dashboard"),
+            html.P("Welcome to the Beyond Frontier Dashboard. Select a view from the navigation bar."),
             dbc.Card([
                 dbc.CardBody([
                     html.H4("System Overview"),
-                    html.P("Real-time monitoring and visualization of the Physics AI system."),
+                    html.P("Real-time monitoring and visualization of the Beyond Frontier system."),
                     html.Ul([
                         html.Li("Simulations: Real-time physics simulation visualization"),
                         html.Li("Chain-of-Thought: Interactive CoT tree display"),
@@ -305,5 +305,5 @@ def create_app():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8052)
+    app.run(debug=True, host='0.0.0.0', port=int(os.getenv('DASHBOARD_PORT', '8052')))
 

@@ -1,11 +1,11 @@
 # Master Architecture Document
 
 **Last Updated**: 2024
-**Project**: Physics AI - Neurosymbotic Rule-Based Modular AI
+**Project**: Beyond Frontier - Neurosymbotic Rule-Based Modular AI
 
 ## Overview
 
-This document serves as the master architecture blueprint for the Physics AI system. It is maintained as a living document and updated with each significant architectural change to prevent technical debt.
+This document serves as the master architecture blueprint for the Beyond Frontier system. It is maintained as a living document and updated with each significant architectural change to prevent technical debt.
 
 ## System Architecture
 
@@ -22,7 +22,7 @@ This document serves as the master architecture blueprint for the Physics AI sys
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                   Physics AI System                     │
+│                   Beyond Frontier System                     │
 ├─────────────────────────────────────────────────────────┤
 │                                                          │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │

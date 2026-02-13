@@ -25,10 +25,12 @@ import Metrics from './pages/Metrics';
 import Settings from './pages/Settings';
 import About from './pages/About';
 import NotFound from './pages/NotFound';
+import UpdateBanner from './components/UpdateBanner';
 
 function App() {
   return (
     <BrowserRouter>
+      <UpdateBanner />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />

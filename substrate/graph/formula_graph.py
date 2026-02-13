@@ -1,6 +1,6 @@
 # PATH: substrate/graph/formula_graph.py
 # PURPOSE:
-#   - The Formula Graph - the reality substrate of Physics AI
+#   - The Formula Graph - the reality substrate of Beyond Frontier
 #   - Stores formulas and their relationships (derivations, limits, etc.)
 #
 # ROLE IN ARCHITECTURE:
@@ -105,7 +105,7 @@ class Edge:
 
 class FormulaGraph:
     """
-    The Formula Graph - the reality substrate of Physics AI.
+    The Formula Graph - the reality substrate of Beyond Frontier.
     
     This is the central knowledge store. All physics knowledge is encoded
     as Formula nodes and Edge relationships. The system reasons by walking

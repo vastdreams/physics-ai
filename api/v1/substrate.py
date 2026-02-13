@@ -1,6 +1,6 @@
 # PATH: api/v1/substrate.py
 # PURPOSE:
-#   - API endpoints for the Physics AI substrate
+#   - API endpoints for the Beyond Frontier substrate
 #   - Exposes chat, formulas, evolution, and statistics
 #
 # ROLE IN ARCHITECTURE:
@@ -46,7 +46,7 @@ def get_ai():
 @substrate_bp.route("/chat", methods=["POST"])
 def chat():
     """
-    Send a message to the Physics AI.
+    Send a message to the Beyond Frontier.
     
     Request body:
     {

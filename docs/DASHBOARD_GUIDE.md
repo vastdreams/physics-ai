@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Physics AI Dashboard is a real-time visualization system built with Dash, providing interactive views of simulations, chain-of-thought logs, nodal graphs, VECTOR metrics, performance monitoring, and evolution history.
+The Beyond Frontier Dashboard is a real-time visualization system built with Dash, providing interactive views of simulations, chain-of-thought logs, nodal graphs, VECTOR metrics, performance monitoring, and evolution history.
 
 ## Architecture
 

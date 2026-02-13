@@ -27,6 +27,7 @@ from ai.llm.local_provider import OllamaProvider, setup_dream_models
 from ai.agents.gatekeeper import GatekeeperAgent
 from ai.agents.workhorse import WorkhorseAgent
 from ai.agents.orchestrator import OrchestratorAgent
+from ai.rubric.quality_gate import QualityGate, GateVerdict, get_quality_gate
 
 agents_bp = Blueprint('agents', __name__, url_prefix='/agents')
 
@@ -207,6 +208,20 @@ def chat():
         auto_escalate=not force_tier  # Don't auto-escalate if tier is forced
     ))
     
+    # Run through Quality Gate (rubric-based evaluation)
+    quality_report = None
+    try:
+        gate = get_quality_gate()
+        gate_decision = gate.evaluate(
+            content=response.content or "",
+            query=message,
+            domain="general",
+        )
+        quality_report = gate_decision.to_dict()
+    except Exception as e:
+        # Quality gate failure should not block the response
+        quality_report = {"error": str(e), "verdict": "skip"}
+    
     return jsonify({
         'success': not response.is_error,
         'response': {
@@ -221,6 +236,7 @@ def chat():
                 'total_tokens': response.usage.total_tokens
             }
         },
+        'quality': quality_report,
         'error': response.error
     })
 
@@ -460,6 +476,65 @@ def reason():
         'success': response.status.value in ['success', 'escalated'],
         'result': response.to_dict()
     })
+
+
+@agents_bp.route('/quality/evaluate', methods=['POST'])
+def evaluate_quality():
+    """
+    Evaluate content quality using the Rubric Quality Gate system.
+    
+    Body:
+    - content: Content to evaluate (required)
+    - query: Original query that prompted this content (optional)
+    - code: Any code in the response (optional)
+    - domain: Physics domain (optional, default: general)
+    """
+    data = request.get_json() or {}
+    content = data.get('content', '')
+    query = data.get('query', '')
+    code = data.get('code')
+    domain = data.get('domain', 'general')
+    
+    if not content:
+        return jsonify({
+            'success': False,
+            'error': 'Content is required'
+        }), 400
+    
+    try:
+        gate = get_quality_gate()
+        decision = gate.evaluate(
+            content=content,
+            query=query,
+            code=code,
+            domain=domain,
+        )
+        
+        return jsonify({
+            'success': True,
+            'quality': decision.to_dict()
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+
+@agents_bp.route('/quality/stats', methods=['GET'])
+def quality_stats():
+    """Get quality gate statistics."""
+    try:
+        gate = get_quality_gate()
+        return jsonify({
+            'success': True,
+            'stats': gate.get_stats()
+        })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 
 @agents_bp.route('/derive', methods=['POST'])

@@ -4,15 +4,31 @@
  *
  * WHY: Provides real-time updates when backend modules are reloaded,
  *      enabling automatic UI refresh without manual page reload.
+ *      Only connects WebSocket when backend is confirmed reachable.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { io } from 'socket.io-client';
-
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+import { API_BASE } from '../config';
 
 /**
- * Hook for monitoring and controlling hot reload
+ * Probe the backend with a lightweight fetch. Returns true if reachable.
+ */
+async function isBackendReachable() {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+    const res = await fetch(`${API_BASE}/health`, { signal: controller.signal });
+    clearTimeout(timeout);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Hook for monitoring and controlling hot reload.
+ * WebSocket is only created after confirming the backend is reachable.
  */
 export function useHotReload() {
   const [status, setStatus] = useState({
@@ -25,7 +41,7 @@ export function useHotReload() {
   });
   
   const [recentReloads, setRecentReloads] = useState([]);
-  const [socket, setSocket] = useState(null);
+  const socketRef = useRef(null);
 
   // Fetch initial status
   const fetchStatus = useCallback(async () => {
@@ -41,72 +57,77 @@ export function useHotReload() {
         uptime: data.uptime_seconds || 0,
         autoReload: data.auto_reload !== false,
       });
-    } catch (err) {
-      console.warn('Failed to fetch hot reload status:', err);
+    } catch {
+      // Backend not available — silently ignore
     }
   }, []);
 
-  // Setup WebSocket connection for real-time updates
+  // Only connect WebSocket if backend is reachable
   useEffect(() => {
-    const ws = io(API_BASE, {
-      transports: ['websocket'],
-      autoConnect: true,
-    });
+    let cancelled = false;
 
-    ws.on('connect', () => {
-      console.log('Connected to hot reload WebSocket');
-    });
+    async function connect() {
+      const reachable = await isBackendReachable();
+      if (cancelled || !reachable) return;
 
-    ws.on('module_reloaded', (data) => {
-      console.log('Module reloaded:', data.module);
-      
-      // Add to recent reloads
-      setRecentReloads((prev) => [
-        {
-          module: data.module,
-          timestamp: new Date(data.timestamp),
-          success: true,
-          reloadTime: data.reload_time_ms,
-        },
-        ...prev.slice(0, 9), // Keep last 10
-      ]);
+      const ws = io(API_BASE, {
+        transports: ['websocket'],
+        reconnectionAttempts: 3,
+        reconnectionDelay: 3000,
+        reconnectionDelayMax: 15000,
+        timeout: 5000,
+      });
 
-      // Update status
-      setStatus((prev) => ({
-        ...prev,
-        totalReloads: prev.totalReloads + 1,
-      }));
+      ws.on('module_reloaded', (data) => {
+        setRecentReloads((prev) => [
+          {
+            module: data.module,
+            timestamp: new Date(data.timestamp),
+            success: true,
+            reloadTime: data.reload_time_ms,
+          },
+          ...prev.slice(0, 9),
+        ]);
 
-      // Trigger custom event for components to handle
-      window.dispatchEvent(new CustomEvent('physicsai:module-reload', { 
-        detail: data 
-      }));
-    });
+        setStatus((prev) => ({
+          ...prev,
+          totalReloads: prev.totalReloads + 1,
+        }));
 
-    ws.on('module_reload_failed', (data) => {
-      console.error('Module reload failed:', data.module, data.error);
-      
-      setRecentReloads((prev) => [
-        {
-          module: data.module,
-          timestamp: new Date(),
-          success: false,
-          error: data.error,
-        },
-        ...prev.slice(0, 9),
-      ]);
+        window.dispatchEvent(new CustomEvent('beyondfrontier:module-reload', { 
+          detail: data 
+        }));
+      });
 
-      setStatus((prev) => ({
-        ...prev,
-        failedReloads: prev.failedReloads + 1,
-      }));
-    });
+      ws.on('module_reload_failed', (data) => {
+        setRecentReloads((prev) => [
+          {
+            module: data.module,
+            timestamp: new Date(),
+            success: false,
+            error: data.error,
+          },
+          ...prev.slice(0, 9),
+        ]);
 
-    setSocket(ws);
-    fetchStatus();
+        setStatus((prev) => ({
+          ...prev,
+          failedReloads: prev.failedReloads + 1,
+        }));
+      });
+
+      socketRef.current = ws;
+      fetchStatus();
+    }
+
+    connect();
 
     return () => {
-      ws.disconnect();
+      cancelled = true;
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
   }, [fetchStatus]);
 
@@ -126,7 +147,6 @@ export function useHotReload() {
       
       return data;
     } catch (err) {
-      console.error('Failed to trigger reload:', err);
       return { success: false, error: err.message };
     }
   }, [fetchStatus]);
@@ -147,7 +167,6 @@ export function useHotReload() {
       
       return data;
     } catch (err) {
-      console.error('Failed to toggle auto-reload:', err);
       return { success: false, error: err.message };
     }
   }, []);
@@ -169,21 +188,19 @@ export function useAutoRefresh(modules, onRefresh) {
     const handleReload = (event) => {
       const { module } = event.detail;
       
-      // Check if the reloaded module is relevant
       const isRelevant = modules.some((m) => 
         module.startsWith(m) || module.includes(m)
       );
       
       if (isRelevant && onRefresh) {
-        console.log(`Auto-refreshing due to ${module} reload`);
         onRefresh();
       }
     };
 
-    window.addEventListener('physicsai:module-reload', handleReload);
+    window.addEventListener('beyondfrontier:module-reload', handleReload);
     
     return () => {
-      window.removeEventListener('physicsai:module-reload', handleReload);
+      window.removeEventListener('beyondfrontier:module-reload', handleReload);
     };
   }, [modules, onRefresh]);
 }

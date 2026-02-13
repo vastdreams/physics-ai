@@ -1,6 +1,6 @@
 # PATH: substrate/__init__.py
 # PURPOSE:
-#   - Root package for the Physics AI reality substrate
+#   - Root package for the Beyond Frontier reality substrate
 #   - Contains the Formula Graph, Planner, Memory, Critics, and Evolution systems
 #
 # ROLE IN ARCHITECTURE:

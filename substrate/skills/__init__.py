@@ -1,6 +1,6 @@
 """
 PATH: substrate/skills/__init__.py
-PURPOSE: Physics AI Skills System - Modular, versioned physics capabilities
+PURPOSE: Beyond Frontier Skills System - Modular, versioned physics capabilities
 
 WHY: Inspired by OpenClaw's ClawHub skill registry, this provides a modular
      system for physics computations that can be discovered, composed, and

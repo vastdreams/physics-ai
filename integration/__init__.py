@@ -1,5 +1,5 @@
 # integration/
 """
-Integration module for unified Physics AI system.
+Integration module for unified Beyond Frontier system.
 """
 

@@ -50,7 +50,7 @@ export default function Layout() {
   const [bottomPanelSize, setBottomPanelSize] = useState(250);
   
   const location = useLocation();
-  const pageInfo = pageTitles[location.pathname] || { title: 'Physics AI', subtitle: '' };
+  const pageInfo = pageTitles[location.pathname] || { title: 'Beyond Frontier', subtitle: '' };
 
   const toggleRightDrawer = useCallback(() => {
     setRightDrawerOpen(prev => !prev);

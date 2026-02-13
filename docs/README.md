@@ -1,6 +1,6 @@
-# Physics AI Documentation
+# Beyond Frontier Documentation
 
-Welcome to the Physics AI documentation. This folder contains all technical documentation for the project.
+Welcome to the Beyond Frontier documentation. This folder contains all technical documentation for the project.
 
 ## Quick Links
 
@@ -38,7 +38,7 @@ docs/
 ## Core Concepts
 
 ### Neurosymbolic AI
-Physics AI combines two AI paradigms:
+Beyond Frontier combines two AI paradigms:
 - **Neural**: Pattern recognition through embeddings
 - **Symbolic**: Logical reasoning through rules and equations
 
@@ -72,6 +72,6 @@ See [API_REFERENCE.md](API_REFERENCE.md) for complete documentation.
 
 ## Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/vastdreams/physics-ai/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/vastdreams/physics-ai/discussions)
+- **Issues**: [GitHub Issues](https://github.com/beyondfrontier/beyondfrontier/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/beyondfrontier/beyondfrontier/discussions)
 - **Contributing**: See [CONTRIBUTING.md](../CONTRIBUTING.md)

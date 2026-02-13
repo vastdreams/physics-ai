@@ -1,4 +1,4 @@
-# Self-Evolving Rule-Based Physics AI Implementation
+# Self-Evolving Rule-Based Beyond Frontier Implementation
 
 ## Overview
 

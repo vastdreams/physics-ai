@@ -1,6 +1,6 @@
 # PATH: substrate/interface/chatbot.py
 # PURPOSE:
-#   - ChatGPT-style interface to the Physics AI substrate
+#   - ChatGPT-style interface to the Beyond Frontier substrate
 #   - Translates natural language to physics problems
 #   - Returns structured derivations and explanations
 #
@@ -103,7 +103,7 @@ class ChatSession:
 
 class ChatbotInterface:
     """
-    ChatGPT-style interface to the Physics AI.
+    ChatGPT-style interface to the Beyond Frontier.
     """
 
     def __init__(

@@ -3,7 +3,7 @@
 PATH: run_dev.py
 PURPOSE: Development server runner with hot reload enabled
 
-WHY: Provides a simple way to start the Physics AI server with auto-reload
+WHY: Provides a simple way to start the Beyond Frontier server with auto-reload
      functionality for rapid development.
 
 USAGE:
@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Physics AI Development Server')
+    parser = argparse.ArgumentParser(description='Beyond Frontier Development Server')
     parser.add_argument('--host', default='127.0.0.1', help='Host to bind to (default: 127.0.0.1)')
     parser.add_argument('--port', type=int, default=5002, help='Port to listen on (default: 5002)')
     parser.add_argument('--no-hot-reload', action='store_true', help='Disable hot reload')
@@ -35,7 +35,7 @@ def main():
     
     print("""
 ╔═══════════════════════════════════════════════════════════════════╗
-║                    Physics AI Development Server                   ║
+║                    Beyond Frontier Development Server                   ║
 ╠═══════════════════════════════════════════════════════════════════╣
 ║  Hot Reload: {hot_reload:<10}                                      ║
 ║  Host:       {host:<15}                                      ║

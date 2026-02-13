@@ -1,4 +1,4 @@
-# Physics AI - Project Summary
+# Beyond Frontier - Project Summary
 
 ## Project Overview
 
@@ -46,7 +46,7 @@ This project creates a **neurosymbotic rule-based modular AI system** designed t
 ## Project Structure
 
 ```
-Physics AI/
+Beyond Frontier/
 ├── core/                    # Core neurosymbotic engine
 │   ├── engine.py           # Main engine
 │   ├── reasoning.py        # Reasoning algorithms

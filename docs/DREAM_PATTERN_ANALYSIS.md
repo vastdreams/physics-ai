@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive analysis of patterns extracted from the DREAM medical architecture and their translation to the Physics AI system.
+This document provides a comprehensive analysis of patterns extracted from the DREAM medical architecture and their translation to the Beyond Frontier system.
 
 ## Pattern Extraction Methodology
 
@@ -173,7 +173,7 @@ Represent code files as nodes in a graph where:
 
 ## Conclusion
 
-The DREAM architecture provides a rich source of patterns for building sophisticated, self-evolving AI systems. The Physics AI system now incorporates:
+The DREAM architecture provides a rich source of patterns for building sophisticated, self-evolving AI systems. The Beyond Frontier system now incorporates:
 
 1. **Core DREAM Patterns**: Modularity, first-principles, synergy matrices
 2. **Advanced Patterns**: VECTOR framework, state graphs, C2 Center

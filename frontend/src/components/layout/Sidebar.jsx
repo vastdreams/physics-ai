@@ -143,7 +143,7 @@ export default function Sidebar({ collapsed, onToggle }) {
           </div>
           {!collapsed && (
             <div>
-              <h1 className="font-semibold text-light-900">Physics AI</h1>
+              <h1 className="font-semibold text-light-900">Beyond Frontier</h1>
               <p className="text-xs text-light-500">Neurosymbolic Engine</p>
             </div>
           )}
