@@ -170,14 +170,14 @@ def create_app(enable_hot_reload: bool = None) -> Flask:
 
     @app.route("/metrics", methods=["GET"])
     def prometheus_metrics():
-        """Prometheus metrics endpoint (if prometheus-client installed)."""
+        """Prometheus metrics endpoint. Requires: pip install prometheus-client"""
         try:
             from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
             from flask import Response
             return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
         except ImportError:
             from flask import Response
-            return Response("# prometheus_client not installed\n", mimetype="text/plain")
+            return Response("# pip install prometheus-client\n", mimetype="text/plain")
 
     @app.route("/api/docs", methods=["GET"])
     def api_docs():

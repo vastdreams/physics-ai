@@ -52,6 +52,9 @@ openai>=1.52.0  # OpenAI-compatible client
 # Async HTTP for LLM providers
 aiohttp>=3.9.0  # Async HTTP client for Ollama/DeepSeek
 
-# Observability (optional)
-prometheus-client>=0.19.0  # /metrics endpoint
+# Observability
+prometheus-client>=0.19.0  # /metrics endpoint (pip install prometheus-client)
+
+# Caching (when REDIS_URL is set)
+redis>=4.5.0
 
