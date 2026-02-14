@@ -25,9 +25,25 @@ knowledge_bp = Blueprint('knowledge', __name__)
 
 
 def get_graph():
-    """Lazy import and get the knowledge graph."""
-    from physics.knowledge import get_knowledge_graph
-    return get_knowledge_graph()
+    """Lazy import and get the knowledge graph.
+
+    Returns an empty dict-like fallback if the graph fails to initialize,
+    so endpoints can still return graceful empty results.
+    """
+    try:
+        from physics.knowledge import get_knowledge_graph
+        return get_knowledge_graph()
+    except Exception as exc:
+        import traceback
+        traceback.print_exc()
+        # Return minimal empty graph so endpoints don't crash
+        return {
+            'statistics': {'total_nodes': 0, '_init_error': str(exc)},
+            'domains': {},
+            'nodes': {},
+            'equations': {},
+            'constants': {},
+        }
 
 
 def get_builder():

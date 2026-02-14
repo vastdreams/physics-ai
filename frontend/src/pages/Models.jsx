@@ -3,7 +3,7 @@
  * PURPOSE: Browse available physics models
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Atom,
@@ -14,9 +14,11 @@ import {
   Thermometer,
   ArrowRight,
   Search,
-  Filter
+  Filter,
+  AlertCircle
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../config';
 
 const models = [
   {
@@ -137,6 +139,21 @@ function ModelCard({ model }) {
 export default function Models() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [demoMode, setDemoMode] = useState(false);
+  const [agentStatus, setAgentStatus] = useState(null);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/agents/status`);
+        if (res.ok) {
+          const data = await res.json();
+          setAgentStatus(data);
+        } else { setDemoMode(true); }
+      } catch { setDemoMode(true); }
+    };
+    fetchStatus();
+  }, []);
 
   const categories = ['all', ...new Set(models.map(m => m.category))];
 
@@ -153,6 +170,13 @@ export default function Models() {
         <h1 className="text-xl font-semibold text-light-900">Physics Models</h1>
         <p className="text-light-500 text-sm">Browse and explore available simulation models</p>
       </div>
+
+      {demoMode && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2">
+          <AlertCircle size={16} />
+          Running in demo mode — start the backend for live model status
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex items-center gap-4">

@@ -332,8 +332,6 @@ class QualityGate:
     def _update_stats(self, report: RubricReport, verdict: GateVerdict):
         """Update gate statistics."""
         self._stats["total_evaluations"] += 1
-        self._stats[verdict.value + ("" if verdict.value == "passed" else "ed" if verdict.value != "pass" else "")] = \
-            self._stats.get(verdict.value, 0)
         
         if verdict == GateVerdict.PASS:
             self._stats["passed"] += 1

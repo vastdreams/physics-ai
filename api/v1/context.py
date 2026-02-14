@@ -37,7 +37,7 @@ def get_context_tree():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in get_context_tree: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/context/bubbles', methods=['GET'])
@@ -63,7 +63,7 @@ def list_bubbles():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in list_bubbles: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/context/bubbles', methods=['POST'])
@@ -86,7 +86,7 @@ def create_bubble():
         
         if not data or 'content' not in data:
             cot.end_step(step_id, output_data={'error': 'content required'}, validation_passed=False)
-            return jsonify({'error': 'content required'}), 400
+            return jsonify({'success': False, 'error': 'content required'}), 400
         
         bubble = ContextBubble(
             bubble_id="",  # Auto-generated
@@ -99,7 +99,7 @@ def create_bubble():
         
         if not success:
             cot.end_step(step_id, output_data={'error': 'Failed to add bubble'}, validation_passed=False)
-            return jsonify({'error': 'Failed to add bubble'}), 500
+            return jsonify({'success': False, 'error': 'Failed to add bubble'}), 500
         
         cot.end_step(step_id, output_data={'bubble_id': bubble.bubble_id}, validation_passed=True)
         
@@ -108,7 +108,7 @@ def create_bubble():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in create_bubble: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/context/pathways', methods=['POST'])
@@ -131,7 +131,7 @@ def find_pathway():
         
         if not data or 'start_bubble_id' not in data or 'target_bubble_id' not in data:
             cot.end_step(step_id, output_data={'error': 'start_bubble_id and target_bubble_id required'}, validation_passed=False)
-            return jsonify({'error': 'start_bubble_id and target_bubble_id required'}), 400
+            return jsonify({'success': False, 'error': 'start_bubble_id and target_bubble_id required'}), 400
         
         path = path_optimizer.optimize_path(
             start=data['start_bubble_id'],
@@ -151,7 +151,7 @@ def find_pathway():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in find_pathway: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/context/pathways/optimize', methods=['POST'])
@@ -173,7 +173,7 @@ def optimize_pathways():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in optimize_pathways: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/context/statistics', methods=['GET'])
@@ -202,5 +202,5 @@ def get_context_statistics():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in get_context_statistics: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 

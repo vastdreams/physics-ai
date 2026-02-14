@@ -37,7 +37,7 @@ def add_state():
         
         if not data or 'state_id' not in data:
             cot.end_step(step_id, output_data={'error': 'state_id required'}, validation_passed=False)
-            return jsonify({'error': 'state_id required'}), 400
+            return jsonify({'success': False, 'error': 'state_id required'}), 400
         
         state = State(
             state_id=data['state_id'],
@@ -55,7 +55,7 @@ def add_state():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in add_state endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/state-graph/paths', methods=['POST'])
@@ -79,7 +79,7 @@ def find_paths():
         
         if not data or 'from_state' not in data or 'to_state' not in data:
             cot.end_step(step_id, output_data={'error': 'from_state and to_state required'}, validation_passed=False)
-            return jsonify({'error': 'from_state and to_state required'}), 400
+            return jsonify({'success': False, 'error': 'from_state and to_state required'}), 400
         
         paths = state_graph.find_paths(
             from_state=data['from_state'],
@@ -95,7 +95,7 @@ def find_paths():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in find_paths endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/state-graph/scenarios', methods=['POST'])
@@ -119,7 +119,7 @@ def explore_scenarios():
         
         if not data or 'initial_state' not in data:
             cot.end_step(step_id, output_data={'error': 'initial_state required'}, validation_passed=False)
-            return jsonify({'error': 'initial_state required'}), 400
+            return jsonify({'success': False, 'error': 'initial_state required'}), 400
         
         scenarios = state_graph.explore_scenarios(
             initial_state=data['initial_state'],
@@ -135,5 +135,5 @@ def explore_scenarios():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in explore_scenarios endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 

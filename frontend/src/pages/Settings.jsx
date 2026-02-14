@@ -118,9 +118,19 @@ export default function Settings() {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = () => {
-    // Save to localStorage or API
+  const handleSave = async () => {
+    // Save to localStorage
     localStorage.setItem('beyondfrontier-settings', JSON.stringify(settings));
+    // Also try to sync with backend
+    try {
+      await fetch(`${API_BASE}/api/v1/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+    } catch {
+      // Backend unavailable — local save is enough
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };

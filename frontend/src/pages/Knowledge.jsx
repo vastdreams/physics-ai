@@ -289,6 +289,8 @@ export default function Knowledge() {
   const [selectedDomain, setSelectedDomain] = useState(null);
   const [selectedEquation, setSelectedEquation] = useState(null);
   const [showDomains, setShowDomains] = useState(true);
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 50;
 
   // Fetch data
   const fetchData = useCallback(async () => {
@@ -486,7 +488,7 @@ export default function Knowledge() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {filteredEquations.slice(0, 50).map((equation) => (
+            {filteredEquations.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((equation) => (
               <EquationCard
                 key={equation.id}
                 equation={equation}
@@ -495,11 +497,25 @@ export default function Knowledge() {
             ))}
           </div>
 
-          {filteredEquations.length > 50 && (
-            <div className="mt-6 text-center">
-              <p className="text-light-500 text-sm">
-                Showing first 50 of {filteredEquations.length} equations. Use search to find specific equations.
-              </p>
+          {filteredEquations.length > PAGE_SIZE && (
+            <div className="mt-6 flex items-center justify-center gap-4">
+              <button
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="btn-secondary text-sm disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-light-500">
+                Page {page + 1} of {Math.ceil(filteredEquations.length / PAGE_SIZE)}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(Math.ceil(filteredEquations.length / PAGE_SIZE) - 1, p + 1))}
+                disabled={(page + 1) * PAGE_SIZE >= filteredEquations.length}
+                className="btn-secondary text-sm disabled:opacity-40"
+              >
+                Next
+              </button>
             </div>
           )}
 

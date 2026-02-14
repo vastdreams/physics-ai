@@ -46,8 +46,32 @@ AUTH_CONFIG = {
     "password_min_length": 8,
 }
 
-# In-memory user store (replace with database in production)
-USERS: Dict[str, Dict[str, Any]] = {}
+# ── Persistent user store (JSON file) ───────────────────────────
+_USERS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "users.json")
+
+
+def _load_users() -> Dict[str, Dict[str, Any]]:
+    """Load users from JSON file on disk."""
+    try:
+        if os.path.exists(_USERS_FILE):
+            with open(_USERS_FILE, "r") as f:
+                return json.load(f)
+    except Exception:
+        pass
+    return {}
+
+
+def _save_users() -> None:
+    """Persist users dict to JSON file."""
+    try:
+        os.makedirs(os.path.dirname(_USERS_FILE), exist_ok=True)
+        with open(_USERS_FILE, "w") as f:
+            json.dump(USERS, f, indent=2, default=str)
+    except Exception as exc:
+        print(f"[auth] Warning: could not save users file: {exc}")
+
+
+USERS: Dict[str, Dict[str, Any]] = _load_users()
 
 # Active sessions (token -> user_id)
 SESSIONS: Dict[str, str] = {}
@@ -203,6 +227,7 @@ def register_user(
     }
     
     USERS[email.lower()] = user
+    _save_users()
     
     # Return safe user data
     safe_user = {k: v for k, v in user.items() if k not in ('password_hash', 'salt')}
@@ -230,6 +255,7 @@ def login_user(email: str, password: str) -> Tuple[bool, str, Optional[Dict]]:
     
     # Update last login
     user["last_login"] = datetime.now().isoformat()
+    _save_users()
     
     # Create tokens
     access_token = _create_jwt(

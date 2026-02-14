@@ -18,6 +18,7 @@ import {
   Zap
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../config';
 
 function EvolutionCard({ evolution }) {
   return (
@@ -74,59 +75,58 @@ function EvolutionCard({ evolution }) {
 export default function Evolution() {
   const [evolutions, setEvolutions] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    totalCycles: 8,
-    successRate: 87.5,
-    avgImprovement: 12.3,
-    lastRun: '2 hours ago'
+    totalCycles: 0,
+    successRate: 0,
+    avgImprovement: 0,
+    lastRun: '--'
   });
 
+  const mockEvolutions = [
+    { id: 1, name: 'Optimize RuleEngine.match()', description: 'Improved pattern matching algorithm with early termination', file: 'rules/rule_engine.py', status: 'completed', timestamp: '2 hours ago', improvement: 15 },
+    { id: 2, name: 'Enhance EquationSolver caching', description: 'Added memoization for repeated equation solutions', file: 'physics/equations.py', status: 'completed', timestamp: '5 hours ago', improvement: 23 },
+    { id: 3, name: 'Refactor NeuralComponent.embed()', description: 'Optimizing embedding generation for better performance', file: 'core/engine.py', status: 'running', timestamp: 'In progress' },
+    { id: 4, name: 'Add parallel processing to simulations', description: 'Pending review for multi-threaded simulation support', file: 'physics/models.py', status: 'pending', timestamp: 'Queued' },
+  ];
+
   useEffect(() => {
-    // Mock data
-    setEvolutions([
-      {
-        id: 1,
-        name: 'Optimize RuleEngine.match()',
-        description: 'Improved pattern matching algorithm with early termination',
-        file: 'rules/rule_engine.py',
-        status: 'completed',
-        timestamp: '2 hours ago',
-        improvement: 15
-      },
-      {
-        id: 2,
-        name: 'Enhance EquationSolver caching',
-        description: 'Added memoization for repeated equation solutions',
-        file: 'physics/equations.py',
-        status: 'completed',
-        timestamp: '5 hours ago',
-        improvement: 23
-      },
-      {
-        id: 3,
-        name: 'Refactor NeuralComponent.embed()',
-        description: 'Optimizing embedding generation for better performance',
-        file: 'core/engine.py',
-        status: 'running',
-        timestamp: 'In progress'
-      },
-      {
-        id: 4,
-        name: 'Add parallel processing to simulations',
-        description: 'Pending review for multi-threaded simulation support',
-        file: 'physics/models.py',
-        status: 'pending',
-        timestamp: 'Queued'
-      },
-    ]);
+    const fetchEvolution = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/evolution/history`);
+        if (res.ok) {
+          const data = await res.json();
+          const list = data.history || data.evolutions || [];
+          setEvolutions(list);
+          const completed = list.filter(e => e.status === 'completed');
+          setStats({
+            totalCycles: list.length,
+            successRate: list.length ? Math.round((completed.length / list.length) * 100 * 10) / 10 : 0,
+            avgImprovement: completed.length
+              ? Math.round(completed.reduce((s, e) => s + (e.improvement || 0), 0) / completed.length * 10) / 10
+              : 0,
+            lastRun: list.length ? (list[0].timestamp || '--') : '--',
+          });
+        } else { throw new Error(); }
+      } catch {
+        setDemoMode(true);
+        setEvolutions(mockEvolutions);
+        setStats({ totalCycles: 8, successRate: 87.5, avgImprovement: 12.3, lastRun: '2 hours ago' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvolution();
   }, []);
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
-    // Simulate analysis
-    setTimeout(() => {
-      setIsAnalyzing(false);
-    }, 3000);
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/evolution/analyze`, { method: 'POST' });
+      if (res.ok) { /* refresh */ }
+    } catch { /* ok */ }
+    setTimeout(() => setIsAnalyzing(false), 3000);
   };
 
   return (
@@ -161,6 +161,13 @@ export default function Evolution() {
           </button>
         </div>
       </div>
+
+      {demoMode && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2">
+          <AlertCircle size={16} />
+          Running in demo mode — start the backend for live data
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

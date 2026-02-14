@@ -61,8 +61,9 @@ def create_app(enable_hot_reload: bool = None):
     # SECURITY: Use environment variable for secret key, with secure fallback
     app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY') or os.getenv('SECRET_KEY') or secrets.token_hex(32)
     
-    # Enable CORS
-    CORS(app)
+    # Enable CORS — configurable via CORS_ORIGINS env var (comma-separated)
+    _cors_origins = os.getenv("CORS_ORIGINS", "*")
+    CORS(app, origins=[o.strip() for o in _cors_origins.split(",")])
     
     # Initialize SocketIO with app
     socketio.init_app(app)
@@ -102,6 +103,44 @@ def create_app(enable_hot_reload: bool = None):
             'version': os.getenv('APP_VERSION', 'dev'),
             'build': os.getenv('BUILD_SHA', 'local'),
         }, 200
+
+    # ── System-wide stats endpoint (used by Dashboard) ──────────
+    import time as _time
+    _app_start_time = _time.time()
+
+    @app.route('/api/v1/system/stats', methods=['GET'])
+    def system_stats():
+        """Aggregated platform statistics for the Dashboard."""
+        from api.v1.rules import rule_engine
+        stats = {}
+        # Rules
+        try:
+            rules_list = rule_engine.list_rules()
+            stats['rules'] = len(rules_list)
+        except Exception:
+            stats['rules'] = 0
+        # Knowledge
+        try:
+            from physics.knowledge import get_knowledge_graph
+            graph = get_knowledge_graph()
+            stats['knowledge_count'] = graph.get('statistics', {}).get('total_nodes', 0)
+        except Exception:
+            stats['knowledge_count'] = 0
+        # Simulations — no persistent counter yet, return 0
+        stats['simulations'] = 0
+        # Evolution
+        try:
+            from ai.evolution.tracker import EvolutionTracker
+            tracker = EvolutionTracker()
+            stats['evolutions'] = len(tracker.history) if hasattr(tracker, 'history') else 0
+        except Exception:
+            stats['evolutions'] = 0
+        # Uptime
+        elapsed = _time.time() - _app_start_time
+        h, rem = divmod(int(elapsed), 3600)
+        m, _ = divmod(rem, 60)
+        stats['uptime'] = f"{h}h {m}m"
+        return stats, 200
     
     # Initialize hot reload if enabled
     if enable_hot_reload is None:

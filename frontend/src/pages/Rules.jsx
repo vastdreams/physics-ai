@@ -202,6 +202,8 @@ export default function Rules() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [testResult, setTestResult] = useState(null);
+  const [editingRule, setEditingRule] = useState(null);
+  const [demoMode, setDemoMode] = useState(false);
 
   useEffect(() => {
     // Fetch rules from API
@@ -213,7 +215,7 @@ export default function Rules() {
           setRules(data.rules || []);
         }
       } catch (error) {
-        console.log('Using mock rules');
+        setDemoMode(true);
         setRules([
           {
             id: 1,
@@ -321,6 +323,13 @@ export default function Rules() {
         </button>
       </div>
 
+      {demoMode && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2">
+          <AlertCircle size={16} />
+          Running in demo mode — start the backend for live rule management
+        </div>
+      )}
+
       {/* Search & Filter */}
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
@@ -377,7 +386,10 @@ export default function Rules() {
           <RuleCard
             key={rule.id}
             rule={rule}
-            onEdit={() => {}}
+            onEdit={(r) => {
+              setEditingRule(r);
+              setShowAddModal(true);
+            }}
             onDelete={handleDeleteRule}
             onTest={handleTestRule}
           />

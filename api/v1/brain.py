@@ -43,7 +43,7 @@ def submit_feedback():
         
         if not data or 'target_id' not in data or 'message' not in data:
             cot.end_step(step_id, output_data={'error': 'target_id and message required'}, validation_passed=False)
-            return jsonify({'error': 'target_id and message required'}), 400
+            return jsonify({'success': False, 'error': 'target_id and message required'}), 400
         
         from ai.brain_modal.expert_feedback import ExpertFeedback
         
@@ -66,7 +66,7 @@ def submit_feedback():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in submit_feedback: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/brain/audit', methods=['POST'])
@@ -88,7 +88,7 @@ def perform_audit():
         
         if not data or 'audit_type' not in data:
             cot.end_step(step_id, output_data={'error': 'audit_type required'}, validation_passed=False)
-            return jsonify({'error': 'audit_type required'}), 400
+            return jsonify({'success': False, 'error': 'audit_type required'}), 400
         
         result = audit_system.perform_audit(
             audit_type=data['audit_type'],
@@ -108,7 +108,7 @@ def perform_audit():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in perform_audit: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/brain/review', methods=['POST'])
@@ -131,7 +131,7 @@ def request_brain_review():
         
         if not data or 'target' not in data or 'target_data' not in data:
             cot.end_step(step_id, output_data={'error': 'target and target_data required'}, validation_passed=False)
-            return jsonify({'error': 'target and target_data required'}), 400
+            return jsonify({'success': False, 'error': 'target and target_data required'}), 400
         
         review = recursive_brain.recursive_review(
             target=data['target'],
@@ -152,7 +152,7 @@ def request_brain_review():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in request_brain_review: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/brain/feedback-history', methods=['GET'])
@@ -171,5 +171,5 @@ def get_feedback_history():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in get_feedback_history: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 

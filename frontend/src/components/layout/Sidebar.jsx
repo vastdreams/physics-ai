@@ -9,7 +9,7 @@
  * └─────────────┘    └──────────────┘    └─────────────┘
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Home, 
@@ -33,8 +33,9 @@ import {
   Info
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../../config';
 
-const navigationSections = [
+const buildNavigationSections = (knowledgeCount) => [
   {
     title: 'Main',
     items: [
@@ -45,7 +46,7 @@ const navigationSections = [
   {
     title: 'Physics',
     items: [
-      { name: 'Knowledge Base', path: '/knowledge', icon: Database, badge: '522' },
+      { name: 'Knowledge Base', path: '/knowledge', icon: Database, badge: knowledgeCount != null ? String(knowledgeCount) : null },
       { name: 'Simulations', path: '/simulations', icon: Atom },
       { name: 'Equations', path: '/equations', icon: BookOpen },
       { name: 'Models', path: '/models', icon: Workflow },
@@ -127,6 +128,16 @@ function NavSection({ section, collapsed, defaultOpen = true }) {
 
 export default function Sidebar({ collapsed, onToggle }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [knowledgeCount, setKnowledgeCount] = useState(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/v1/knowledge/statistics`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => setKnowledgeCount(d.statistics?.total_nodes ?? d.statistics?.total ?? null))
+      .catch(() => setKnowledgeCount(null));
+  }, []);
+
+  const navigationSections = buildNavigationSections(knowledgeCount);
 
   return (
     <aside 

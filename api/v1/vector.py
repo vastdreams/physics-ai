@@ -40,7 +40,7 @@ def add_delta_factor():
         
         if not data or 'name' not in data or 'value' not in data:
             cot.end_step(step_id, output_data={'error': 'name and value required'}, validation_passed=False)
-            return jsonify({'error': 'name and value required'}), 400
+            return jsonify({'success': False, 'error': 'name and value required'}), 400
         
         delta = DeltaFactor(
             name=data['name'],
@@ -59,7 +59,7 @@ def add_delta_factor():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in add_delta_factor endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/vector/throttle', methods=['POST'])
@@ -90,7 +90,7 @@ def throttle_variance():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in throttle_variance endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/vector/bayesian-update', methods=['POST'])
@@ -116,7 +116,7 @@ def bayesian_update():
         
         if not data or 'parameter_name' not in data:
             cot.end_step(step_id, output_data={'error': 'parameter_name required'}, validation_passed=False)
-            return jsonify({'error': 'parameter_name required'}), 400
+            return jsonify({'success': False, 'error': 'parameter_name required'}), 400
         
         vector_framework.update_delta_with_bayesian(
             data['parameter_name'],
@@ -131,7 +131,7 @@ def bayesian_update():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in bayesian_update endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/vector/overlay-validation', methods=['POST'])
@@ -157,7 +157,7 @@ def overlay_validation():
         
         if not data or 'simple_output' not in data or 'complex_output' not in data:
             cot.end_step(step_id, output_data={'error': 'simple_output and complex_output required'}, validation_passed=False)
-            return jsonify({'error': 'simple_output and complex_output required'}), 400
+            return jsonify({'success': False, 'error': 'simple_output and complex_output required'}), 400
         
         is_valid, deviation = vector_framework.overlay_validation(
             data['simple_output'],
@@ -180,7 +180,7 @@ def overlay_validation():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in overlay_validation endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/vector/statistics', methods=['GET'])
@@ -202,5 +202,5 @@ def vector_statistics():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in vector_statistics endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 

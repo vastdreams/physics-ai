@@ -158,49 +158,108 @@ export default function Dashboard() {
     uptime: '0h',
   });
 
-  const [activities] = useState([
-    { type: 'simulation', message: 'Harmonic oscillator simulation completed', time: '2 minutes ago' },
-    { type: 'rule', message: 'New rule "kinetic_energy" added', time: '15 minutes ago' },
-    { type: 'evolution', message: 'Code evolution cycle completed', time: '1 hour ago' },
-    { type: 'simulation', message: 'Pendulum simulation ran for 10s', time: '2 hours ago' },
-  ]);
-
-  const [systemStatus] = useState({
-    overall: 'healthy',
+  const [activities, setActivities] = useState([]);
+  const [systemStatus, setSystemStatus] = useState({
+    overall: 'unknown',
     components: [
-      { name: 'Neurosymbolic Engine', icon: Brain, status: 'operational', latency: '12ms' },
-      { name: 'Rule Engine', icon: Database, status: 'operational', latency: '8ms' },
-      { name: 'Physics Solver', icon: Atom, status: 'operational', latency: '45ms' },
-      { name: 'Evolution Module', icon: GitBranch, status: 'operational', latency: '23ms' },
+      { name: 'Neurosymbolic Engine', icon: Brain, status: 'checking', latency: '--' },
+      { name: 'Rule Engine', icon: Database, status: 'checking', latency: '--' },
+      { name: 'Physics Solver', icon: Atom, status: 'checking', latency: '--' },
+      { name: 'Evolution Module', icon: GitBranch, status: 'checking', latency: '--' },
     ]
   });
+  const [demoMode, setDemoMode] = useState(false);
 
   useEffect(() => {
-    // Fetch stats from API
+    let failed = 0;
+
+    // Fetch aggregated stats from the new /api/v1/system/stats endpoint
     const fetchStats = async () => {
       try {
-        const response = await fetch(`${API_BASE}/api/v1/rules/statistics`);
-        if (response.ok) {
-          const data = await response.json();
-          setStats(prev => ({ ...prev, rules: data.total_rules || 0 }));
-        }
-      } catch (error) {
-        console.log('API not available, using mock data');
-      }
+        const res = await fetch(`${API_BASE}/api/v1/system/stats`);
+        if (res.ok) {
+          const data = await res.json();
+          setStats({
+            simulations: data.simulations ?? 0,
+            rules: data.rules ?? 0,
+            evolutions: data.evolutions ?? 0,
+            uptime: data.uptime ?? '0h',
+          });
+        } else { failed++; }
+      } catch { failed++; }
     };
-    fetchStats();
 
-    // Simulate stats loading
-    setStats({
-      simulations: 127,
-      rules: 24,
-      evolutions: 8,
-      uptime: '72h 15m',
+    // Fetch recent activity from logs endpoint
+    const fetchActivity = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/cot/logs?limit=5`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.logs?.length) {
+            setActivities(data.logs.map(l => ({
+              type: l.type || 'simulation',
+              message: l.message || l.action || 'Activity',
+              time: l.timestamp || '',
+            })));
+          } else { failed++; }
+        } else { failed++; }
+      } catch { failed++; }
+    };
+
+    // Fetch system health
+    const fetchHealth = async () => {
+      try {
+        const start = Date.now();
+        const res = await fetch(`${API_BASE}/health`);
+        const latency = Date.now() - start;
+        if (res.ok) {
+          setSystemStatus({
+            overall: 'healthy',
+            components: [
+              { name: 'Neurosymbolic Engine', icon: Brain, status: 'operational', latency: `${latency}ms` },
+              { name: 'Rule Engine', icon: Database, status: 'operational', latency: `${latency}ms` },
+              { name: 'Physics Solver', icon: Atom, status: 'operational', latency: `${latency}ms` },
+              { name: 'Evolution Module', icon: GitBranch, status: 'operational', latency: `${latency}ms` },
+            ]
+          });
+        } else { failed++; }
+      } catch { failed++; }
+    };
+
+    Promise.all([fetchStats(), fetchActivity(), fetchHealth()]).then(() => {
+      // If ALL three failed, fall back to demo data
+      if (failed >= 3) {
+        setDemoMode(true);
+        setStats({ simulations: 127, rules: 24, evolutions: 8, uptime: '72h 15m' });
+        setActivities([
+          { type: 'simulation', message: 'Harmonic oscillator simulation completed', time: '2 minutes ago' },
+          { type: 'rule', message: 'New rule "kinetic_energy" added', time: '15 minutes ago' },
+          { type: 'evolution', message: 'Code evolution cycle completed', time: '1 hour ago' },
+          { type: 'simulation', message: 'Pendulum simulation ran for 10s', time: '2 hours ago' },
+        ]);
+        setSystemStatus({
+          overall: 'healthy',
+          components: [
+            { name: 'Neurosymbolic Engine', icon: Brain, status: 'operational', latency: '12ms' },
+            { name: 'Rule Engine', icon: Database, status: 'operational', latency: '8ms' },
+            { name: 'Physics Solver', icon: Atom, status: 'operational', latency: '45ms' },
+            { name: 'Evolution Module', icon: GitBranch, status: 'operational', latency: '23ms' },
+          ]
+        });
+      }
     });
   }, []);
 
   return (
     <div className="space-y-6">
+      {/* Demo mode banner */}
+      {demoMode && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2">
+          <AlertCircle size={16} />
+          Running in demo mode — start the backend for live data
+        </div>
+      )}
+
       {/* Welcome Banner */}
       <div className="card bg-gradient-to-r from-light-50 to-light-100 border-light-200 overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-r from-accent-primary/5 to-accent-purple/5" />

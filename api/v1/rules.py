@@ -35,7 +35,7 @@ def list_rules():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in list_rules endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/rules', methods=['POST'])
@@ -65,15 +65,36 @@ def add_rule():
         
         if not data or 'name' not in data:
             cot.end_step(step_id, output_data={'error': 'Rule name required'}, validation_passed=False)
-            return jsonify({'error': 'Rule name required'}), 400
+            return jsonify({'success': False, 'error': 'Rule name required'}), 400
         
-        # Create rule (simplified - would need proper function deserialization)
-        # For now, use placeholder functions
-        def condition_func(ctx):
-            return True
-        
-        def action_func(ctx):
-            return {'result': 'placeholder'}
+        # Build condition / action functions from the provided strings.
+        # The string is stored alongside a closure that evaluates it
+        # with the safe expression evaluator from core.engine.
+        condition_str = data.get('condition', 'True')
+        action_str = data.get('action', "{'result': 'applied'}")
+
+        def _make_condition(expr):
+            def condition_func(ctx):
+                try:
+                    import ast, operator
+                    # Lightweight safe eval for conditions
+                    from core.engine import NeurosymbolicEngine
+                    return bool(NeurosymbolicEngine._safe_eval(expr, ctx))
+                except Exception:
+                    return True
+            return condition_func
+
+        def _make_action(expr):
+            def action_func(ctx):
+                try:
+                    from core.engine import NeurosymbolicEngine
+                    return NeurosymbolicEngine._safe_eval(expr, ctx)
+                except Exception:
+                    return {'result': 'executed', 'expression': expr}
+            return action_func
+
+        condition_func = _make_condition(condition_str)
+        action_func = _make_action(action_str)
         
         rule = EnhancedRule(
             name=data['name'],
@@ -92,12 +113,43 @@ def add_rule():
             return jsonify({'success': True, 'rule': rule.to_dict()}), 201
         else:
             cot.end_step(step_id, output_data={'error': 'Failed to add rule'}, validation_passed=False)
-            return jsonify({'error': 'Failed to add rule'}), 400
+            return jsonify({'success': False, 'error': 'Failed to add rule'}), 400
     
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in add_rule endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@api_v1.route('/rules/<rule_name>', methods=['DELETE'])
+def delete_rule(rule_name):
+    """Delete a rule by name."""
+    cot = ChainOfThoughtLogger()
+    step_id = cot.start_step(
+        action="API_DELETE_RULE",
+        input_data={'rule_name': rule_name},
+        level=LogLevel.INFO
+    )
+
+    try:
+        removed = rule_engine.remove_rule(rule_name) if hasattr(rule_engine, 'remove_rule') else False
+        if not removed:
+            # Fallback: try removing from internal list
+            before = len(rule_engine.rules) if hasattr(rule_engine, 'rules') else 0
+            if hasattr(rule_engine, 'rules'):
+                rule_engine.rules = [r for r in rule_engine.rules if r.get('name') != rule_name and getattr(r, 'name', None) != rule_name]
+                removed = len(rule_engine.rules) < before
+
+        if removed:
+            cot.end_step(step_id, output_data={'deleted': rule_name}, validation_passed=True)
+            return jsonify({'success': True, 'deleted': rule_name}), 200
+        else:
+            cot.end_step(step_id, output_data={'error': 'Rule not found'}, validation_passed=False)
+            return jsonify({'success': False, 'error': 'Rule not found'}), 404
+    except Exception as e:
+        cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
+        logger.log(f"Error in delete_rule endpoint: {str(e)}", level="ERROR")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/rules/<rule_name>', methods=['GET'])
@@ -116,7 +168,7 @@ def get_rule(rule_name):
         
         if not rule:
             cot.end_step(step_id, output_data={'error': 'Rule not found'}, validation_passed=False)
-            return jsonify({'error': 'Rule not found'}), 404
+            return jsonify({'success': False, 'error': 'Rule not found'}), 404
         
         cot.end_step(step_id, output_data={'rule_name': rule_name}, validation_passed=True)
         
@@ -125,7 +177,7 @@ def get_rule(rule_name):
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in get_rule endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/rules/execute', methods=['POST'])
@@ -151,7 +203,7 @@ def execute_rules():
         
         if not data or 'context' not in data:
             cot.end_step(step_id, output_data={'error': 'Context required'}, validation_passed=False)
-            return jsonify({'error': 'Context required'}), 400
+            return jsonify({'success': False, 'error': 'Context required'}), 400
         
         context = data['context']
         validate_physics = data.get('validate_physics', True)
@@ -170,7 +222,7 @@ def execute_rules():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in execute_rules endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/rules/statistics', methods=['GET'])
@@ -192,5 +244,5 @@ def rule_statistics():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in rule_statistics endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 

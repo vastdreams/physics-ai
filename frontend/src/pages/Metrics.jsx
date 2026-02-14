@@ -3,7 +3,7 @@
  * PURPOSE: Performance and usage metrics dashboard
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Activity,
   Cpu,
@@ -12,12 +12,14 @@ import {
   TrendingDown,
   Database,
   Zap,
-  BarChart3
+  BarChart3,
+  AlertCircle
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { API_BASE } from '../config';
 
-// Generate mock data
+// Generate mock data (fallback)
 const generateTimeData = () => {
   return Array.from({ length: 24 }, (_, i) => ({
     time: `${i}:00`,
@@ -63,9 +65,34 @@ function MetricCard({ title, value, change, icon: Icon, trend, unit = '' }) {
 }
 
 export default function Metrics() {
-  const [timeData] = useState(generateTimeData);
-  const [componentData] = useState(generateComponentData);
+  const [timeData, setTimeData] = useState(generateTimeData);
+  const [componentData, setComponentData] = useState(generateComponentData);
   const [timeRange, setTimeRange] = useState('24h');
+  const [demoMode, setDemoMode] = useState(false);
+  const [liveStats, setLiveStats] = useState(null);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const [healthRes, statsRes] = await Promise.all([
+          fetch(`${API_BASE}/health`).catch(() => null),
+          fetch(`${API_BASE}/api/v1/system/stats`).catch(() => null),
+        ]);
+        if (healthRes?.ok) {
+          const hData = await healthRes.json();
+          setLiveStats(prev => ({ ...prev, version: hData.version, build: hData.build }));
+        }
+        if (statsRes?.ok) {
+          const sData = await statsRes.json();
+          setLiveStats(prev => ({ ...prev, rules: sData.rules, uptime: sData.uptime }));
+        }
+        if (!healthRes?.ok && !statsRes?.ok) setDemoMode(true);
+      } catch {
+        setDemoMode(true);
+      }
+    };
+    fetchMetrics();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -92,6 +119,13 @@ export default function Metrics() {
           ))}
         </div>
       </div>
+
+      {demoMode && (
+        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2">
+          <AlertCircle size={16} />
+          Running in demo mode — start the backend for live metrics
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

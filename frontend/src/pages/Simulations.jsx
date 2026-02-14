@@ -163,7 +163,7 @@ export default function Simulations() {
         metadata: data.metadata || {}
       });
     } catch (err) {
-      setError('Failed to run simulation. Make sure the API server is running.');
+      setError('Failed to run simulation. Make sure the API server is running. Showing demo results below.');
       
       // Generate mock data for demo
       const mockData = [];
@@ -338,9 +338,17 @@ export default function Simulations() {
               )}
             </div>
 
-            {error && (
-              <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
-                {error}
+            {results?.metadata?.demo && (
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2">
+                <AlertTriangle size={16} />
+                Running in demo mode — start the backend for live simulation data
+              </div>
+            )}
+
+            {error && !results?.metadata?.demo && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center justify-between">
+                <span>{error}</span>
+                <button onClick={runSimulation} className="text-red-600 underline ml-2">Retry</button>
               </div>
             )}
 

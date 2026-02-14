@@ -64,7 +64,7 @@ function ContentDisplay({ content }) {
   );
 }
 
-function MessageBubble({ message, isLast }) {
+function MessageBubble({ message, isLast, onRegenerate }) {
   const [copied, setCopied] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showReasoning, setShowReasoning] = useState(false);
@@ -251,21 +251,39 @@ function MessageBubble({ message, isLast }) {
               {copied ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
               {copied ? 'Copied!' : 'Copy'}
             </button>
-            <button className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+            <button
+              onClick={() => {
+                const blob = new Blob([JSON.stringify({ role: message.role, content: message.content, code: message.code }, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'chat-export.json';
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+            >
               <Download size={14} />
               Export
             </button>
-            <button className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+            <button
+              onClick={() => {
+                if (typeof onRegenerate === 'function') onRegenerate(message);
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+            >
               <RefreshCw size={14} />
               Regenerate
             </button>
-            <a 
-              href="#" 
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors ml-auto"
-            >
-              <ExternalLink size={14} />
-              Open in Notebook
-            </a>
+            {message.code && (
+              <a
+                href={`/simulations`}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors ml-auto"
+              >
+                <ExternalLink size={14} />
+                Open in Notebook
+              </a>
+            )}
           </div>
         )}
       </div>
@@ -502,7 +520,20 @@ export default function ChatInterface() {
               <MessageBubble 
                 key={i} 
                 message={message} 
-                isLast={i === messages.length - 1} 
+                isLast={i === messages.length - 1}
+                onRegenerate={() => {
+                  // Find the last user message before this assistant message
+                  const lastUserIdx = messages.slice(0, i).reverse().findIndex(m => m.role === 'user');
+                  if (lastUserIdx !== -1) {
+                    const userMsg = messages[i - 1 - lastUserIdx];
+                    if (userMsg) {
+                      setInput(userMsg.content);
+                      // Remove from this assistant message onwards and re-send
+                      setMessages(prev => prev.slice(0, i));
+                      setTimeout(() => handleSend(), 100);
+                    }
+                  }
+                }}
               />
             ))}
             <div ref={messagesEndRef} className="h-8" />

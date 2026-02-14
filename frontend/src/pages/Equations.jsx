@@ -192,7 +192,8 @@ export default function Equations() {
               </div>
 
               {error && (
-                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
+                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm flex items-center gap-2">
+                  <Sparkles size={16} />
                   {error}
                 </div>
               )}

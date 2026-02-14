@@ -11,9 +11,11 @@ import {
   Shuffle,
   ArrowRight,
   Play,
-  ChevronRight
+  ChevronRight,
+  AlertCircle
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { API_BASE } from '../config';
 
 const reasoningTypes = [
   {
@@ -96,23 +98,43 @@ function ReasoningTypeCard({ type, isSelected, onSelect }) {
 function ReasoningDemo({ type }) {
   const [result, setResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [demoFallback, setDemoFallback] = useState(false);
 
-  const handleRun = () => {
+  const mockSteps = {
+    deductive: ['Applied modus ponens', 'Chained syllogisms', 'Derived conclusion'],
+    inductive: ['Collected observations', 'Identified pattern', 'Formed generalization'],
+    abductive: ['Analyzed observation', 'Generated hypotheses', 'Selected best explanation'],
+    analogical: ['Identified source domain', 'Mapped structure', 'Transferred knowledge'],
+  };
+
+  const handleRun = async () => {
     setIsProcessing(true);
-    setTimeout(() => {
-      setResult({
-        success: true,
-        confidence: 0.92,
-        steps: type.id === 'deductive' 
-          ? ['Applied modus ponens', 'Chained syllogisms', 'Derived conclusion']
-          : type.id === 'inductive'
-          ? ['Collected observations', 'Identified pattern', 'Formed generalization']
-          : type.id === 'abductive'
-          ? ['Analyzed observation', 'Generated hypotheses', 'Selected best explanation']
-          : ['Identified source domain', 'Mapped structure', 'Transferred knowledge']
+    setDemoFallback(false);
+    try {
+      const question = type.id === 'deductive' ? type.example.premises.join('; ')
+        : type.id === 'inductive' ? type.example.observations.join('; ')
+        : type.id === 'abductive' ? type.example.observation
+        : type.example.source;
+
+      const res = await fetch(`${API_BASE}/api/v1/agents/reason`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question, type: type.id }),
       });
+      if (res.ok) {
+        const data = await res.json();
+        setResult({
+          success: true,
+          confidence: data.confidence ?? 0.92,
+          steps: data.steps || mockSteps[type.id],
+        });
+      } else { throw new Error(); }
+    } catch {
+      setDemoFallback(true);
+      setResult({ success: true, confidence: 0.92, steps: mockSteps[type.id] });
+    } finally {
       setIsProcessing(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -183,6 +205,12 @@ function ReasoningDemo({ type }) {
       {/* Result */}
       {result && (
         <div className="border-t border-light-200 pt-4">
+          {demoFallback && (
+            <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs flex items-center gap-1">
+              <AlertCircle size={12} />
+              Demo mode — start the backend for real reasoning
+            </div>
+          )}
           <div className="flex items-center gap-2 mb-3">
             <ArrowRight size={16} className="text-accent-primary" />
             <span className="text-sm font-medium text-light-700">Result</span>

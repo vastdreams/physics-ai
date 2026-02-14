@@ -57,7 +57,7 @@ def list_nodes():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in list_nodes endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/nodes/<node_id>', methods=['GET'])
@@ -75,7 +75,7 @@ def get_node(node_id):
         
         if not node:
             cot.end_step(step_id, output_data={'error': 'Node not found'}, validation_passed=False)
-            return jsonify({'error': 'Node not found'}), 404
+            return jsonify({'success': False, 'error': 'Node not found'}), 404
         
         result = node.to_dict()
         
@@ -90,7 +90,7 @@ def get_node(node_id):
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in get_node endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/nodes/analyze', methods=['POST'])
@@ -115,7 +115,7 @@ def analyze_directory():
         
         if not data or 'directory' not in data:
             cot.end_step(step_id, output_data={'error': 'Directory not provided'}, validation_passed=False)
-            return jsonify({'error': 'Directory not provided'}), 400
+            return jsonify({'success': False, 'error': 'Directory not provided'}), 400
         
         directory = data['directory']
         
@@ -138,7 +138,7 @@ def analyze_directory():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in analyze_directory endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @api_v1.route('/nodes/graph/statistics', methods=['GET'])
@@ -160,5 +160,5 @@ def graph_statistics():
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
         logger.log(f"Error in graph_statistics endpoint: {str(e)}", level="ERROR")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'success': False, 'error': str(e)}), 500
 

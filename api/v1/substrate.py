@@ -73,7 +73,7 @@ def chat():
         context = data.get("context", {})
         
         if not message:
-            return jsonify({"error": "message is required"}), 400
+            return jsonify({"success": False, "error": "message is required"}), 400
         
         ai = get_ai()
         response = ai.chat(message, session_id=session_id, context=context)
@@ -84,7 +84,7 @@ def chat():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # =============================================================================
@@ -112,13 +112,13 @@ def dry_run_plan():
         max_plans = int(data.get("max_plans", 3))
 
         if not outputs:
-            return jsonify({"error": "outputs are required"}), 400
+            return jsonify({"success": False, "error": "outputs are required"}), 400
 
         ai = get_ai()
         plans = ai.dry_run_plan(inputs=inputs, outputs=outputs, context=context, max_plans=max_plans)
         return jsonify({"plans": plans, "count": len(plans)})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/execute", methods=["POST"])
@@ -138,13 +138,13 @@ def execute_formula():
         inputs = data.get("inputs", {})
 
         if not formula_id:
-            return jsonify({"error": "formula_id is required"}), 400
+            return jsonify({"success": False, "error": "formula_id is required"}), 400
 
         ai = get_ai()
         outputs = ai.execute_formula(formula_id, inputs)
         return jsonify({"outputs": outputs})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/sessions", methods=["POST"])
@@ -163,7 +163,7 @@ def create_session():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/sessions/<session_id>", methods=["GET"])
@@ -174,12 +174,12 @@ def get_session(session_id: str):
         session = ai.chatbot.get_session(session_id)
         
         if not session:
-            return jsonify({"error": "Session not found"}), 404
+            return jsonify({"success": False, "error": "Session not found"}), 404
         
         return jsonify(session.to_dict())
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # =============================================================================
@@ -231,7 +231,7 @@ def list_formulas():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/formulas/<formula_id>", methods=["GET"])
@@ -242,12 +242,12 @@ def get_formula(formula_id: str):
         formula = ai.get_formula(formula_id)
         
         if not formula:
-            return jsonify({"error": "Formula not found"}), 404
+            return jsonify({"success": False, "error": "Formula not found"}), 404
         
         return jsonify(formula.to_dict())
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/formulas", methods=["POST"])
@@ -269,10 +269,10 @@ def add_formula():
         if success:
             return jsonify({"formula_id": formula.id, "success": True}), 201
         else:
-            return jsonify({"error": "Formula already exists", "success": False}), 409
+            return jsonify({"success": False, "error": "Formula already exists"}), 409
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/formulas/search", methods=["GET"])
@@ -297,7 +297,7 @@ def search_formulas():
         return jsonify({"results": results})
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # =============================================================================
@@ -312,7 +312,7 @@ def graph_stats():
         return jsonify(ai.graph.stats())
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/graph/edges", methods=["GET"])
@@ -354,7 +354,7 @@ def list_edges():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/graph/consistency", methods=["GET"])
@@ -371,7 +371,7 @@ def check_consistency():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # =============================================================================
@@ -386,12 +386,12 @@ def get_trace(trace_id: str):
         trace = ai.get_trace(trace_id)
         
         if not trace:
-            return jsonify({"error": "Trace not found"}), 404
+            return jsonify({"success": False, "error": "Trace not found"}), 404
         
         return jsonify(trace)
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/traces", methods=["GET"])
@@ -420,7 +420,7 @@ def list_traces():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # =============================================================================
@@ -435,7 +435,7 @@ def evolution_stats():
         return jsonify(ai.evolution.get_statistics())
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/evolution/results", methods=["GET"])
@@ -458,7 +458,7 @@ def evolution_results():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/evolution/trigger", methods=["POST"])
@@ -474,7 +474,7 @@ def trigger_evolution():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # =============================================================================
@@ -494,7 +494,7 @@ def critic_stats():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/critics/report", methods=["GET"])
@@ -510,7 +510,7 @@ def critic_report():
         })
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # =============================================================================
@@ -525,7 +525,7 @@ def system_stats():
         return jsonify(ai.stats())
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @substrate_bp.route("/health", methods=["GET"])

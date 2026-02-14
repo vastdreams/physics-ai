@@ -58,7 +58,7 @@ def get_modules():
         JSON with module states
     """
     if _reloader is None:
-        return jsonify({"modules": [], "error": "Hot reload not initialized"})
+        return jsonify({"success": False, "modules": [], "error": "Hot reload not initialized"})
     
     modules = _reloader.get_module_states()
     return jsonify({"modules": modules})

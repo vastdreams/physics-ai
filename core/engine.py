@@ -304,9 +304,103 @@ class SymbolicComponent:
             self.symbols[name] = name
             return name
     
+    # ── Safe expression evaluator (replaces eval) ────────────────
+    @staticmethod
+    def _safe_eval(expr: str, context: Dict[str, Any]) -> Any:
+        """Evaluate a simple expression without using eval().
+
+        Supports:
+        - Variable lookups from *context*
+        - Numeric / string / bool / None literals
+        - Arithmetic: + - * / // % **
+        - Comparisons: == != < > <= >=
+        - Boolean: and or not
+        - Unary minus
+        """
+        import ast
+        import operator
+
+        _OPS = {
+            ast.Add: operator.add,
+            ast.Sub: operator.sub,
+            ast.Mult: operator.mul,
+            ast.Div: operator.truediv,
+            ast.FloorDiv: operator.floordiv,
+            ast.Mod: operator.mod,
+            ast.Pow: operator.pow,
+            ast.Eq: operator.eq,
+            ast.NotEq: operator.ne,
+            ast.Lt: operator.lt,
+            ast.LtE: operator.le,
+            ast.Gt: operator.gt,
+            ast.GtE: operator.ge,
+            ast.And: lambda a, b: a and b,
+            ast.Or: lambda a, b: a or b,
+            ast.USub: operator.neg,
+            ast.UAdd: operator.pos,
+            ast.Not: operator.not_,
+        }
+
+        def _eval_node(node):
+            # Literals
+            if isinstance(node, ast.Constant):
+                return node.value
+            # Variable lookup
+            if isinstance(node, ast.Name):
+                if node.id in context:
+                    return context[node.id]
+                raise NameError(f"Unknown variable: {node.id}")
+            # Binary op
+            if isinstance(node, ast.BinOp):
+                fn = _OPS.get(type(node.op))
+                if fn is None:
+                    raise ValueError(f"Unsupported operator: {type(node.op).__name__}")
+                return fn(_eval_node(node.left), _eval_node(node.right))
+            # Unary op
+            if isinstance(node, ast.UnaryOp):
+                fn = _OPS.get(type(node.op))
+                if fn is None:
+                    raise ValueError(f"Unsupported unary operator: {type(node.op).__name__}")
+                return fn(_eval_node(node.operand))
+            # Boolean op (and / or)
+            if isinstance(node, ast.BoolOp):
+                fn = _OPS.get(type(node.op))
+                result = _eval_node(node.values[0])
+                for v in node.values[1:]:
+                    result = fn(result, _eval_node(v))
+                return result
+            # Comparison
+            if isinstance(node, ast.Compare):
+                left = _eval_node(node.left)
+                for op_node, comparator in zip(node.ops, node.comparators):
+                    fn = _OPS.get(type(op_node))
+                    if fn is None:
+                        raise ValueError(f"Unsupported comparison: {type(op_node).__name__}")
+                    right = _eval_node(comparator)
+                    if not fn(left, right):
+                        return False
+                    left = right
+                return True
+            # Ternary / IfExp
+            if isinstance(node, ast.IfExp):
+                return _eval_node(node.body) if _eval_node(node.test) else _eval_node(node.orelse)
+            # Tuple / List (return as-is)
+            if isinstance(node, (ast.Tuple, ast.List)):
+                return [_eval_node(e) for e in node.elts]
+            # Dict literal
+            if isinstance(node, ast.Dict):
+                return {_eval_node(k): _eval_node(v) for k, v in zip(node.keys, node.values)}
+            # Expression wrapper
+            if isinstance(node, ast.Expression):
+                return _eval_node(node.body)
+            raise ValueError(f"Unsupported expression node: {type(node).__name__}")
+
+        tree = ast.parse(expr.strip(), mode='eval')
+        return _eval_node(tree.body)
+
     def evaluate_condition(self, condition: str, context: Dict[str, Any]) -> bool:
         """
-        Evaluate a condition string against a context.
+        Evaluate a condition string against a context using the safe evaluator.
         
         Args:
             condition: Condition expression
@@ -316,17 +410,14 @@ class SymbolicComponent:
             True if condition is satisfied
         """
         try:
-            # Create safe evaluation context
-            safe_context = {
+            merged = {
                 'True': True,
                 'False': False,
                 'None': None,
                 **self.facts,
                 **context
             }
-            
-            # Evaluate condition
-            result = eval(condition, {"__builtins__": {}}, safe_context)
+            result = self._safe_eval(condition, merged)
             return bool(result)
         except Exception as e:
             self.logger.log(f"Error evaluating condition '{condition}': {e}", level="WARNING")
@@ -347,15 +438,14 @@ class SymbolicComponent:
         for rule in self.rules:
             if self.evaluate_condition(rule['condition'], context):
                 try:
-                    # Evaluate action
-                    safe_context = {
+                    merged = {
                         'True': True,
                         'False': False,
                         'None': None,
                         **self.facts,
                         **context
                     }
-                    result = eval(rule['action'], {"__builtins__": {}}, safe_context)
+                    result = self._safe_eval(rule['action'], merged)
                     applications.append({
                         'rule': rule['name'],
                         'result': result,

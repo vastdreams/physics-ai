@@ -25,6 +25,95 @@ precomputation = Precomputation(state_cache)
 retrieval = Retrieval(state_cache)
 
 
+@api_v1.route('/equations/solve', methods=['POST'])
+def solve_equation():
+    """
+    Solve an equation symbolically using SymPy.
+
+    Request body:
+    {
+        "equation": "F = m * a",
+        "variables": {"m": 10, "a": 9.8},
+        "solve_for": "F"
+    }
+    """
+    cot = ChainOfThoughtLogger()
+    step_id = cot.start_step(action="API_SOLVE_EQUATION", level=LogLevel.INFO)
+
+    try:
+        data = request.get_json()
+        if not data or 'equation' not in data:
+            cot.end_step(step_id, output_data={'error': 'equation required'}, validation_passed=False)
+            return jsonify({'success': False, 'error': 'equation required'}), 400
+
+        equation_str = data['equation']
+        solve_for = data.get('solve_for', '')
+        variables = data.get('variables', {})
+
+        import sympy
+        from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application
+
+        transformations = standard_transformations + (implicit_multiplication_application,)
+
+        # Split on '=' to handle equations like "F = m * a"
+        sides = equation_str.split('=')
+        if len(sides) == 2:
+            lhs = parse_expr(sides[0].strip(), transformations=transformations)
+            rhs = parse_expr(sides[1].strip(), transformations=transformations)
+            expr = sympy.Eq(lhs, rhs)
+        else:
+            expr = parse_expr(equation_str.strip(), transformations=transformations)
+
+        # Substitute known variable values
+        subs = {}
+        for var_name, var_val in variables.items():
+            sym = sympy.Symbol(var_name)
+            subs[sym] = var_val
+
+        # Solve
+        if solve_for:
+            target = sympy.Symbol(solve_for)
+            solutions = sympy.solve(expr, target, dict=False)
+        else:
+            solutions = sympy.solve(expr, dict=True)
+
+        # Evaluate numerically if substitutions available
+        numeric_results = []
+        for sol in (solutions if isinstance(solutions, list) else [solutions]):
+            if subs:
+                try:
+                    numeric_results.append(str(sympy.nsimplify(sol).subs(subs).evalf()))
+                except Exception:
+                    numeric_results.append(str(sol))
+            else:
+                numeric_results.append(str(sol))
+
+        simplified = str(sympy.simplify(expr))
+
+        result = {
+            'success': True,
+            'equation': equation_str,
+            'solve_for': solve_for,
+            'solutions': [str(s) for s in (solutions if isinstance(solutions, list) else [solutions])],
+            'numeric': numeric_results,
+            'simplified': simplified,
+            'steps': [
+                f"Parse: {equation_str}",
+                f"Target variable: {solve_for or 'all'}",
+                f"Substitutions: {variables}",
+                f"Solutions: {[str(s) for s in (solutions if isinstance(solutions, list) else [solutions])]}",
+            ],
+        }
+
+        cot.end_step(step_id, output_data=result, validation_passed=True)
+        return jsonify(result), 200
+
+    except Exception as e:
+        cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
+        logger.log(f"Error in solve_equation: {str(e)}", level="ERROR")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
 @api_v1.route('/equational/ingest', methods=['POST'])
 def ingest_research():
     """

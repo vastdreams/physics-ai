@@ -102,14 +102,14 @@ npm install
 npm run build
 
 # Configure Nginx
-cat > /etc/nginx/sites-available/beyondfrontier <<'NGINX'
+cat > /etc/nginx/sites-available/physics-ai <<'NGINX'
 server {
     listen 80;
     server_name _;
 
     # Frontend
     location / {
-        root /opt/beyondfrontier/frontend/dist;
+        root /opt/physics-ai/frontend/dist;
         try_files $uri $uri/ /index.html;
     }
 
@@ -134,22 +134,22 @@ server {
 }
 NGINX
 
-ln -sf /etc/nginx/sites-available/beyondfrontier /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/physics-ai /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl restart nginx
 
 # Create systemd service for backend
-cat > /etc/systemd/system/beyondfrontier-api.service <<'SERVICE'
+cat > /etc/systemd/system/physics-ai-api.service <<'SERVICE'
 [Unit]
-Description=Beyond Frontier API Server
+Description=Physics AI API Server
 After=network.target
 
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/beyondfrontier
-Environment=PATH=/opt/beyondfrontier/venv/bin
-ExecStart=/opt/beyondfrontier/venv/bin/python -m api.app
+WorkingDirectory=/opt/physics-ai
+Environment=PATH=/opt/physics-ai/venv/bin
+ExecStart=/opt/physics-ai/venv/bin/python -m api.app
 Restart=always
 
 [Install]
@@ -157,10 +157,10 @@ WantedBy=multi-user.target
 SERVICE
 
 systemctl daemon-reload
-systemctl enable beyondfrontier-api
-systemctl start beyondfrontier-api
+systemctl enable physics-ai-api
+systemctl start physics-ai-api
 
-echo "Beyond Frontier deployment complete!" > /var/log/beyondfrontier-deploy.log
+echo "Physics AI deployment complete!" > /var/log/physics-ai-deploy.log
 USERDATA
 )
 
