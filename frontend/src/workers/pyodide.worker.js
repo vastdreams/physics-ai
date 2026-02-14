@@ -65,7 +65,7 @@ async function initializePyodide() {
         }
       }
       
-      // Set up stdout/stderr capture
+      // Set up stdout/stderr capture + matplotlib plot capture
       await pyodide.runPythonAsync(`
 import sys
 from io import StringIO
@@ -76,10 +76,12 @@ class OutputCapture:
         self.stderr = StringIO()
         self._original_stdout = sys.stdout
         self._original_stderr = sys.stderr
+        self.plots = []  # list of base64-encoded PNG images
     
     def start(self):
         self.stdout = StringIO()
         self.stderr = StringIO()
+        self.plots = []
         sys.stdout = self.stdout
         sys.stderr = self.stderr
     
@@ -87,6 +89,31 @@ class OutputCapture:
         sys.stdout = self._original_stdout
         sys.stderr = self._original_stderr
         return self.stdout.getvalue(), self.stderr.getvalue()
+    
+    def capture_plots(self):
+        """Capture all open matplotlib figures as base64 PNG."""
+        try:
+            import matplotlib
+            matplotlib.use('Agg')  # non-interactive backend
+            import matplotlib.pyplot as plt
+            import base64
+            from io import BytesIO
+            
+            figs = [plt.figure(i) for i in plt.get_fignums()]
+            for fig in figs:
+                buf = BytesIO()
+                fig.savefig(buf, format='png', dpi=150, bbox_inches='tight',
+                            facecolor='white', edgecolor='none')
+                buf.seek(0)
+                b64 = base64.b64encode(buf.read()).decode('utf-8')
+                self.plots.append(f"data:image/png;base64,{b64}")
+                buf.close()
+            plt.close('all')
+        except ImportError:
+            pass  # matplotlib not loaded yet
+        except Exception as e:
+            print(f"[Plot capture warning]: {e}")
+        return self.plots
 
 _output_capture = OutputCapture()
       `);
@@ -104,6 +131,51 @@ _output_capture = OutputCapture()
 }
 
 /**
+ * Auto-detect and install missing imports before running code
+ */
+async function ensureDependencies(code) {
+  const importPattern = /^\s*(?:import|from)\s+(\w+)/gm;
+  const needed = new Set();
+  let match;
+  while ((match = importPattern.exec(code)) !== null) {
+    needed.add(match[1]);
+  }
+
+  // Map import names to Pyodide package names
+  const packageMap = {
+    matplotlib: 'matplotlib',
+    scipy: 'scipy',
+    pandas: 'pandas',
+    sklearn: 'scikit-learn',
+    PIL: 'Pillow',
+    cv2: 'opencv-python',
+    networkx: 'networkx',
+  };
+
+  for (const mod of needed) {
+    if (packageMap[mod]) {
+      try {
+        // Check if already importable
+        await pyodide.runPythonAsync(`import ${mod}`);
+      } catch {
+        // Not available — install it
+        postMessage({ type: 'status', status: 'loading', message: `Installing ${mod}...` });
+        try {
+          await pyodide.loadPackage(packageMap[mod]);
+        } catch {
+          try {
+            const micropip = pyodide.pyimport('micropip');
+            await micropip.install(packageMap[mod]);
+          } catch (e) {
+            console.warn(`Could not install ${mod}:`, e);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
  * Run Python code and return results
  */
 async function runPython(code, options = {}) {
@@ -111,23 +183,27 @@ async function runPython(code, options = {}) {
     await initializePyodide();
   }
   
-  const { captureOutput = true, returnExpression = false } = options;
+  const { captureOutput = true } = options;
   
   try {
+    // Auto-install missing packages
+    await ensureDependencies(code);
+
+    // If code uses matplotlib, ensure Agg backend is set
+    if (code.includes('matplotlib') || code.includes('plt')) {
+      await pyodide.runPythonAsync(`
+import matplotlib
+matplotlib.use('Agg')
+`);
+    }
+
     // Start output capture
     if (captureOutput) {
       await pyodide.runPythonAsync('_output_capture.start()');
     }
     
-    // Run the code
-    let result;
-    if (returnExpression) {
-      // Evaluate as expression (for single expressions like "2+2")
-      result = await pyodide.runPythonAsync(code);
-    } else {
-      // Execute as statements
-      result = await pyodide.runPythonAsync(code);
-    }
+    // Execute the code
+    let result = await pyodide.runPythonAsync(code);
     
     // Stop capture and get output
     let stdout = '';
@@ -137,17 +213,29 @@ async function runPython(code, options = {}) {
       stdout = captured.get(0);
       stderr = captured.get(1);
     }
+
+    // Capture any matplotlib plots
+    let plots = [];
+    try {
+      const pyPlots = await pyodide.runPythonAsync('_output_capture.capture_plots()');
+      if (pyPlots && pyPlots.toJs) {
+        plots = Array.from(pyPlots.toJs());
+      } else if (Array.isArray(pyPlots)) {
+        plots = pyPlots;
+      }
+    } catch {
+      // No plots to capture
+    }
     
     // Convert result to JavaScript
     let jsResult = null;
     if (result !== undefined && result !== null) {
       try {
         jsResult = result.toJs ? result.toJs() : result;
-        // Handle complex types
         if (jsResult instanceof Map) {
           jsResult = Object.fromEntries(jsResult);
         }
-      } catch (e) {
+      } catch {
         jsResult = String(result);
       }
     }
@@ -157,6 +245,7 @@ async function runPython(code, options = {}) {
       result: jsResult,
       stdout,
       stderr,
+      plots,   // <-- base64 PNG images from matplotlib
     };
     
   } catch (error) {
@@ -164,7 +253,7 @@ async function runPython(code, options = {}) {
     if (captureOutput) {
       try {
         await pyodide.runPythonAsync('_output_capture.stop()');
-      } catch (e) {
+      } catch {
         // Ignore
       }
     }

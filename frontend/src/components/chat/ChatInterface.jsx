@@ -15,7 +15,7 @@
  * └─────────────┘    └──────────────┘    └─────────────┘
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { 
   Send, 
   Sparkles, 
@@ -37,7 +37,7 @@ import {
   Zap
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import CodeCell from '../physics/CodeArtifact';
+import { ExecutableCodeCell } from '../physics/ExecutableNotebook';
 import { TheoremBlock, DerivationChain, MathBlock } from '../physics/ProofDisplay';
 import MarkdownRenderer from './MarkdownRenderer';
 import ReasoningFlowChart from './ReasoningFlowChart';
@@ -181,18 +181,18 @@ function MessageBubble({ message, isLast }) {
             </div>
           )}
           
-          {/* Code Artifact */}
+          {/* Executable Code Artifact */}
           {message.code && !message.isLoading && (
             <div className="mt-6">
-              <CodeCell 
+              <ExecutableCodeCell 
                 code={message.code} 
-                language="python"
-                executionCount={1}
+                language={message.codeLanguage || 'python'}
+                autoExecute={message.autoExecute}
               />
             </div>
           )}
 
-          {/* Simulation Result */}
+          {/* Simulation Result (structured data from backend) */}
           {message.simulation && !message.isLoading && (
             <div className="mt-6">
               <TheoremBlock
@@ -385,7 +385,9 @@ export default function ChatInterface() {
         {
           role: 'assistant',
           content: content,
-          code: data.code,
+          code: data.code || null,
+          codeLanguage: data.code_language || 'python',
+          autoExecute: data.auto_execute || false,
           simulation: data.simulation,
           reasoning: reasoning,
           quality: qualityData,

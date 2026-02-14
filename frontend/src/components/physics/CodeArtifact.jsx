@@ -267,6 +267,24 @@ function CodeCell({
                 <pre className="text-sm font-mono text-slate-700 whitespace-pre-wrap">
                   {output}
                 </pre>
+              ) : output.type === 'rich' ? (
+                /* Rich output: text + matplotlib plots */
+                <div className="space-y-4">
+                  {output.text && (
+                    <pre className="text-sm font-mono text-slate-700 whitespace-pre-wrap">
+                      {output.text}
+                    </pre>
+                  )}
+                  {output.plots && output.plots.map((plotSrc, i) => (
+                    <div key={i} className="flex justify-center">
+                      <img 
+                        src={plotSrc} 
+                        alt={`Plot ${i + 1}`} 
+                        className="max-w-full rounded-lg border border-slate-200 shadow-sm"
+                      />
+                    </div>
+                  ))}
+                </div>
               ) : output.type === 'plot' ? (
                 <div className="flex justify-center">
                   <img 

@@ -178,10 +178,14 @@ export function usePyodide() {
 }
 
 /**
- * Helper to format Python execution output for display
+ * Helper to format Python execution output for display.
+ * 
+ * Returns EITHER a string (text-only) OR a structured object when
+ * the output includes matplotlib plots:
+ *   { type: 'rich', text: '...', plots: ['data:image/png;base64,...'] }
  * 
  * @param {Object} result - Result from runPython
- * @returns {string} - Formatted output string
+ * @returns {string|Object} - Formatted output
  */
 export function formatPythonOutput(result) {
   if (!result) return '';
@@ -209,7 +213,14 @@ export function formatPythonOutput(result) {
     parts.push(`[Warning]\n${result.stderr}`);
   }
   
-  return parts.join('\n').trim();
+  const text = parts.join('\n').trim();
+  
+  // If there are plots, return a rich output object
+  if (result.plots && result.plots.length > 0) {
+    return { type: 'rich', text, plots: result.plots };
+  }
+  
+  return text;
 }
 
 /**

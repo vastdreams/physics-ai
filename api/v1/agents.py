@@ -159,6 +159,69 @@ def setup_models():
     })
 
 
+import re as _re
+
+# ── Physics-aware system prompt ──────────────────────────────────────────
+_SYSTEM_PROMPT = """You are Beyond Frontier, a computational physics AI engine.
+
+CRITICAL RULES FOR CODE GENERATION:
+1. When asked to simulate, compute, or visualize anything, you MUST produce
+   executable Python code that runs in the browser via Pyodide.
+2. For visualizations and simulations, use ONLY matplotlib (with inline
+   backend). NEVER use pygame, tkinter, turtle, or any GUI framework.
+3. Always call plt.show() at the end of plots — the system captures them
+   automatically.
+4. Use numpy for numerical computation. sympy is available for symbolic math.
+5. For animations / time-evolving simulations, produce a multi-frame figure
+   or a series of plots — do NOT use FuncAnimation or real-time loops.
+6. Wrap simulation code in a single ```python code fence.
+7. Always include print() statements to show key results numerically
+   alongside any plots.
+8. Available packages: numpy, sympy, matplotlib, scipy (on demand).
+
+RESPONSE FORMAT:
+- Start with a brief explanation of the physics.
+- Then provide the complete executable code block.
+- After the code block, summarize what the user will see when it runs.
+
+Example for "simulate gravity":
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+# N-body gravitational simulation
+G = 6.674e-11
+...
+plt.show()
+```
+"""
+
+
+def _extract_code_blocks(text: str):
+    """Extract fenced code blocks from markdown text.
+
+    Returns a list of dicts: [{"language": "python", "code": "..."}]
+    """
+    pattern = _re.compile(r"```(\w*)\s*\n(.*?)```", _re.DOTALL)
+    blocks = []
+    for m in pattern.finditer(text):
+        lang = m.group(1).lower() or "python"
+        code = m.group(2).strip()
+        if code:
+            blocks.append({"language": lang, "code": code})
+    return blocks
+
+
+def _detect_simulation(message: str) -> bool:
+    """Return True if the user message looks like a simulation / visualization request."""
+    keywords = [
+        "simulat", "visuali", "plot", "graph", "animat", "render",
+        "show me", "draw", "chart", "demonstrate", "run",
+    ]
+    lower = message.lower()
+    return any(kw in lower for kw in keywords)
+
+
 @agents_bp.route('/chat', methods=['POST'])
 def chat():
     """
@@ -182,10 +245,19 @@ def chat():
     
     manager = get_manager()
     
-    # Build messages
-    messages = []
+    # Build messages — always include the physics system prompt
+    messages = [Message.system(_SYSTEM_PROMPT)]
     if context:
-        messages.append(Message.system(f"Context: {context}"))
+        messages.append(Message.system(f"Conversation context:\n{context}"))
+
+    # For simulation requests, add an extra nudge
+    if _detect_simulation(message):
+        messages.append(Message.system(
+            "The user is requesting a simulation or visualization. "
+            "You MUST include a complete, runnable ```python code block "
+            "using matplotlib for visualization. Do NOT use pygame."
+        ))
+
     messages.append(Message.user(message))
     
     # Determine tier
@@ -208,6 +280,20 @@ def chat():
         auto_escalate=not force_tier  # Don't auto-escalate if tier is forced
     ))
     
+    # Extract code blocks from the response content
+    code_blocks = _extract_code_blocks(response.content or "")
+    # Primary code = first python block, if any
+    primary_code = None
+    code_language = "python"
+    for block in code_blocks:
+        if block["language"] in ("python", "sympy", "py"):
+            primary_code = block["code"]
+            code_language = block["language"]
+            break
+    if not primary_code and code_blocks:
+        primary_code = code_blocks[0]["code"]
+        code_language = code_blocks[0]["language"]
+
     # Run through Quality Gate (rubric-based evaluation)
     quality_report = None
     try:
@@ -236,6 +322,10 @@ def chat():
                 'total_tokens': response.usage.total_tokens
             }
         },
+        'code': primary_code,
+        'code_language': code_language,
+        'code_blocks': code_blocks,
+        'auto_execute': primary_code is not None and _detect_simulation(message),
         'quality': quality_report,
         'error': response.error
     })

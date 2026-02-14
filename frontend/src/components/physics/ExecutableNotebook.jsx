@@ -24,7 +24,7 @@
  * - Loading indicator during Pyodide init
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Loader2, Package, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import CodeCell, { NotebookContainer } from './CodeArtifact';
@@ -170,21 +170,29 @@ export function ExecutableNotebook({ initialCells = [], className }) {
 }
 
 /**
- * Standalone executable code cell
+ * Standalone executable code cell with optional auto-execute
+ *
+ * @param {string}  code         - The source code to display / run
+ * @param {string}  language     - Language (python, sympy, etc.)
+ * @param {boolean} autoExecute  - If true, runs the code automatically once Pyodide is ready
+ * @param {string}  className    - Optional CSS class
  */
 export function ExecutableCodeCell({ 
   code, 
   language = 'python',
+  autoExecute = false,
   className 
 }) {
   const { runPython, isReady, isLoading, error } = usePyodide();
   const [output, setOutput] = useState(null);
   const [cellError, setCellError] = useState(null);
   const [executionCount, setExecutionCount] = useState(null);
+  const [isAutoRunning, setIsAutoRunning] = useState(false);
   const [counter, setCounter] = useState(1);
+  const hasAutoExecuted = useRef(false);
   
   const handleExecute = useCallback(async (cellCode, cellLang) => {
-    if (cellLang !== 'python' && cellLang !== 'sympy') {
+    if (cellLang !== 'python' && cellLang !== 'sympy' && cellLang !== 'py') {
       setOutput(`Execution not supported for ${cellLang}`);
       setCellError(null);
       return;
@@ -202,13 +210,28 @@ export function ExecutableCodeCell({
       setCellError(formatPythonError(result));
     }
   }, [runPython, counter]);
+
+  // Auto-execute when Pyodide becomes ready (once)
+  useEffect(() => {
+    if (autoExecute && isReady && code && !hasAutoExecuted.current) {
+      hasAutoExecuted.current = true;
+      setIsAutoRunning(true);
+      handleExecute(code, language).finally(() => setIsAutoRunning(false));
+    }
+  }, [autoExecute, isReady, code, language, handleExecute]);
   
   return (
     <div className={className}>
-      {isLoading && (
+      {(isLoading || isAutoRunning) && (
         <div className="flex items-center gap-2 mb-2 text-sm text-slate-500">
           <Loader2 className="animate-spin" size={14} />
-          <span>Loading Python...</span>
+          <span>
+            {isAutoRunning 
+              ? 'Running simulation...' 
+              : isLoading 
+                ? 'Loading Python runtime...' 
+                : 'Preparing...'}
+          </span>
         </div>
       )}
       <CodeCell
