@@ -5,6 +5,7 @@
 
 import ChatInterface from '../components/chat/ChatInterface';
 
+/** Chat page — wraps the ChatInterface component. */
 export default function Chat() {
   return <ChatInterface />;
 }

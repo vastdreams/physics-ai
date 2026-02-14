@@ -10,6 +10,7 @@
  */
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
@@ -27,6 +28,7 @@ import About from './pages/About';
 import NotFound from './pages/NotFound';
 import UpdateBanner from './components/UpdateBanner';
 
+/** Root application component — sets up routing and global layout. */
 function App() {
   return (
     <BrowserRouter>

@@ -15,8 +15,10 @@ import time
 from typing import Any, Dict, List, Optional
 import aiohttp
 
-from .provider import LLMProvider, LLMResponse, Message, TokenUsage
 from .config import get_config
+from .provider import LLMProvider, LLMResponse, Message, TokenUsage
+
+_HEALTH_CHECK_TIMEOUT_SECONDS = 10
 
 
 class DeepSeekProvider(LLMProvider):
@@ -72,7 +74,7 @@ class DeepSeekProvider(LLMProvider):
                 async with session.get(
                     f"{self.base_url}/models",
                     headers=headers,
-                    timeout=aiohttp.ClientTimeout(total=10)
+                    timeout=aiohttp.ClientTimeout(total=_HEALTH_CHECK_TIMEOUT_SECONDS)
                 ) as response:
                     self._is_healthy = response.status == 200
                     self._last_health_check = time.time()

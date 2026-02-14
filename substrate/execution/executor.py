@@ -14,7 +14,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import sympy as sp
 
@@ -29,7 +29,9 @@ class FormulaExecutor:
     Returns a dict of outputs or None on failure.
     """
 
-    def evaluate_formula(self, formula: Formula, variables: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def evaluate_formula(
+        self, formula: Formula, variables: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
         """Evaluate a formula with given variable assignments.
 
         Args:
@@ -40,19 +42,17 @@ class FormulaExecutor:
             Dict of output symbol -> value, or None if evaluation fails.
         """
         try:
-            # Parse expression
             expr_str = formula.sympy_expr or formula.symbolic_form
             if not expr_str:
                 return None
 
             expr = sp.sympify(expr_str)
 
-            # If equation, solve for output(s)
             if isinstance(expr, sp.Equality):
                 left, right = expr.lhs, expr.rhs
-                outputs = [v.symbol for v in formula.outputs] or list(expr.free_symbols)
-
-                # Solve for first output symbol
+                outputs: List[str] = (
+                    [v.symbol for v in formula.outputs] or list(expr.free_symbols)
+                )
                 target = sp.Symbol(outputs[0])
                 solution = sp.solve(sp.Eq(left, right), target)
                 if not solution:
@@ -60,7 +60,6 @@ class FormulaExecutor:
                 val = self._evaluate_expression(solution[0], variables)
                 return {outputs[0]: val}
 
-            # Otherwise treat as expression for first output
             outputs = [v.symbol for v in formula.outputs]
             if not outputs:
                 return None
@@ -71,15 +70,24 @@ class FormulaExecutor:
             return None
 
     def _evaluate_expression(self, expr: sp.Expr, variables: Dict[str, Any]) -> Any:
-        """Evaluate a SymPy expression with given variables."""
+        """Evaluate a SymPy expression with given variables.
+
+        Args:
+            expr: SymPy expression to evaluate.
+            variables: Mapping of symbol name -> value.
+
+        Returns:
+            Numeric result.
+
+        Raises:
+            ValueError: If required variables are missing.
+        """
         symbols = list(expr.free_symbols)
-        # Build mapping and lambdify
         subs = {sp.Symbol(k): v for k, v in variables.items() if sp.Symbol(k) in symbols}
         missing = [s for s in symbols if s not in subs]
         if missing:
             raise ValueError(f"Missing variables for evaluation: {missing}")
 
         func = sp.lambdify(list(subs.keys()), expr, modules=["numpy", "math"])
-        args = [subs[s] for s in subs.keys()]
+        args = [subs[s] for s in subs]
         return func(*args)
-

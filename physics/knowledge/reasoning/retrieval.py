@@ -24,8 +24,7 @@ Reasoning-based Retrieval (PageIndex-inspired):
 """
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional, Callable
-import json
+from typing import Any, Callable, Dict, List, Optional
 
 from .tree_index import PhysicsTreeIndex, TreeNode, build_domain_tree
 from .reasoner import PhysicsReasoner, ReasoningPath

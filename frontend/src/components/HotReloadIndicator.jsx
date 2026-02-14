@@ -7,9 +7,17 @@
  */
 
 import { useState, useEffect } from 'react';
+
 import { RefreshCw, Check, X, Zap } from 'lucide-react';
+import { clsx } from 'clsx';
+
 import { useHotReload } from '../hooks/useHotReload';
 
+/**
+ * Visual indicator for backend hot reload status.
+ * @param {Object} props
+ * @param {boolean} [props.compact=false] - Render as a small inline button
+ */
 export function HotReloadIndicator({ compact = false }) {
   const { status, recentReloads, triggerReload } = useHotReload();
   const [showDetails, setShowDetails] = useState(false);
@@ -42,14 +50,12 @@ export function HotReloadIndicator({ compact = false }) {
     return (
       <button
         onClick={handleManualReload}
-        className={`
-          flex items-center gap-1 px-2 py-1 rounded text-xs
-          transition-all duration-200
-          ${reloading 
-            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
+        className={clsx(
+          'flex items-center gap-1 px-2 py-1 rounded text-xs transition-all duration-200',
+          reloading
+            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
             : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-          }
-        `}
+        )}
         title="Hot Reload Active - Click to refresh all modules"
       >
         <Zap className={`w-3 h-3 ${reloading ? 'animate-pulse' : ''}`} />
@@ -62,14 +68,12 @@ export function HotReloadIndicator({ compact = false }) {
     <div className="relative">
       <button
         onClick={() => setShowDetails(!showDetails)}
-        className={`
-          flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm
-          transition-all duration-200
-          ${reloading 
-            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 animate-pulse' 
+        className={clsx(
+          'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all duration-200',
+          reloading
+            ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 animate-pulse'
             : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
-          }
-        `}
+        )}
       >
         <Zap className={`w-4 h-4 ${status.running ? 'text-yellow-500' : ''}`} />
         <span>Hot Reload</span>

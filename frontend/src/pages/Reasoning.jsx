@@ -4,6 +4,8 @@
  */
 
 import { useState } from 'react';
+
+import { clsx } from 'clsx';
 import {
   Brain,
   GitMerge,
@@ -12,9 +14,9 @@ import {
   ArrowRight,
   Play,
   ChevronRight,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
-import { clsx } from 'clsx';
+
 import { API_BASE } from '../config';
 
 const reasoningTypes = [
@@ -64,6 +66,12 @@ const reasoningTypes = [
   },
 ];
 
+/**
+ * @param {Object} props
+ * @param {Object} props.type - Reasoning type definition
+ * @param {boolean} props.isSelected - Whether this type is currently selected
+ * @param {Function} props.onSelect - Selection callback
+ */
 function ReasoningTypeCard({ type, isSelected, onSelect }) {
   const Icon = type.icon;
 
@@ -95,6 +103,7 @@ function ReasoningTypeCard({ type, isSelected, onSelect }) {
   );
 }
 
+/** @param {{ type: Object }} props — interactive demo for a reasoning type. */
 function ReasoningDemo({ type }) {
   const [result, setResult] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -249,6 +258,7 @@ function ReasoningDemo({ type }) {
   );
 }
 
+/** Reasoning engine page — four types of logical reasoning with interactive demos. */
 export default function Reasoning() {
   const [selectedType, setSelectedType] = useState(reasoningTypes[0]);
 

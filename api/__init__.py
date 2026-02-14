@@ -1,15 +1,8 @@
-# api/
 """
-REST API layer for Beyond Frontier system.
+PATH: api/__init__.py
+PURPOSE: REST API layer for the Physics AI system.
 
-First Principle Analysis:
-- API provides interface: I = {endpoints, methods, data_format}
-- Endpoints: E = {/simulate, /nodes, /rules, /evolution, /cot}
-- Mathematical foundation: REST principles, HTTP protocol, JSON serialization
-- Architecture: Flask-based API with modular endpoints
+Exposes the application factory for external consumers.
 """
 
-from flask import Flask
-
-__all__ = ['create_app']
-
+__all__ = ["create_app"]

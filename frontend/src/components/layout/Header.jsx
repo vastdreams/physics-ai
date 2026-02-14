@@ -4,20 +4,29 @@
  */
 
 import { useState } from 'react';
-import { 
-  PanelLeftClose, 
+
+import { clsx } from 'clsx';
+import {
+  PanelLeftClose,
   PanelLeft,
   Bell,
   Wifi,
   WifiOff,
   Activity,
-  Moon,
-  Sun,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
-import { clsx } from 'clsx';
+
 import { HotReloadIndicator } from '../HotReloadIndicator';
 
+/**
+ * Top header bar with connection status, activity, and action buttons.
+ * @param {Object} props
+ * @param {boolean} props.sidebarCollapsed - Whether the sidebar is collapsed
+ * @param {Function} props.onToggleSidebar - Toggle sidebar callback
+ * @param {string} [props.title] - Page title
+ * @param {string} [props.subtitle] - Page subtitle
+ * @param {React.ReactNode} [props.rightActions] - Extra action buttons
+ */
 export default function Header({ sidebarCollapsed, onToggleSidebar, title, subtitle, rightActions }) {
   const [isConnected, setIsConnected] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);

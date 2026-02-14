@@ -11,6 +11,8 @@
  */
 
 import { useState } from 'react';
+
+import { clsx } from 'clsx';
 import {
   ChevronDown,
   ChevronRight,
@@ -21,9 +23,8 @@ import {
   Copy,
   Check,
   ExternalLink,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
-import { clsx } from 'clsx';
 
 // Block types with styling
 const blockStyles = {
@@ -232,7 +233,11 @@ function Reference({ authors, title, year, journal, doi }) {
   );
 }
 
-// Main proof display component
+/**
+ * Main proof display — renders structured proof content in a formal style.
+ * @param {Object} props
+ * @param {React.ReactNode} props.content - Proof content to render
+ */
 export default function ProofDisplay({ content }) {
   // Parse structured proof content
   // In production, this would parse from backend response

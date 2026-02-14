@@ -10,6 +10,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+
 import { createHighlighter } from 'shiki';
 
 // Singleton highlighter instance

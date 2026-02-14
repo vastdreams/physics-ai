@@ -4,7 +4,9 @@
  */
 
 import { useState, useEffect } from 'react';
+
 import { Link } from 'react-router-dom';
+import { clsx } from 'clsx';
 import {
   Atom,
   Activity,
@@ -14,10 +16,9 @@ import {
   Thermometer,
   ArrowRight,
   Search,
-  Filter,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
-import { clsx } from 'clsx';
+
 import { API_BASE } from '../config';
 
 const models = [
@@ -83,6 +84,7 @@ const models = [
   },
 ];
 
+/** @param {{ model: Object }} props — card displaying a single physics model. */
 function ModelCard({ model }) {
   const Icon = model.icon;
 
@@ -136,6 +138,7 @@ function ModelCard({ model }) {
   );
 }
 
+/** Physics models browser with search and category filtering. */
 export default function Models() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');

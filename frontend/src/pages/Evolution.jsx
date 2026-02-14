@@ -4,22 +4,22 @@
  */
 
 import { useState, useEffect } from 'react';
+
+import { clsx } from 'clsx';
 import {
   GitBranch,
-  GitCommit,
-  Play,
-  Pause,
   RotateCcw,
   CheckCircle2,
   AlertCircle,
   Clock,
   Code,
   TrendingUp,
-  Zap
+  Zap,
 } from 'lucide-react';
-import { clsx } from 'clsx';
+
 import { API_BASE } from '../config';
 
+/** @param {{ evolution: Object }} props — single evolution entry card. */
 function EvolutionCard({ evolution }) {
   return (
     <div className="card">
@@ -72,6 +72,7 @@ function EvolutionCard({ evolution }) {
   );
 }
 
+/** Self-evolution tracking page — shows AI-driven code improvement history. */
 export default function Evolution() {
   const [evolutions, setEvolutions] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);

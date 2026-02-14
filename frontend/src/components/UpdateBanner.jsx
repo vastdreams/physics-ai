@@ -8,6 +8,7 @@
 import { RefreshCw, X } from 'lucide-react';
 import useAutoUpdate from '../hooks/useAutoUpdate';
 
+/** Non-intrusive banner shown when a newer build is detected. */
 export default function UpdateBanner() {
   const { updateAvailable, latestVersion, reload, dismiss } = useAutoUpdate();
 

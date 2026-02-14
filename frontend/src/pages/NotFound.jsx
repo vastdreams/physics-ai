@@ -6,6 +6,9 @@
 import { Link } from 'react-router-dom';
 import { Home, ArrowLeft } from 'lucide-react';
 
+const ICON_SIZE = 18;
+
+/** 404 page with links to navigate home or go back. */
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
@@ -16,14 +19,14 @@ export default function NotFound() {
       </p>
       <div className="flex items-center gap-4">
         <Link to="/" className="btn-primary flex items-center gap-2">
-          <Home size={18} />
+          <Home size={ICON_SIZE} />
           Go Home
         </Link>
         <button 
           onClick={() => window.history.back()}
           className="btn-secondary flex items-center gap-2"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={ICON_SIZE} />
           Go Back
         </button>
       </div>

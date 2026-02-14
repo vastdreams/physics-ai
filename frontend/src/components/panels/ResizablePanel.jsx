@@ -10,9 +10,30 @@
  */
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { clsx } from 'clsx';
-import { GripVertical, GripHorizontal, ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react';
 
+import { clsx } from 'clsx';
+import {
+  GripVertical,
+  GripHorizontal,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
+
+/**
+ * Resizable panel with drag handles and optional collapse button.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Panel content
+ * @param {'horizontal'|'vertical'} [props.direction='horizontal'] - Resize axis
+ * @param {'start'|'end'} [props.position='end'] - Handle placement
+ * @param {number} [props.defaultSize=320] - Initial size in px
+ * @param {number} [props.minSize=200] - Minimum size in px
+ * @param {number} [props.maxSize=600] - Maximum size in px
+ * @param {boolean} [props.collapsed=false] - Whether the panel is collapsed
+ * @param {Function} [props.onCollapse] - Collapse toggle callback
+ * @param {string} [props.className] - Additional CSS classes
+ */
 export default function ResizablePanel({
   children,
   direction = 'horizontal', // 'horizontal' (left-right) or 'vertical' (top-bottom)

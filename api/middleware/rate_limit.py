@@ -22,9 +22,9 @@ import time
 import threading
 from collections import defaultdict
 from functools import wraps
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Callable, Dict, Optional, Tuple
 
-from flask import Flask, request, jsonify, g
+from flask import Flask, g, jsonify, request
 
 
 class _TokenBucket:
@@ -32,14 +32,14 @@ class _TokenBucket:
 
     __slots__ = ("capacity", "refill_rate", "tokens", "last_refill")
 
-    def __init__(self, capacity: int, refill_rate: float):
+    def __init__(self, capacity: int, refill_rate: float) -> None:
         self.capacity = capacity
         self.refill_rate = refill_rate  # tokens per second
         self.tokens = float(capacity)
         self.last_refill = time.monotonic()
 
     def consume(self) -> Tuple[bool, float]:
-        """Try to consume one token. Returns (allowed, retry_after_seconds)."""
+        """Try to consume one token. Returns ``(allowed, retry_after_seconds)``."""
         now = time.monotonic()
         elapsed = now - self.last_refill
         self.tokens = min(self.capacity, self.tokens + elapsed * self.refill_rate)
@@ -57,7 +57,7 @@ class RateLimiter:
     """
     In-memory rate limiter using token bucket algorithm.
 
-    Thread-safe.  Expired buckets are garbage-collected periodically.
+    Thread-safe. Expired buckets are garbage-collected periodically.
     """
 
     def __init__(
@@ -67,14 +67,14 @@ class RateLimiter:
         auth_limit: int = 10,
         auth_window: int = 60,
         cleanup_interval: int = 300,
-    ):
+    ) -> None:
         """
         Args:
-            default_limit:  Max requests per window for general endpoints.
-            default_window:  Window size in seconds.
-            auth_limit:  Stricter limit for auth endpoints (login/register).
-            auth_window:  Window for auth endpoints.
-            cleanup_interval:  Seconds between stale-bucket cleanup.
+            default_limit: Max requests per window for general endpoints.
+            default_window: Window size in seconds.
+            auth_limit: Stricter limit for auth endpoints (login/register).
+            auth_window: Window for auth endpoints.
+            cleanup_interval: Seconds between stale-bucket cleanup.
         """
         self.default_limit = default_limit
         self.default_window = default_window
@@ -86,9 +86,8 @@ class RateLimiter:
         self._cleanup_interval = cleanup_interval
         self._last_cleanup = time.monotonic()
 
-    # ── public API ──────────────────────────────────────────────
-
     def _get_bucket(self, key: str, capacity: int, window: int) -> _TokenBucket:
+        """Retrieve or create a token bucket for *key*."""
         with self._lock:
             self._maybe_cleanup()
             if key not in self._buckets:
@@ -106,7 +105,7 @@ class RateLimiter:
         Check whether the request is allowed.
 
         Returns:
-            (allowed, retry_after_seconds, remaining_tokens)
+            ``(allowed, retry_after_seconds, remaining_tokens)``
         """
         limit = limit or self.default_limit
         window = window or self.default_window
@@ -115,9 +114,8 @@ class RateLimiter:
         remaining = max(0, int(bucket.tokens))
         return allowed, retry_after, remaining
 
-    # ── cleanup ─────────────────────────────────────────────────
-
     def _maybe_cleanup(self) -> None:
+        """Remove stale buckets that haven't been used recently."""
         now = time.monotonic()
         if now - self._last_cleanup < self._cleanup_interval:
             return
@@ -143,8 +141,7 @@ def get_rate_limiter() -> RateLimiter:
 # ── Flask helpers ───────────────────────────────────────────────
 
 def _client_key() -> str:
-    """Derive a rate-limit key from the request."""
-    # Prefer authenticated user ID, fall back to IP
+    """Derive a rate-limit key from the current request (user ID or IP)."""
     user = getattr(g, "current_user", None)
     if user and isinstance(user, dict):
         return f"user:{user.get('id', 'anon')}"
@@ -159,8 +156,9 @@ def rate_limit(
     """
     Decorator to rate-limit a Flask route.
 
-    Usage:
-        @app.route('/api/search')
+    Usage::
+
+        @app.route("/api/search")
         @rate_limit(limit=30, window=60)
         def search():
             ...
@@ -173,13 +171,11 @@ def rate_limit(
             allowed, retry_after, remaining = _limiter.check(key, limit, window)
 
             if not allowed:
-                resp = jsonify(
-                    {
-                        "success": False,
-                        "error": "Rate limit exceeded",
-                        "retry_after": round(retry_after, 1),
-                    }
-                )
+                resp = jsonify({
+                    "success": False,
+                    "error": "Rate limit exceeded",
+                    "retry_after": round(retry_after, 1),
+                })
                 resp.status_code = 429
                 resp.headers["Retry-After"] = str(int(retry_after) + 1)
                 resp.headers["X-RateLimit-Remaining"] = "0"
@@ -211,13 +207,11 @@ def rate_limit_auth(f):
         )
 
         if not allowed:
-            resp = jsonify(
-                {
-                    "success": False,
-                    "error": "Too many authentication attempts. Try again later.",
-                    "retry_after": round(retry_after, 1),
-                }
-            )
+            resp = jsonify({
+                "success": False,
+                "error": "Too many authentication attempts. Try again later.",
+                "retry_after": round(retry_after, 1),
+            })
             resp.status_code = 429
             resp.headers["Retry-After"] = str(int(retry_after) + 1)
             return resp
@@ -231,7 +225,8 @@ class RateLimitMiddleware:
     """
     Flask middleware that applies a global rate limit to every request.
 
-    Usage in create_app():
+    Usage in ``create_app()``::
+
         RateLimitMiddleware.setup(app)
     """
 
@@ -256,13 +251,11 @@ class RateLimitMiddleware:
 
             if not allowed:
                 return (
-                    jsonify(
-                        {
-                            "success": False,
-                            "error": "Rate limit exceeded",
-                            "retry_after": round(retry_after, 1),
-                        }
-                    ),
+                    jsonify({
+                        "success": False,
+                        "error": "Rate limit exceeded",
+                        "retry_after": round(retry_after, 1),
+                    }),
                     429,
                     {"Retry-After": str(int(retry_after) + 1)},
                 )

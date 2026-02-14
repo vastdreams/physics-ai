@@ -14,14 +14,16 @@
  */
 
 import { useState, useCallback } from 'react';
+
 import { Outlet, useLocation } from 'react-router-dom';
+import { clsx } from 'clsx';
+import { MessageSquare, Terminal, PanelRight } from 'lucide-react';
+
 import Sidebar from './Sidebar';
 import Header from './Header';
 import ResizablePanel from '../panels/ResizablePanel';
 import RightDrawer from '../panels/RightDrawer';
 import BottomPanel from '../panels/BottomPanel';
-import { clsx } from 'clsx';
-import { MessageSquare, Terminal, PanelRight, PanelBottom } from 'lucide-react';
 
 const pageTitles = {
   '/': { title: 'Dashboard', subtitle: 'System overview and quick actions' },
@@ -38,6 +40,7 @@ const pageTitles = {
   '/about': { title: 'About', subtitle: 'Vision and mission' },
 };
 
+/** Main layout — sidebar, header, content area, and resizable panels. */
 export default function Layout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [rightDrawerOpen, setRightDrawerOpen] = useState(false);

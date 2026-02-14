@@ -11,6 +11,9 @@ import os
 
 from .proposal import EvolutionProposal, ProposalStatus, ProposalType
 
+_SMALL_CHANGE_THRESHOLD = 2
+_LARGE_CHANGE_THRESHOLD = 5
+
 
 @dataclass
 class EvolutionMetrics:
@@ -214,8 +217,8 @@ class EvolutionTracker:
             })
         
         # Analyze change size
-        small_changes = [p for p in successful if len(p.changes) <= 2]
-        large_changes = [p for p in successful if len(p.changes) > 5]
+        small_changes = [p for p in successful if len(p.changes) <= _SMALL_CHANGE_THRESHOLD]
+        large_changes = [p for p in successful if len(p.changes) > _LARGE_CHANGE_THRESHOLD]
         
         if len(small_changes) > len(large_changes):
             patterns.append({

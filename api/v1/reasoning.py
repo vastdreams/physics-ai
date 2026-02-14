@@ -8,11 +8,9 @@ Inspired by PageIndex (https://github.com/VectifyAI/PageIndex)
 - Explainable paths
 """
 
-from flask import Blueprint, jsonify, request
-import sys
-import os
+import json
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+from flask import Blueprint, jsonify, request
 
 reasoning_bp = Blueprint('reasoning', __name__)
 
@@ -27,52 +25,39 @@ def get_retriever():
 def retrieve():
     """
     Reasoning-based retrieval.
-    
+
     POST /api/v1/reasoning/retrieve
     {
         "query": "What is the relationship between force and acceleration?",
         "max_results": 5,
         "include_derivations": true
     }
-    
-    Returns:
-    {
-        "success": true,
-        "result": {
-            "query": "...",
-            "nodes": [...],
-            "reasoning": {...},
-            "domain": "classical_mechanics",
-            "confidence": 0.8,
-            "explanation": "..."
-        }
-    }
     """
     try:
         data = request.get_json() or {}
         query = data.get('query', '')
-        
+
         if not query:
             return jsonify({
                 'success': False,
                 'error': 'Query is required'
             }), 400
-        
+
         max_results = data.get('max_results', 5)
         include_derivations = data.get('include_derivations', True)
-        
+
         retriever = get_retriever()
         result = retriever.retrieve(
             query=query,
             max_results=max_results,
             include_derivations=include_derivations
         )
-        
+
         return jsonify({
             'success': True,
             'result': result.to_dict()
         })
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -81,7 +66,7 @@ def retrieve():
 def answer_question():
     """
     Answer a physics question using reasoning-based retrieval.
-    
+
     POST /api/v1/reasoning/answer
     {
         "query": "How is kinetic energy derived from Newton's laws?"
@@ -90,22 +75,22 @@ def answer_question():
     try:
         data = request.get_json() or {}
         query = data.get('query', '')
-        
+
         if not query:
             return jsonify({
                 'success': False,
                 'error': 'Query is required'
             }), 400
-        
+
         retriever = get_retriever()
         answer = retriever.answer_question(query)
-        
+
         return jsonify({
             'success': True,
             'query': query,
             'answer': answer
         })
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -114,7 +99,7 @@ def answer_question():
 def explain_reasoning():
     """
     Get detailed explanation of reasoning process.
-    
+
     POST /api/v1/reasoning/explain
     {
         "query": "What is the uncertainty principle?"
@@ -123,46 +108,39 @@ def explain_reasoning():
     try:
         data = request.get_json() or {}
         query = data.get('query', '')
-        
+
         if not query:
             return jsonify({
                 'success': False,
                 'error': 'Query is required'
             }), 400
-        
+
         retriever = get_retriever()
         explanation = retriever.explain_reasoning(query)
-        
+
         return jsonify({
             'success': True,
             'query': query,
             'reasoning_explanation': explanation
         })
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @reasoning_bp.route('/tree', methods=['GET'])
 def get_tree():
-    """
-    Get the physics knowledge tree structure (PageIndex format).
-    
-    GET /api/v1/reasoning/tree
-    """
+    """Get the physics knowledge tree structure (PageIndex format)."""
     try:
         retriever = get_retriever()
         tree_json = retriever.get_tree_json()
-        
-        # Parse back to dict for JSON response
-        import json
         tree_data = json.loads(tree_json)
-        
+
         return jsonify({
             'success': True,
             'tree': tree_data
         })
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
@@ -171,7 +149,7 @@ def get_tree():
 def navigate_tree():
     """
     Navigate the tree from a specific node.
-    
+
     POST /api/v1/reasoning/navigate
     {
         "node_id": "classical_mechanics",
@@ -182,10 +160,10 @@ def navigate_tree():
         data = request.get_json() or {}
         node_id = data.get('node_id', 'root')
         query = data.get('query', '')
-        
+
         retriever = get_retriever()
         context = retriever.tree.get_navigation_context(node_id)
-        
+
         children = []
         node = retriever.tree.get_node(node_id)
         if node:
@@ -196,14 +174,14 @@ def navigate_tree():
                     'type': child.node_type.value,
                     'summary': child.summary[:200] if child.summary else ''
                 })
-        
+
         result = {
             'success': True,
             'node_id': node_id,
             'navigation_context': context,
             'children': children
         }
-        
+
         # If query provided, score children by relevance
         if query:
             query_lower = query.lower()
@@ -214,27 +192,23 @@ def navigate_tree():
                 if any(w in child.get('summary', '').lower() for w in query_lower.split()):
                     score += 0.3
                 child['relevance_score'] = score
-            
+
             children.sort(key=lambda x: x.get('relevance_score', 0), reverse=True)
             result['children'] = children
-        
+
         return jsonify(result)
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @reasoning_bp.route('/derivation/<node_id>', methods=['GET'])
-def get_derivation_chain(node_id):
-    """
-    Get the derivation chain for a concept.
-    
-    GET /api/v1/reasoning/derivation/kinetic_energy
-    """
+def get_derivation_chain(node_id: str):
+    """Get the derivation chain for a concept."""
     try:
         retriever = get_retriever()
         chain = retriever.reasoner.get_derivation_chain(node_id)
-        
+
         chain_data = []
         for node in chain:
             chain_data.append({
@@ -244,34 +218,30 @@ def get_derivation_chain(node_id):
                 'domain': node.domain,
                 'summary': node.summary
             })
-        
+
         return jsonify({
             'success': True,
             'node_id': node_id,
             'derivation_chain': chain_data,
             'chain_length': len(chain_data)
         })
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @reasoning_bp.route('/concept/<node_id>/explain', methods=['GET'])
-def explain_concept(node_id):
-    """
-    Get a detailed explanation of a concept.
-    
-    GET /api/v1/reasoning/concept/newton_second_law/explain
-    """
+def explain_concept(node_id: str):
+    """Get a detailed explanation of a concept."""
     try:
         retriever = get_retriever()
         explanation = retriever.reasoner.explain_concept(node_id)
-        
+
         return jsonify({
             'success': True,
             'node_id': node_id,
             'explanation': explanation
         })
-    
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500

@@ -1,41 +1,39 @@
-# api/middleware/
 """
-Validation Middleware.
-
-Validates request data.
+PATH: api/middleware/validation.py
+PURPOSE: Validation middleware that checks incoming request payloads.
 """
 
-from flask import request, jsonify
-from functools import wraps
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from validators.data_validator import DataValidator
+from typing import Optional, Tuple
+
+from flask import Flask, jsonify, request
+
 from loggers.system_logger import SystemLogger
+from validators.data_validator import DataValidator
 
-logger = SystemLogger()
-validator = DataValidator()
+_logger = SystemLogger()
+_validator = DataValidator()
 
 
 class ValidationMiddleware:
     """Validation middleware for API requests."""
-    
+
     @staticmethod
-    def validate_json():
-        """Validate JSON request body."""
-        if request.method in ['POST', 'PUT', 'PATCH']:
+    def validate_json() -> Optional[Tuple]:
+        """Return an error tuple if the JSON body is invalid, else ``None``."""
+        if request.method in ("POST", "PUT", "PATCH"):
             if request.is_json:
                 data = request.get_json()
-                if not validator.validate_dict(data):
-                    return jsonify({'error': 'Invalid JSON data'}), 400
+                if not _validator.validate_dict(data):
+                    return jsonify({"error": "Invalid JSON data"}), 400
         return None
-    
+
     @staticmethod
-    def setup(app):
-        """Setup middleware on Flask app."""
+    def setup(app: Flask) -> None:
+        """Register the validation before-request hook on *app*."""
+
         @app.before_request
-        def before_request():
+        def before_request() -> Optional[Tuple]:
             error = ValidationMiddleware.validate_json()
             if error:
                 return error
-
+            return None

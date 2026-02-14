@@ -25,13 +25,18 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Loader2, Package, AlertCircle, CheckCircle2 } from 'lucide-react';
+
 import { clsx } from 'clsx';
+import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+
 import CodeCell, { NotebookContainer } from './CodeArtifact';
 import { usePyodide, formatPythonOutput, formatPythonError } from '../../hooks/usePyodide';
 
 /**
- * ExecutableNotebook - Interactive Python notebook
+ * Interactive Python notebook — runs cells via Pyodide in the browser.
+ * @param {Object} props
+ * @param {Array} [props.initialCells=[]] - Pre-populated notebook cells
+ * @param {string} [props.className] - Additional CSS classes
  */
 export function ExecutableNotebook({ initialCells = [], className }) {
   const { runPython, installPackage, isReady, isLoading, loadingMessage, error } = usePyodide();

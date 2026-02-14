@@ -53,9 +53,8 @@ MICRO-MODULAR STRUCTURE:
     └── sound.py        : Sound, reverberation
 """
 
-# Import from subpackages - lazy loading for efficiency
-def get_all_equation_nodes():
-    """Lazy load all equation nodes."""
+def get_all_equation_nodes() -> list:
+    """Lazy-load and return all equation nodes from every physics domain."""
     from .classical import NODES as CLASSICAL
     from .electromagnetism import NODES as EM
     from .quantum import NODES as QUANTUM

@@ -17,8 +17,12 @@ import time
 from typing import Any, Dict, List, Optional
 import aiohttp
 
-from .provider import LLMProvider, LLMResponse, Message, TokenUsage
 from .config import get_config
+from .provider import LLMProvider, LLMResponse, Message, TokenUsage
+
+_HEALTH_CHECK_CACHE_TTL_SECONDS = 30
+_HEALTH_CHECK_TIMEOUT_SECONDS = 5
+_MODEL_PULL_TIMEOUT_SECONDS = 3600
 
 
 class OllamaProvider(LLMProvider):
@@ -51,7 +55,7 @@ class OllamaProvider(LLMProvider):
     @property
     def is_available(self) -> bool:
         """Check if Ollama is available (cached for 30 seconds)."""
-        if time.time() - self._last_health_check < 30:
+        if time.time() - self._last_health_check < _HEALTH_CHECK_CACHE_TTL_SECONDS:
             return self._is_healthy
         # Will be updated by health_check
         return self._is_healthy
@@ -62,7 +66,7 @@ class OllamaProvider(LLMProvider):
             async with aiohttp.ClientSession() as session:
                 async with session.get(
                     f"{self.host}/api/tags",
-                    timeout=aiohttp.ClientTimeout(total=5)
+                    timeout=aiohttp.ClientTimeout(total=_HEALTH_CHECK_TIMEOUT_SECONDS)
                 ) as response:
                     self._is_healthy = response.status == 200
                     self._last_health_check = time.time()
@@ -92,7 +96,7 @@ class OllamaProvider(LLMProvider):
                 async with session.post(
                     f"{self.host}/api/pull",
                     json={"name": model},
-                    timeout=aiohttp.ClientTimeout(total=3600)  # Models can be large
+                    timeout=aiohttp.ClientTimeout(total=_MODEL_PULL_TIMEOUT_SECONDS)
                 ) as response:
                     return response.status == 200
         except Exception:

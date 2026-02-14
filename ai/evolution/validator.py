@@ -13,9 +13,8 @@ Validation checks:
 import ast
 import re
 from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
 
-from .proposal import EvolutionProposal, ValidationResult, CodeChange, ProposalType
+from .proposal import CodeChange, EvolutionProposal, ProposalType, ValidationResult
 
 
 class ProposalValidator:

@@ -1,47 +1,38 @@
-# api/middleware/
 """
-API Middleware for Cross-Cutting Concerns.
-
-Inspired by DREAM architecture - clean separation of concerns.
-
-First Principle Analysis:
-- Middleware: M = {auth, validation, logging, error_handling}
-- Cross-cutting: Applied to all requests
-- Mathematical foundation: Function composition, decorators
-- Architecture: Middleware pipeline for request processing
+PATH: api/middleware/__init__.py
+PURPOSE: API middleware for cross-cutting concerns (auth, validation, logging, rate limiting).
 """
 
 from .auth import (
+    AUTH_CONFIG,
+    get_current_user,
+    login_user,
+    optional_auth,
+    register_user,
     require_auth,
     require_role,
-    optional_auth,
-    get_current_user,
-    register_user,
-    login_user,
-    AUTH_CONFIG,
 )
-from .validation import ValidationMiddleware
 from .logging import LoggingMiddleware
 from .rate_limit import (
     RateLimitMiddleware,
+    get_rate_limiter,
     rate_limit,
     rate_limit_auth,
-    get_rate_limiter,
 )
+from .validation import ValidationMiddleware
 
 __all__ = [
-    'require_auth',
-    'require_role',
-    'optional_auth',
-    'get_current_user',
-    'register_user',
-    'login_user',
-    'AUTH_CONFIG',
-    'ValidationMiddleware',
-    'LoggingMiddleware',
-    'RateLimitMiddleware',
-    'rate_limit',
-    'rate_limit_auth',
-    'get_rate_limiter',
+    "require_auth",
+    "require_role",
+    "optional_auth",
+    "get_current_user",
+    "register_user",
+    "login_user",
+    "AUTH_CONFIG",
+    "ValidationMiddleware",
+    "LoggingMiddleware",
+    "RateLimitMiddleware",
+    "rate_limit",
+    "rate_limit_auth",
+    "get_rate_limiter",
 ]
-

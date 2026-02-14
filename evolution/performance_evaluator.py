@@ -1,66 +1,66 @@
-# evolution/
 """
 Performance evaluation module.
 
 Evaluates system performance to guide evolution.
 """
 
-from typing import Any, Dict, List, Optional
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from loggers.system_logger import SystemLogger
+from __future__ import annotations
+
+from typing import Any, Dict
+
 from loggers.performance_logger import PerformanceLogger
+from loggers.system_logger import SystemLogger
+
+# ---------------------------------------------------------------------------
+# Score thresholds for recommendations
+# ---------------------------------------------------------------------------
+_EXCELLENT_THRESHOLD = 0.8
+_GOOD_THRESHOLD = 0.6
+_NEEDS_IMPROVEMENT_THRESHOLD = 0.4
 
 
 class PerformanceEvaluator:
-    """
-    Evaluates system performance.
-    """
-    
-    def __init__(self):
+    """Evaluates system performance and provides recommendations."""
+
+    def __init__(self) -> None:
         """Initialize performance evaluator."""
-        self.logger = SystemLogger()
+        self._logger = SystemLogger()
         self.performance_logger = PerformanceLogger()
-        
-        self.logger.log("PerformanceEvaluator initialized", level="INFO")
-    
+
+        self._logger.log("PerformanceEvaluator initialized", level="INFO")
+
     def evaluate(self, metrics: Dict[str, float]) -> Dict[str, Any]:
-        """
-        Evaluate performance metrics.
-        
+        """Evaluate performance metrics.
+
         Args:
-            metrics: Dictionary of metric names to values
-            
+            metrics: Dictionary of metric names to values.
+
         Returns:
-            Evaluation results
+            Evaluation results containing score, metrics, and recommendation.
         """
-        self.logger.log("Evaluating performance", level="DEBUG")
-        
-        # Log metrics
+        self._logger.log("Evaluating performance", level="DEBUG")
+
         for metric_name, value in metrics.items():
             self.performance_logger.log_metric(metric_name, value)
-        
-        # Calculate overall score
+
         score = sum(metrics.values()) / len(metrics) if metrics else 0.0
-        
-        result = {
+
+        result: Dict[str, Any] = {
             "score": score,
             "metrics": metrics,
-            "recommendation": self._get_recommendation(score)
+            "recommendation": self._get_recommendation(score),
         }
-        
-        self.logger.log(f"Performance evaluation complete: score={score}", level="INFO")
-        return result
-    
-    def _get_recommendation(self, score: float) -> str:
-        """Get recommendation based on score."""
-        if score > 0.8:
-            return "excellent"
-        elif score > 0.6:
-            return "good"
-        elif score > 0.4:
-            return "needs_improvement"
-        else:
-            return "poor"
 
+        self._logger.log(f"Performance evaluation complete: score={score}", level="INFO")
+        return result
+
+    @staticmethod
+    def _get_recommendation(score: float) -> str:
+        """Get recommendation based on score."""
+        if score > _EXCELLENT_THRESHOLD:
+            return "excellent"
+        if score > _GOOD_THRESHOLD:
+            return "good"
+        if score > _NEEDS_IMPROVEMENT_THRESHOLD:
+            return "needs_improvement"
+        return "poor"

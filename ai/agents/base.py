@@ -12,14 +12,15 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
-import json
+from typing import Any, Dict, List, Optional
 import re
 import uuid
 
 from ai.llm.config import ModelTier
-from ai.llm.provider import Message, LLMResponse
 from ai.llm.manager import LLMManager, get_manager_sync
+from ai.llm.provider import LLMResponse, Message
+
+_CONTENT_PREVIEW_MAX_LENGTH = 200
 
 
 class AgentStatus(Enum):
@@ -170,7 +171,7 @@ class BaseAgent(ABC):
         for aid in artefact_ids:
             art = self.get_artefact(aid)
             if art:
-                content_preview = str(art.content)[:200]
+                content_preview = str(art.content)[:_CONTENT_PREVIEW_MAX_LENGTH]
                 lines.append(f"  [{art.id}] ({art.type}): {content_preview}")
         return "\n".join(lines)
     

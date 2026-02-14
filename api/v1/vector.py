@@ -1,18 +1,13 @@
-# api/v1/
-"""
-VECTOR Framework API endpoints.
-"""
+"""VECTOR Framework API endpoints."""
 
-from flask import request, jsonify
+from flask import jsonify, request
+
 from api.v1 import api_v1
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-from utilities.vector_framework import VECTORFramework, DeltaFactor
-from utilities.cot_logging import ChainOfThoughtLogger, LogLevel
 from loggers.system_logger import SystemLogger
+from utilities.cot_logging import ChainOfThoughtLogger, LogLevel
+from utilities.vector_framework import DeltaFactor, VECTORFramework
 
-logger = SystemLogger()
+_logger = SystemLogger()
 vector_framework = VECTORFramework()
 
 
@@ -20,7 +15,7 @@ vector_framework = VECTORFramework()
 def add_delta_factor():
     """
     Add a delta factor.
-    
+
     Request body:
     {
         "name": "energy",
@@ -30,18 +25,15 @@ def add_delta_factor():
     }
     """
     cot = ChainOfThoughtLogger()
-    step_id = cot.start_step(
-        action="API_ADD_DELTA_FACTOR",
-        level=LogLevel.INFO
-    )
-    
+    step_id = cot.start_step(action="API_ADD_DELTA_FACTOR", level=LogLevel.INFO)
+
     try:
         data = request.get_json()
-        
+
         if not data or 'name' not in data or 'value' not in data:
             cot.end_step(step_id, output_data={'error': 'name and value required'}, validation_passed=False)
             return jsonify({'success': False, 'error': 'name and value required'}), 400
-        
+
         delta = DeltaFactor(
             name=data['name'],
             value=data['value'],
@@ -49,16 +41,15 @@ def add_delta_factor():
             confidence=data.get('confidence', 1.0),
             metadata=data.get('metadata', {})
         )
-        
+
         vector_framework.add_delta_factor(delta)
-        
         cot.end_step(step_id, output_data={'delta_name': data['name']}, validation_passed=True)
-        
+
         return jsonify({'success': True, 'delta': {'name': delta.name, 'value': delta.value}}), 200
-    
+
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
-        logger.log(f"Error in add_delta_factor endpoint: {str(e)}", level="ERROR")
+        _logger.log(f"Error in add_delta_factor endpoint: {str(e)}", level="ERROR")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -66,30 +57,27 @@ def add_delta_factor():
 def throttle_variance():
     """Throttle variance if needed."""
     cot = ChainOfThoughtLogger()
-    step_id = cot.start_step(
-        action="API_THROTTLE_VARIANCE",
-        level=LogLevel.INFO
-    )
-    
+    step_id = cot.start_step(action="API_THROTTLE_VARIANCE", level=LogLevel.INFO)
+
     try:
         throttled = vector_framework.throttle_variance()
         v_obs = vector_framework.compute_observed_variance()
-        
+
         cot.end_step(
             step_id,
             output_data={'throttled': len(throttled) > 0, 'v_obs': v_obs},
             validation_passed=True
         )
-        
+
         return jsonify({
             'throttled': throttled,
             'observed_variance': v_obs,
             'max_variance': vector_framework.v_max
         }), 200
-    
+
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
-        logger.log(f"Error in throttle_variance endpoint: {str(e)}", level="ERROR")
+        _logger.log(f"Error in throttle_variance endpoint: {str(e)}", level="ERROR")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -97,7 +85,7 @@ def throttle_variance():
 def bayesian_update():
     """
     Perform Bayesian parameter update.
-    
+
     Request body:
     {
         "parameter_name": "energy",
@@ -106,31 +94,28 @@ def bayesian_update():
     }
     """
     cot = ChainOfThoughtLogger()
-    step_id = cot.start_step(
-        action="API_BAYESIAN_UPDATE",
-        level=LogLevel.INFO
-    )
-    
+    step_id = cot.start_step(action="API_BAYESIAN_UPDATE", level=LogLevel.INFO)
+
     try:
         data = request.get_json()
-        
+
         if not data or 'parameter_name' not in data:
             cot.end_step(step_id, output_data={'error': 'parameter_name required'}, validation_passed=False)
             return jsonify({'success': False, 'error': 'parameter_name required'}), 400
-        
+
         vector_framework.update_delta_with_bayesian(
             data['parameter_name'],
             data.get('new_data_value', 0.0),
             data.get('new_data_variance', 0.1)
         )
-        
+
         cot.end_step(step_id, output_data={'parameter_name': data['parameter_name']}, validation_passed=True)
-        
+
         return jsonify({'success': True}), 200
-    
+
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
-        logger.log(f"Error in bayesian_update endpoint: {str(e)}", level="ERROR")
+        _logger.log(f"Error in bayesian_update endpoint: {str(e)}", level="ERROR")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -138,7 +123,7 @@ def bayesian_update():
 def overlay_validation():
     """
     Perform overlay validation.
-    
+
     Request body:
     {
         "simple_output": {...},
@@ -147,39 +132,36 @@ def overlay_validation():
     }
     """
     cot = ChainOfThoughtLogger()
-    step_id = cot.start_step(
-        action="API_OVERLAY_VALIDATION",
-        level=LogLevel.INFO
-    )
-    
+    step_id = cot.start_step(action="API_OVERLAY_VALIDATION", level=LogLevel.INFO)
+
     try:
         data = request.get_json()
-        
+
         if not data or 'simple_output' not in data or 'complex_output' not in data:
             cot.end_step(step_id, output_data={'error': 'simple_output and complex_output required'}, validation_passed=False)
             return jsonify({'success': False, 'error': 'simple_output and complex_output required'}), 400
-        
+
         is_valid, deviation = vector_framework.overlay_validation(
             data['simple_output'],
             data['complex_output'],
             data.get('epsilon_limit', 0.1)
         )
-        
+
         cot.end_step(
             step_id,
             output_data={'is_valid': is_valid, 'deviation': deviation},
             validation_passed=is_valid
         )
-        
+
         return jsonify({
             'is_valid': is_valid,
             'deviation': deviation,
             'epsilon_limit': data.get('epsilon_limit', 0.1)
         }), 200
-    
+
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
-        logger.log(f"Error in overlay_validation endpoint: {str(e)}", level="ERROR")
+        _logger.log(f"Error in overlay_validation endpoint: {str(e)}", level="ERROR")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
@@ -187,20 +169,15 @@ def overlay_validation():
 def vector_statistics():
     """Get VECTOR framework statistics."""
     cot = ChainOfThoughtLogger()
-    step_id = cot.start_step(
-        action="API_VECTOR_STATISTICS",
-        level=LogLevel.INFO
-    )
-    
+    step_id = cot.start_step(action="API_VECTOR_STATISTICS", level=LogLevel.INFO)
+
     try:
         stats = vector_framework.get_statistics()
-        
         cot.end_step(step_id, output_data={'statistics': stats}, validation_passed=True)
-        
+
         return jsonify(stats), 200
-    
+
     except Exception as e:
         cot.end_step(step_id, output_data={'error': str(e)}, validation_passed=False)
-        logger.log(f"Error in vector_statistics endpoint: {str(e)}", level="ERROR")
+        _logger.log(f"Error in vector_statistics endpoint: {str(e)}", level="ERROR")
         return jsonify({'success': False, 'error': str(e)}), 500
-

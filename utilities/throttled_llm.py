@@ -20,24 +20,52 @@ from typing import Any, Dict, List, Optional
 
 from openai import OpenAI
 
+# ---------------------------------------------------------------------------
+# Environment variable keys & defaults
+# ---------------------------------------------------------------------------
+_ENV_BASE_URL = "LM_STUDIO_URL"
+_ENV_MODEL = "LM_STUDIO_MODEL"
+_ENV_MAX_CONCURRENT = "LM_STUDIO_MAX_CONCURRENT"
+_ENV_MIN_DELAY = "LM_STUDIO_MIN_DELAY"
+_ENV_MAX_TOKENS = "LM_STUDIO_MAX_TOKENS"
+
+_DEFAULT_BASE_URL = "http://127.0.0.1:8080"
+_DEFAULT_MODEL = "DeepSeek-R1-Distill-Qwen-14B"
+_DEFAULT_MAX_CONCURRENT = 1
+_DEFAULT_MIN_DELAY = 0.5
+_DEFAULT_MAX_TOKENS = 512
+
 
 class ThrottledLLMClient:
     """OpenAI-style client wrapper with simple throttling."""
 
     def __init__(
         self,
-        base_url: str = None,
+        base_url: Optional[str] = None,
         api_key: str = "not-needed",
-        model: str = None,
-        max_concurrent: int = None,
-        min_delay: float = None,
-        default_max_tokens: int = None,
+        model: Optional[str] = None,
+        max_concurrent: Optional[int] = None,
+        min_delay: Optional[float] = None,
+        default_max_tokens: Optional[int] = None,
     ) -> None:
-        base_url = base_url or os.getenv("LM_STUDIO_URL", "http://127.0.0.1:8080") + "/v1"
-        model = model or os.getenv("LM_STUDIO_MODEL", "DeepSeek-R1-Distill-Qwen-14B")
-        max_concurrent = max_concurrent if max_concurrent is not None else int(os.getenv("LM_STUDIO_MAX_CONCURRENT", "1"))
-        min_delay = min_delay if min_delay is not None else float(os.getenv("LM_STUDIO_MIN_DELAY", "0.5"))
-        default_max_tokens = default_max_tokens if default_max_tokens is not None else int(os.getenv("LM_STUDIO_MAX_TOKENS", "512"))
+        base_url = (base_url or os.getenv(_ENV_BASE_URL, _DEFAULT_BASE_URL)) + "/v1"
+        model = model or os.getenv(_ENV_MODEL, _DEFAULT_MODEL)
+        max_concurrent = (
+            max_concurrent
+            if max_concurrent is not None
+            else int(os.getenv(_ENV_MAX_CONCURRENT, str(_DEFAULT_MAX_CONCURRENT)))
+        )
+        min_delay = (
+            min_delay
+            if min_delay is not None
+            else float(os.getenv(_ENV_MIN_DELAY, str(_DEFAULT_MIN_DELAY)))
+        )
+        default_max_tokens = (
+            default_max_tokens
+            if default_max_tokens is not None
+            else int(os.getenv(_ENV_MAX_TOKENS, str(_DEFAULT_MAX_TOKENS)))
+        )
+
         self.client = OpenAI(base_url=base_url, api_key=api_key)
         self.model = model
         self._sem = threading.Semaphore(max_concurrent)
@@ -47,6 +75,7 @@ class ThrottledLLMClient:
         self.default_max_tokens = default_max_tokens
 
     def _respect_rate_limits(self) -> None:
+        """Sleep if needed to enforce minimum delay between requests."""
         with self._lock:
             now = time.monotonic()
             elapsed = now - self._last_start
@@ -60,7 +89,16 @@ class ThrottledLLMClient:
         max_tokens: Optional[int] = None,
         temperature: float = 0.6,
     ) -> str:
-        """Send a chat completion request with throttling."""
+        """Send a chat completion request with throttling.
+
+        Args:
+            messages: Chat message list.
+            max_tokens: Max tokens for the response.
+            temperature: Sampling temperature.
+
+        Returns:
+            The assistant's response text.
+        """
         max_tokens = max_tokens or self.default_max_tokens
 
         with self._sem:
@@ -72,4 +110,3 @@ class ThrottledLLMClient:
                 temperature=temperature,
             )
         return completion.choices[0].message.content
-

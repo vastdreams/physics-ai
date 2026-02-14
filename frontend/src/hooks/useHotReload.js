@@ -8,7 +8,9 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+
 import { io } from 'socket.io-client';
+
 import { API_BASE } from '../config';
 
 /**
@@ -181,7 +183,9 @@ export function useHotReload() {
 }
 
 /**
- * Hook for auto-refreshing data when relevant modules reload
+ * Hook for auto-refreshing data when relevant modules reload.
+ * @param {string[]} modules - Module prefixes to watch
+ * @param {Function} onRefresh - Callback invoked when a matching module reloads
  */
 export function useAutoRefresh(modules, onRefresh) {
   useEffect(() => {

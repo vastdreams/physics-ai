@@ -9,80 +9,62 @@ WHY: Inspired by OpenClaw's ClawHub skill registry, this provides a modular
 REFERENCE: https://github.com/openclaw/clawhub (MIT License)
 
 FLOW:
-┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
-│ Register    │────>│ Discover     │────>│ Execute         │
-│ Skills      │     │ & Compose    │     │ Physics Tasks   │
-└─────────────┘     └──────────────┘     └─────────────────┘
+    Register Skills -> Discover & Compose -> Execute Physics Tasks
 
 DEPENDENCIES:
 - dataclasses: Skill definitions
 - typing: Type hints for composability
 """
 
+from .physics_skills import (
+    cosmological_distance,
+    diffraction_pattern,
+    lindblad_evolution,
+    maxwell_solver,
+    optical_system_psf,
+    orbital_mechanics,
+    quantum_time_evolution,
+    solve_lagrangian,
+    solve_schrodinger,
+    stellar_evolution,
+    thermodynamic_process,
+)
 from .skill_registry import (
     Skill,
     SkillMetadata,
     SkillRegistry,
-    skill,
     get_registry,
+    skill,
 )
-
-from .physics_skills import (
-    # Quantum mechanics skills
-    solve_schrodinger,
-    quantum_time_evolution,
-    lindblad_evolution,
-    
-    # Classical mechanics skills
-    solve_lagrangian,
-    orbital_mechanics,
-    
-    # Electromagnetism skills
-    maxwell_solver,
-    
-    # Thermodynamics skills
-    thermodynamic_process,
-    
-    # Astrophysics skills
-    cosmological_distance,
-    stellar_evolution,
-    
-    # Optics skills
-    diffraction_pattern,
-    optical_system_psf,
-)
-
 from .workflows import (
-    Workflow,
-    WorkflowStep,
-    WorkflowEngine,
     ApprovalGate,
+    Workflow,
+    WorkflowEngine,
+    WorkflowStep,
 )
 
 __all__ = [
     # Core
-    'Skill',
-    'SkillMetadata',
-    'SkillRegistry',
-    'skill',
-    'get_registry',
-    
+    "Skill",
+    "SkillMetadata",
+    "SkillRegistry",
+    "skill",
+    "get_registry",
     # Physics skills
-    'solve_schrodinger',
-    'quantum_time_evolution',
-    'lindblad_evolution',
-    'solve_lagrangian',
-    'orbital_mechanics',
-    'maxwell_solver',
-    'thermodynamic_process',
-    'cosmological_distance',
-    'stellar_evolution',
-    'diffraction_pattern',
-    'optical_system_psf',
-    
+    "solve_schrodinger",
+    "quantum_time_evolution",
+    "lindblad_evolution",
+    "solve_lagrangian",
+    "orbital_mechanics",
+    "maxwell_solver",
+    "thermodynamic_process",
+    "cosmological_distance",
+    "stellar_evolution",
+    "diffraction_pattern",
+    "optical_system_psf",
     # Workflows
-    'Workflow',
-    'WorkflowStep',
-    'WorkflowEngine',
-    'ApprovalGate',
+    "Workflow",
+    "WorkflowStep",
+    "WorkflowEngine",
+    "ApprovalGate",
 ]

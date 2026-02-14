@@ -10,12 +10,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/* globals injected by vite.config.js */
+/* Globals injected by vite.config.js */
 const CURRENT_BUILD = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : null;
 
 /** How often to poll (ms).  Default: 60 s in production, never in dev. */
 const POLL_INTERVAL = import.meta.env.PROD ? 60_000 : 0;
 
+/**
+ * Poll /version.json to detect new builds and expose an update banner.
+ * @returns {{ updateAvailable: boolean, latestVersion: string|null, reload: Function, dismiss: Function }}
+ */
 export default function useAutoUpdate() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [latestVersion, setLatestVersion] = useState(null);

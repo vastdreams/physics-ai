@@ -12,8 +12,10 @@
  */
 
 import { useCallback } from 'react';
-import PhysicsCanvas from './PhysicsCanvas';
+
 import Matter from 'matter-js';
+
+import PhysicsCanvas from './PhysicsCanvas';
 
 const { Constraint, Composite, Bodies } = Matter;
 

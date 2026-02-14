@@ -12,22 +12,39 @@ from __future__ import annotations
 import hashlib
 import os
 import tempfile
-from typing import Dict, Any
+from typing import Any, Dict
 
 import arxiv
 
-from substrate.graph.formula import Formula, FormulaStatus, FormulaLayer
-from substrate.graph.formula_graph import FormulaGraph
-from ai.equational.research_ingestion import ResearchIngestion
 from ai.equational.equation_extractor import EquationExtractor
+from ai.equational.research_ingestion import ResearchIngestion
+from substrate.graph.formula import Formula, FormulaLayer, FormulaStatus
+from substrate.graph.formula_graph import FormulaGraph
 from substrate.main import PhysicsAI, PhysicsAIConfig
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+_HASH_PREFIX_LEN = 16
+_DEFAULT_QUERY = "physics"
+_DEFAULT_MAX_RESULTS = 3
 
 
 def _hash_id(text: str) -> str:
-    return hashlib.sha256(text.encode()).hexdigest()[:16]
+    """Generate a short SHA-256 hash ID from *text*."""
+    return hashlib.sha256(text.encode()).hexdigest()[:_HASH_PREFIX_LEN]
 
 
-def equation_to_formula(eq, paper_meta: Dict[str, Any]) -> Formula:
+def equation_to_formula(eq: Any, paper_meta: Dict[str, Any]) -> Formula:
+    """Convert an extracted equation to a Formula object.
+
+    Args:
+        eq: Extracted equation object with ``.equation`` and ``.domain`` attrs.
+        paper_meta: Paper metadata dictionary.
+
+    Returns:
+        A ``Formula`` instance.
+    """
     eq_text = eq.equation.strip()
     fid = _hash_id(eq_text)
     return Formula(
@@ -46,9 +63,19 @@ def equation_to_formula(eq, paper_meta: Dict[str, Any]) -> Formula:
 
 def ingest_arxiv_papers(
     ai: PhysicsAI,
-    query: str = "physics",
-    max_results: int = 3,
-) -> Dict[str, Any]:
+    query: str = _DEFAULT_QUERY,
+    max_results: int = _DEFAULT_MAX_RESULTS,
+) -> Dict[str, int]:
+    """Ingest papers from arXiv into the formula graph.
+
+    Args:
+        ai: Running ``PhysicsAI`` instance.
+        query: arXiv search query.
+        max_results: Maximum number of papers to fetch.
+
+    Returns:
+        Dict with keys ``equations_seen`` and ``formulas_added``.
+    """
     graph: FormulaGraph = ai.graph
     ingestion = ResearchIngestion()
     extractor = EquationExtractor()
@@ -88,25 +115,22 @@ def ingest_arxiv_papers(
                 if graph.add_formula(formula, overwrite=False):
                     added += 1
 
-    # Trigger evolution to integrate new knowledge
     ai.force_evolution_cycle()
 
     return {"equations_seen": seen, "formulas_added": added}
 
 
 if __name__ == "__main__":
-    # Minimal CLI usage
-    query = os.getenv("ARXIV_QUERY", "physics")
-    max_results = int(os.getenv("ARXIV_MAX_RESULTS", "3"))
+    _query = os.getenv("ARXIV_QUERY", _DEFAULT_QUERY)
+    _max = int(os.getenv("ARXIV_MAX_RESULTS", str(_DEFAULT_MAX_RESULTS)))
 
     config = PhysicsAIConfig(
         llm_backend_type=os.getenv("LLM_BACKEND", "throttled_openai"),
         llm_server_url=os.getenv("LM_STUDIO_URL", "http://127.0.0.1:8080"),
         llm_model_name=os.getenv("LM_STUDIO_MODEL", "lmstudio-deepseek"),
     )
-    ai = PhysicsAI(config)
-    ai.start()
-    stats = ingest_arxiv_papers(ai, query=query, max_results=max_results)
-    print(f"[arxiv ingestion] {stats}")
-    ai.stop()
-
+    _ai = PhysicsAI(config)
+    _ai.start()
+    _stats = ingest_arxiv_papers(_ai, query=_query, max_results=_max)
+    print(f"[arxiv ingestion] {_stats}")
+    _ai.stop()

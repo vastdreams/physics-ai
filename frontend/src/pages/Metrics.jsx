@@ -4,6 +4,8 @@
  */
 
 import { useState, useEffect } from 'react';
+
+import { clsx } from 'clsx';
 import {
   Activity,
   Cpu,
@@ -11,13 +13,23 @@ import {
   TrendingUp,
   TrendingDown,
   Database,
-  Zap,
-  BarChart3,
-  AlertCircle
+  AlertCircle,
 } from 'lucide-react';
-import { clsx } from 'clsx';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import {
+  LineChart, Line, AreaChart, Area,
+  XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, BarChart, Bar,
+} from 'recharts';
+
 import { API_BASE } from '../config';
+
+/** Shared Recharts tooltip styling used across all chart components. */
+const TOOLTIP_STYLE = {
+  backgroundColor: '#ffffff',
+  border: '1px solid #e5e5e5',
+  borderRadius: '8px',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+};
 
 // Generate mock data (fallback)
 const generateTimeData = () => {
@@ -37,6 +49,15 @@ const generateComponentData = () => [
   { name: 'API', cpu: 34, memory: 41 },
 ];
 
+/**
+ * @param {Object} props
+ * @param {string} props.title - Metric label
+ * @param {string|number} props.value - Metric value
+ * @param {string} [props.change] - Change description
+ * @param {import('lucide-react').LucideIcon} props.icon - Icon component
+ * @param {'up'|'down'} [props.trend] - Trend direction
+ * @param {string} [props.unit] - Value suffix (e.g. "ms", "%")
+ */
 function MetricCard({ title, value, change, icon: Icon, trend, unit = '' }) {
   return (
     <div className="card">
@@ -64,6 +85,7 @@ function MetricCard({ title, value, change, icon: Icon, trend, unit = '' }) {
   );
 }
 
+/** System metrics dashboard — charts and stats for performance monitoring. */
 export default function Metrics() {
   const [timeData, setTimeData] = useState(generateTimeData);
   const [componentData, setComponentData] = useState(generateComponentData);
@@ -176,14 +198,7 @@ export default function Metrics() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
                 <XAxis dataKey="time" stroke="#737373" fontSize={12} />
                 <YAxis stroke="#737373" fontSize={12} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#ffffff', 
-                    border: '1px solid #e5e5e5',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }}
-                />
+                <Tooltip contentStyle={TOOLTIP_STYLE} />
                 <Area 
                   type="monotone" 
                   dataKey="requests" 
@@ -205,14 +220,7 @@ export default function Metrics() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
                 <XAxis dataKey="time" stroke="#737373" fontSize={12} />
                 <YAxis stroke="#737373" fontSize={12} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#ffffff', 
-                    border: '1px solid #e5e5e5',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                  }}
-                />
+                <Tooltip contentStyle={TOOLTIP_STYLE} />
                 <Line 
                   type="monotone" 
                   dataKey="latency" 

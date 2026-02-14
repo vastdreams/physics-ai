@@ -1,7 +1,11 @@
+import { resolve } from 'path';
+import { writeFileSync } from 'fs';
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { writeFileSync } from 'fs';
-import { resolve } from 'path';
+
+const DEFAULT_PORT = 3000;
+const DEFAULT_BACKEND_URL = 'http://localhost:5002';
 
 /**
  * Vite plugin that writes a version.json manifest into the build output.
@@ -42,15 +46,15 @@ export default defineConfig({
     __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
   server: {
-    port: parseInt(process.env.VITE_PORT || '3000', 10),
+    port: parseInt(process.env.VITE_PORT || String(DEFAULT_PORT), 10),
     open: true,
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:5002',
+        target: process.env.VITE_API_URL || DEFAULT_BACKEND_URL,
         changeOrigin: true,
       },
       '/socket.io': {
-        target: process.env.VITE_API_URL || 'http://localhost:5002',
+        target: process.env.VITE_API_URL || DEFAULT_BACKEND_URL,
         changeOrigin: true,
         ws: true,
       },

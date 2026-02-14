@@ -10,13 +10,15 @@
  */
 
 import { useState, useEffect } from 'react';
+
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  MessageSquare, 
-  Atom, 
-  BookOpen, 
-  GitBranch, 
+import { clsx } from 'clsx';
+import {
+  Home,
+  MessageSquare,
+  Atom,
+  BookOpen,
+  GitBranch,
   Settings,
   ChevronDown,
   ChevronRight,
@@ -27,12 +29,10 @@ import {
   Workflow,
   Database,
   LineChart,
-  History,
   Terminal,
-  Zap,
-  Info
+  Info,
 } from 'lucide-react';
-import { clsx } from 'clsx';
+
 import { API_BASE } from '../../config';
 
 const buildNavigationSections = (knowledgeCount) => [
@@ -71,6 +71,7 @@ const buildNavigationSections = (knowledgeCount) => [
   }
 ];
 
+/** @param {{ item: Object, collapsed: boolean }} props — single navigation link. */
 function NavItem({ item, collapsed }) {
   const location = useLocation();
   const isActive = location.pathname === item.path;
@@ -99,6 +100,7 @@ function NavItem({ item, collapsed }) {
   );
 }
 
+/** @param {{ section: Object, collapsed: boolean, defaultOpen?: boolean }} props */
 function NavSection({ section, collapsed, defaultOpen = true }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -126,6 +128,12 @@ function NavSection({ section, collapsed, defaultOpen = true }) {
   );
 }
 
+/**
+ * Notion-style sidebar navigation with collapsible sections and search.
+ * @param {Object} props
+ * @param {boolean} props.collapsed - Whether the sidebar is collapsed to icon-only
+ * @param {Function} props.onToggle - Toggle collapse callback
+ */
 export default function Sidebar({ collapsed, onToggle }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [knowledgeCount, setKnowledgeCount] = useState(null);

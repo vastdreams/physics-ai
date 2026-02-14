@@ -1,131 +1,125 @@
-# physics/solvers/
 """
-Symbolic solver module.
+PATH: physics/solvers/symbolic_solver.py
+PURPOSE: Symbolic manipulation of physics equations via SymPy
 
-First Principle Analysis:
-- Symbolic manipulation of physics equations
-- Can solve equations exactly when possible
-- Mathematical foundation: Computer algebra, SymPy
-- Architecture: Wrapper around symbolic math libraries
+Provides exact equation solving, symbolic differentiation, and
+symbolic integration when SymPy is available.
 
-Planning:
-1. Implement symbolic equation solving
-2. Add symbolic differentiation and integration
-3. Implement equation simplification
-4. Add LaTeX output for equations
+DEPENDENCIES:
+- sympy (optional): Computer algebra system
+- validators.data_validator: Input validation
+- loggers.system_logger: Structured logging
 """
 
-from typing import Any, Dict, List, Optional
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from validators.data_validator import DataValidator
+from typing import Any, List
+
 from loggers.system_logger import SystemLogger
+from validators.data_validator import DataValidator
 
 try:
     import sympy as sp
     SYMPY_AVAILABLE = True
 except ImportError:
     SYMPY_AVAILABLE = False
-    sp = None
+    sp = None  # type: ignore[assignment]
 
 
 class SymbolicSolver:
     """
-    Symbolic equation solver implementation.
-    
-    Uses SymPy for symbolic manipulation of physics equations.
+    Symbolic equation solver using SymPy.
+
+    Solves equations exactly, computes symbolic derivatives and integrals.
+    Gracefully degrades when SymPy is not installed.
     """
-    
-    def __init__(self):
+
+    def __init__(self) -> None:
         """Initialize symbolic solver."""
         self.validator = DataValidator()
-        self.logger = SystemLogger()
-        
+        self._logger = SystemLogger()
+
         if not SYMPY_AVAILABLE:
-            self.logger.log("SymPy not available, symbolic solving disabled", level="WARNING")
-        
-        self.logger.log("SymbolicSolver initialized", level="INFO")
-    
+            self._logger.log("SymPy not available, symbolic solving disabled", level="WARNING")
+
+        self._logger.log("SymbolicSolver initialized", level="INFO")
+
     def solve_equation(self,
                        equation: str,
                        variable: str) -> List[Any]:
         """
-        Solve symbolic equation.
-        
+        Solve a symbolic equation for the given variable.
+
         Args:
-            equation: Equation string (e.g., "x**2 - 4 = 0")
+            equation: Equation string (e.g., "x**2 - 4")
             variable: Variable to solve for
-            
+
         Returns:
-            List of solutions
+            List of solutions (empty if SymPy unavailable)
         """
         if not SYMPY_AVAILABLE:
-            self.logger.log("SymPy required for symbolic solving", level="ERROR")
+            self._logger.log("SymPy required for symbolic solving", level="ERROR")
             return []
-        
+
         try:
             x = sp.Symbol(variable)
             eq = sp.sympify(equation)
             solutions = sp.solve(eq, x)
-            
-            self.logger.log(f"Equation solved: {len(solutions)} solutions", level="INFO")
+
+            self._logger.log(f"Equation solved: {len(solutions)} solutions", level="INFO")
             return solutions
         except Exception as e:
-            self.logger.log(f"Symbolic solving failed: {e}", level="ERROR")
+            self._logger.log(f"Symbolic solving failed: {e}", level="ERROR")
             return []
-    
+
     def differentiate(self,
                       expression: str,
                       variable: str,
                       order: int = 1) -> str:
         """
-        Compute symbolic derivative.
-        
+        Compute symbolic derivative d^n/dx^n of an expression.
+
         Args:
             expression: Expression string
             variable: Variable to differentiate with respect to
             order: Derivative order
-            
+
         Returns:
-            Derivative expression string
+            Derivative expression string (empty if SymPy unavailable)
         """
         if not SYMPY_AVAILABLE:
             return ""
-        
+
         try:
             x = sp.Symbol(variable)
             expr = sp.sympify(expression)
             derivative = sp.diff(expr, x, order)
-            
+
             return str(derivative)
         except Exception as e:
-            self.logger.log(f"Differentiation failed: {e}", level="ERROR")
+            self._logger.log(f"Differentiation failed: {e}", level="ERROR")
             return ""
-    
+
     def integrate(self,
                    expression: str,
                    variable: str) -> str:
         """
-        Compute symbolic integral.
-        
+        Compute symbolic indefinite integral ∫ expr dx.
+
         Args:
             expression: Expression string
             variable: Variable to integrate with respect to
-            
+
         Returns:
-            Integral expression string
+            Integral expression string (empty if SymPy unavailable)
         """
         if not SYMPY_AVAILABLE:
             return ""
-        
+
         try:
             x = sp.Symbol(variable)
             expr = sp.sympify(expression)
             integral = sp.integrate(expr, x)
-            
+
             return str(integral)
         except Exception as e:
-            self.logger.log(f"Integration failed: {e}", level="ERROR")
+            self._logger.log(f"Integration failed: {e}", level="ERROR")
             return ""
-

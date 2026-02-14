@@ -26,17 +26,17 @@
 #   - Evolution happens at this layer, not above it
 #   - No safety gating - only technical validators
 
-from substrate.graph.formula import Formula, FormulaStatus, FormulaLayer
-from substrate.graph.formula_graph import FormulaGraph, EdgeType
-from substrate.planner.formula_planner import FormulaPlanner, DerivationPlan
-from substrate.memory.reasoning_trace import ReasoningTrace, TraceStep
-from substrate.critics.local_llm import LocalLLMBackend
-from substrate.execution.executor import FormulaExecutor
-from substrate.critics.logic_critic import LogicCritic
 from substrate.critics.code_critic import CodeCritic
+from substrate.critics.local_llm import LocalLLMBackend
+from substrate.critics.logic_critic import LogicCritic
 from substrate.critics.meta_critic import MetaCritic
 from substrate.evolution.evolution_loop import EvolutionLoop
+from substrate.execution.executor import FormulaExecutor
+from substrate.graph.formula import Formula, FormulaLayer, FormulaStatus
+from substrate.graph.formula_graph import EdgeType, FormulaGraph
 from substrate.interface.chatbot import ChatbotInterface
+from substrate.memory.reasoning_trace import ReasoningTrace, TraceStep
+from substrate.planner.formula_planner import DerivationPlan, FormulaPlanner
 
 __all__ = [
     "Formula",
@@ -56,4 +56,3 @@ __all__ = [
     "EvolutionLoop",
     "ChatbotInterface",
 ]
-

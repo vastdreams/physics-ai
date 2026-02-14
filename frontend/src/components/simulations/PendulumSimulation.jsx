@@ -12,8 +12,10 @@
  */
 
 import { useCallback } from 'react';
-import PhysicsCanvas, { createBodies } from './PhysicsCanvas';
+
 import Matter from 'matter-js';
+
+import PhysicsCanvas from './PhysicsCanvas';
 
 const { Constraint, Composite, Body } = Matter;
 
@@ -83,12 +85,6 @@ export default function PendulumSimulation({
     
     // Add to world
     Composite.add(engine.world, [anchor, bob, rope]);
-    
-    // Add trace effect (optional - show path)
-    const tracePoints = [];
-    Matter.Events.on(engine, 'afterUpdate', () => {
-      // Could add path tracing here
-    });
     
   }, [length, bobRadius, initialAngle, damping]);
   

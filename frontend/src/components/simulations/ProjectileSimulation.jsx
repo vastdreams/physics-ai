@@ -13,10 +13,11 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import PhysicsCanvas, { createBodies } from './PhysicsCanvas';
+
 import Matter from 'matter-js';
-import { Target, Crosshair } from 'lucide-react';
-import { clsx } from 'clsx';
+import { Target } from 'lucide-react';
+
+import PhysicsCanvas from './PhysicsCanvas';
 
 const { Composite, Body, Events } = Matter;
 
@@ -36,7 +37,6 @@ export default function ProjectileSimulation({
 }) {
   const [velocity, setVelocity] = useState(initialVelocity);
   const [angle, setAngle] = useState(initialAngle);
-  const [trajectory, setTrajectory] = useState([]);
   const projectileRef = useRef(null);
   const engineRef = useRef(null);
   
