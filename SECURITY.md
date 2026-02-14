@@ -16,7 +16,7 @@ We take the security of Beyond Frontier seriously. If you believe you have found
 ### Please do the following:
 
 1. **Do not** open a public GitHub issue
-2. Email the security team at: **security@beyondfrontier.ai**
+2. Email the maintainer at: **vastdreams@users.noreply.github.com** (or use [GitHub Security Advisories](https://github.com/vastdreams/physics-ai/security/advisories/new))
    - Include a detailed description of the vulnerability
    - Include steps to reproduce the issue
    - Include potential impact assessment

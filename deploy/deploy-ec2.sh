@@ -88,8 +88,8 @@ apt-get install -y nodejs
 
 # Clone repository
 cd /opt
-git clone https://github.com/beyondfrontier/beyondfrontier.git
-cd beyondfrontier
+git clone https://github.com/vastdreams/physics-ai.git
+cd physics-ai
 
 # Setup Python backend
 python3 -m venv venv

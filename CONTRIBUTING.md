@@ -16,8 +16,8 @@ Thank you for your interest in contributing to Beyond Frontier. This document pr
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/<your-username>/beyondfrontier.git
-   cd beyondfrontier
+   git clone https://github.com/<your-username>/physics-ai.git
+   cd physics-ai
    ```
 3. Set up the development environment:
    ```bash
@@ -79,6 +79,6 @@ Examples:
 
 ## Need Help?
 
-- Open a [Discussion](https://github.com/beyondfrontier/beyondfrontier/discussions) for questions
-- Check existing [Issues](https://github.com/beyondfrontier/beyondfrontier/issues) before filing new ones
+- Open a [Discussion](https://github.com/vastdreams/physics-ai/discussions) for questions
+- Check existing [Issues](https://github.com/vastdreams/physics-ai/issues) before filing new ones
 - Read the [docs/](docs/) directory for architecture and implementation details

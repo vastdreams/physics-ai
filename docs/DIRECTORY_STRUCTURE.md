@@ -8,7 +8,7 @@ This document maintains the current directory structure of the Beyond Frontier p
 
 ```
 Beyond Frontier/
-├── core/                    # Core neurosymbotic engine
+├── core/                    # Core neurosymbolic engine
 │   ├── __init__.py
 │   ├── engine.py           # Main engine
 │   ├── reasoning.py        # Reasoning algorithms
@@ -59,7 +59,7 @@ Beyond Frontier/
 ## Module Descriptions
 
 ### core/
-Core neurosymbotic reasoning engine that integrates neural and symbolic approaches.
+Core neurosymbolic reasoning engine that integrates neural and symbolic approaches.
 
 ### rules/
 Rule-based knowledge representation and execution system.

@@ -299,6 +299,6 @@ Follow the PR template in `.github/pull_request_template.md`.
 
 ## Contact
 
-For questions about contributing, open a [GitHub Discussion](https://github.com/beyondfrontier/beyondfrontier/discussions) or [Issue](https://github.com/beyondfrontier/beyondfrontier/issues).
+For questions about contributing, open a [GitHub Discussion](https://github.com/vastdreams/physics-ai/discussions) or [Issue](https://github.com/vastdreams/physics-ai/issues).
 
 **Maintainer**: Abhishek Sehgal

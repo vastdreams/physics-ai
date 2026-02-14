@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial project structure
-- Core neurosymbotic engine (placeholder)
+- Core neurosymbolic engine (placeholder)
 - Rule-based system framework
 - Self-evolution module structure
 - Physics integration module

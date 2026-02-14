@@ -260,7 +260,7 @@ value, uncertainty = imputation.impute_missing(
 
 ## Future Enhancements
 
-1. **Neural Component Integration**: Complete neurosymbotic engine
+1. **Neural Component Integration**: Complete neurosymbolic engine
 2. **Advanced Code Generation**: LLM-based code synthesis
 3. **Distributed Execution**: Parallel rule execution
 4. **Real-time Dashboard**: Web interface for monitoring

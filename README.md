@@ -125,8 +125,8 @@ Full API for integration:
 
 ```bash
 # Clone the repository
-git clone https://github.com/beyondfrontier/beyondfrontier.git
-cd beyondfrontier
+git clone https://github.com/vastdreams/physics-ai.git
+cd physics-ai
 
 # Create virtual environment
 python -m venv venv
@@ -317,7 +317,7 @@ Full API documentation: [docs/API_REFERENCE.md](docs/API_REFERENCE.md)
 ## Project Structure
 
 ```
-beyondfrontier/
+physics-ai/
 ├── core/                   # Neurosymbolic engine
 │   ├── engine.py          # Main engine
 │   ├── reasoning.py       # Reasoning types
@@ -443,7 +443,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Author
 
-**Abhishek Sehgal** — [GitHub](https://github.com/beyondfrontier)
+**Abhishek Sehgal** — [GitHub](https://github.com/vastdreams)
 
 ---
 
@@ -457,7 +457,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ---
 
 <p align="center">
-  <a href="https://github.com/beyondfrontier/beyondfrontier/issues">Report Bug</a> &middot;
-  <a href="https://github.com/beyondfrontier/beyondfrontier/issues">Request Feature</a> &middot;
-  <a href="https://github.com/beyondfrontier/beyondfrontier/discussions">Discussions</a>
+  <a href="https://github.com/vastdreams/physics-ai/issues">Report Bug</a> &middot;
+  <a href="https://github.com/vastdreams/physics-ai/issues">Request Feature</a> &middot;
+  <a href="https://github.com/vastdreams/physics-ai/discussions">Discussions</a>
 </p>

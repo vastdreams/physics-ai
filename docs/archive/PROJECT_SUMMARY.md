@@ -2,13 +2,13 @@
 
 ## Project Overview
 
-This project creates a **neurosymbotic rule-based modular AI system** designed to break through the barriers of reality using modern AI architecture. The system can self-code and evolve, integrating physics knowledge to solve the hardest problems.
+This project creates a **neurosymbolic rule-based modular AI system** designed to break through the barriers of reality using modern AI architecture. The system can self-code and evolve, integrating physics knowledge to solve the hardest problems.
 
 ## What Has Been Created
 
 ### 1. Core Architecture ✅
 
-- **Core Engine** (`core/`): Central neurosymbotic reasoning engine that integrates neural and symbolic approaches
+- **Core Engine** (`core/`): Central neurosymbolic reasoning engine that integrates neural and symbolic approaches
 - **Rule System** (`rules/`): Dynamic rule-based knowledge representation with storage and evolution
 - **Evolution Module** (`evolution/`): Self-coding and self-improvement capabilities
 - **Physics Integration** (`physics/`): Domain-specific physics knowledge modules
@@ -47,7 +47,7 @@ This project creates a **neurosymbotic rule-based modular AI system** designed t
 
 ```
 Beyond Frontier/
-├── core/                    # Core neurosymbotic engine
+├── core/                    # Core neurosymbolic engine
 │   ├── engine.py           # Main engine
 │   ├── reasoning.py        # Reasoning algorithms
 │   └── knowledge_synthesis.py

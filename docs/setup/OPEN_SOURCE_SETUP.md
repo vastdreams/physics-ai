@@ -71,8 +71,8 @@ Your Beyond Frontier repository has been fully configured for open source collab
 
 2. **Clone Your Fork**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/beyondfrontier.git
-   cd beyondfrontier
+   git clone https://github.com/YOUR_USERNAME/physics-ai.git
+   cd physics-ai
    ```
 
 3. **Create Feature Branch**
@@ -121,7 +121,7 @@ Your Beyond Frontier repository has been fully configured for open source collab
 
 ## Repository Settings Summary
 
-- **URL**: https://github.com/beyondfrontier/beyondfrontier
+- **URL**: https://github.com/vastdreams/physics-ai
 - **Visibility**: Public
 - **License**: MIT
 - **Default Branch**: main
@@ -138,7 +138,7 @@ Your Beyond Frontier repository has been fully configured for open source collab
    - Security vulnerability alerts
 
 2. **Add Repository Topics** (Settings → General → Topics)
-   - `ai`, `machine-learning`, `physics`, `neurosymbotic`, `self-evolving`, `python`
+   - `ai`, `machine-learning`, `physics`, `neurosymbolic`, `self-evolving`, `python`
 
 3. **Set Up GitHub Pages** (if needed)
    - For documentation hosting
@@ -179,5 +179,5 @@ You can now:
 
 ---
 
-**Repository**: https://github.com/beyondfrontier/beyondfrontier
+**Repository**: https://github.com/vastdreams/physics-ai
 

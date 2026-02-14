@@ -49,7 +49,7 @@ This document serves as the master architecture blueprint for the Beyond Frontie
 ### Module Descriptions
 
 #### 1. Core Engine (`core/`)
-- **Purpose**: Central neurosymbotic reasoning engine
+- **Purpose**: Central neurosymbolic reasoning engine
 - **Responsibilities**:
   - Neural-symbolic integration
   - Decision making

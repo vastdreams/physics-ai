@@ -363,9 +363,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
 ## Contact & Community
 
-- **GitHub**: [beyondfrontier/beyondfrontier](https://github.com/beyondfrontier/beyondfrontier)
-- **Issues**: [Report bugs or request features](https://github.com/beyondfrontier/beyondfrontier/issues)
-- **Discussions**: [Join the conversation](https://github.com/beyondfrontier/beyondfrontier/discussions)
+- **GitHub**: [vastdreams/physics-ai](https://github.com/vastdreams/physics-ai)
+- **Issues**: [Report bugs or request features](https://github.com/vastdreams/physics-ai/issues)
+- **Discussions**: [Join the conversation](https://github.com/vastdreams/physics-ai/discussions)
 
 ---
 

@@ -1,7 +1,7 @@
 # core/
 """
 PATH: core/engine.py
-PURPOSE: Central neurosymbotic engine that integrates neural and symbolic reasoning.
+PURPOSE: Central neurosymbolic engine that integrates neural and symbolic reasoning.
 
 FLOW:
 ┌─────────────┐    ┌──────────────┐    ┌─────────────┐    ┌──────────────┐
@@ -472,7 +472,7 @@ class SymbolicComponent:
 
 class NeurosymboticEngine:
     """
-    Central neurosymbotic reasoning engine.
+    Central neurosymbolic reasoning engine.
     
     Integrates neural network learning with symbolic reasoning
     to create a hybrid AI system capable of both pattern recognition
@@ -481,7 +481,7 @@ class NeurosymboticEngine:
     
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """
-        Initialize the neurosymbotic engine.
+        Initialize the neurosymbolic engine.
         
         Args:
             config: Configuration dictionary for engine parameters
@@ -549,7 +549,7 @@ class NeurosymboticEngine:
     
     def process(self, input_data: Any) -> Any:
         """
-        Process input through the neurosymbotic engine.
+        Process input through the neurosymbolic engine.
         
         Mathematical approach:
         - Neural: f_neural(x) -> pattern_representation

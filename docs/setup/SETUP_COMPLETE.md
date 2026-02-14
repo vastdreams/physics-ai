@@ -6,7 +6,7 @@ All optional configurations have been applied!
 
 ### 1. Git Identity Configured
 - **Name**: Abhishek Sehgal
-- **Email**: beyondfrontier@users.noreply.github.com (GitHub noreply email)
+- **Email**: vastdreams@users.noreply.github.com (GitHub noreply email)
 
 This will eliminate the commit warnings you were seeing.
 
@@ -15,17 +15,17 @@ This will eliminate the commit warnings you were seeing.
 - Dependabot will automatically create PRs for security updates
 
 **Note**: You may want to verify this in GitHub UI:
-- Visit: https://github.com/beyondfrontier/beyondfrontier/settings/security_analysis
+- Visit: https://github.com/vastdreams/physics-ai/settings/security_analysis
 - Confirm "Dependabot security updates" is enabled
 
 ### 3. Repository Topics
 Topics have been configured. If they don't appear immediately, you can add them manually:
-- Visit: https://github.com/beyondfrontier/beyondfrontier
+- Visit: https://github.com/vastdreams/physics-ai
 - Click the gear icon (⚙️) next to "About"
 - Add these topics:
   - `ai`
   - `physics`
-  - `neurosymbotic`
+  - `neurosymbolic`
   - `python`
   - `open-source`
   - `machine-learning`
@@ -33,7 +33,7 @@ Topics have been configured. If they don't appear immediately, you can add them 
 
 ## 🎉 Your Repository is Fully Configured!
 
-**Repository**: https://github.com/beyondfrontier/beyondfrontier
+**Repository**: https://github.com/vastdreams/physics-ai
 
 Everything is set up and ready for:
 - ✅ Accepting contributions

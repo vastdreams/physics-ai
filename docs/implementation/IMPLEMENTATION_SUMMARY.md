@@ -142,7 +142,7 @@ python integration/vector_integration_test.py
 1. **Run Integration Tests**: Verify all components work together
 2. **Configure API**: Set up Flask server for API access
 3. **Add Embeddings**: Integrate transformer models for code embeddings
-4. **Neural Components**: Complete neurosymbotic engine implementation
+4. **Neural Components**: Complete neurosymbolic engine implementation
 5. **Dashboard**: Create web interface for monitoring
 
 ## Status: ✅ COMPLETE

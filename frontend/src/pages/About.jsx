@@ -476,7 +476,7 @@ export default function About() {
         </h2>
         <div className="flex items-center justify-center gap-4">
           <a
-            href="https://github.com/beyondfrontier/beyondfrontier"
+            href="https://github.com/vastdreams/physics-ai"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-primary flex items-center gap-2"
@@ -486,7 +486,7 @@ export default function About() {
             <ExternalLink size={14} />
           </a>
           <a
-            href="https://github.com/beyondfrontier/beyondfrontier/blob/main/CONTRIBUTING.md"
+            href="https://github.com/vastdreams/physics-ai/blob/main/CONTRIBUTING.md"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 rounded-lg border border-light-300 text-light-700 hover:bg-light-100 transition-colors flex items-center gap-2"

@@ -27,14 +27,14 @@ git config --global user.email "your.email@example.com"
 ```
 
 ### 2. Enable Dependabot Security Updates
-Go to: https://github.com/beyondfrontier/beyondfrontier/settings/security_analysis
+Go to: https://github.com/vastdreams/physics-ai/settings/security_analysis
 - Enable "Dependabot security updates"
 - Enable "Dependabot version updates" (already configured via .github/dependabot.yml)
 
 ### 3. Add Repository Topics
-Go to: https://github.com/beyondfrontier/beyondfrontier/settings
+Go to: https://github.com/vastdreams/physics-ai/settings
 - Scroll to "Topics"
-- Add: `ai`, `machine-learning`, `physics`, `neurosymbotic`, `self-evolving`, `python`, `open-source`
+- Add: `ai`, `machine-learning`, `physics`, `neurosymbolic`, `self-evolving`, `python`, `open-source`
 
 ### 4. Set Up GitHub Pages (Optional)
 If you want to host documentation:
@@ -52,7 +52,7 @@ When you want to grant write access to trusted contributors:
 - Add by username or email
 
 ### 7. Review and Test CI/CD
-- Check Actions tab: https://github.com/beyondfrontier/beyondfrontier/actions
+- Check Actions tab: https://github.com/vastdreams/physics-ai/actions
 - Make a test commit to trigger workflows
 - Verify tests run correctly
 
@@ -66,13 +66,13 @@ When you want to grant write access to trusted contributors:
    ```
 
 2. **Enable Dependabot** (automatic security updates)
-   - Visit: https://github.com/beyondfrontier/beyondfrontier/settings/security_analysis
+   - Visit: https://github.com/vastdreams/physics-ai/settings/security_analysis
    - Toggle "Dependabot security updates" ON
 
 3. **Add Topics** (helps discoverability)
-   - Visit: https://github.com/beyondfrontier/beyondfrontier
+   - Visit: https://github.com/vastdreams/physics-ai
    - Click the gear icon next to "About"
-   - Add topics: `ai`, `physics`, `neurosymbotic`, `python`, `open-source`
+   - Add topics: `ai`, `physics`, `neurosymbolic`, `python`, `open-source`
 
 ### Later (When Ready)
 - Add collaborators
@@ -82,7 +82,7 @@ When you want to grant write access to trusted contributors:
 
 ## 📊 Current Status
 
-**Repository**: https://github.com/beyondfrontier/beyondfrontier
+**Repository**: https://github.com/vastdreams/physics-ai
 
 **Status**: ✅ **Fully functional and ready for contributions!**
 

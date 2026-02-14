@@ -1,6 +1,6 @@
 # core/
 """
-Core neurosymbotic engine module.
+Core neurosymbolic engine module.
 
 This module contains the central reasoning engine that integrates
 neural network learning with symbolic reasoning capabilities.

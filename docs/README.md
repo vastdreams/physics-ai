@@ -72,6 +72,6 @@ See [API_REFERENCE.md](API_REFERENCE.md) for complete documentation.
 
 ## Getting Help
 
-- **Issues**: [GitHub Issues](https://github.com/beyondfrontier/beyondfrontier/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/beyondfrontier/beyondfrontier/discussions)
+- **Issues**: [GitHub Issues](https://github.com/vastdreams/physics-ai/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/vastdreams/physics-ai/discussions)
 - **Contributing**: See [CONTRIBUTING.md](../CONTRIBUTING.md)

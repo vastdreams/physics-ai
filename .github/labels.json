@@ -55,6 +55,11 @@
     "description": "Python-related"
   },
   {
+    "name": "javascript",
+    "color": "f1e05a",
+    "description": "JavaScript / React frontend"
+  },
+  {
     "name": "github-actions",
     "color": "2088ff",
     "description": "GitHub Actions related"
@@ -80,9 +85,28 @@
     "description": "Physics integration related"
   },
   {
-    "name": "neurosymbotic",
+    "name": "neurosymbolic",
     "color": "9370DB",
-    "description": "Neurosymbotic AI related"
+    "description": "Neurosymbolic AI related"
+  },
+  {
+    "name": "security",
+    "color": "e11d48",
+    "description": "Security vulnerability or hardening"
+  },
+  {
+    "name": "performance",
+    "color": "f97316",
+    "description": "Performance improvement"
+  },
+  {
+    "name": "frontend",
+    "color": "06b6d4",
+    "description": "Frontend / UI related"
+  },
+  {
+    "name": "api",
+    "color": "8b5cf6",
+    "description": "API / backend related"
   }
 ]
-

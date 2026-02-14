@@ -13,7 +13,7 @@ This guide will help you set up the GitHub repository for Beyond Frontier.
 1. Go to https://github.com/new
 2. Fill in the repository details:
    - **Owner**: Your GitHub username (abhisheksehgal)
-   - **Repository name**: `beyondfrontier` (or your preferred name)
+   - **Repository name**: `physics-ai` (or your preferred name)
    - **Description**: "Neurosymbotic Rule-Based Modular AI for Physics - Breaking through the barriers of reality"
    - **Visibility**: Public (for open source)
    - **Important**: Do NOT initialize with README, .gitignore, or license (we already have them)
@@ -27,10 +27,10 @@ Run the following commands in your terminal:
 cd "/Users/abhisheksehgal/Beyond Frontier"
 
 # Add remote (replace YOUR_USERNAME with your GitHub username)
-git remote add origin https://github.com/YOUR_USERNAME/beyondfrontier.git
+git remote add origin https://github.com/YOUR_USERNAME/physics-ai.git
 
 # Or if you prefer SSH:
-# git remote add origin git@github.com:YOUR_USERNAME/beyondfrontier.git
+# git remote add origin git@github.com:YOUR_USERNAME/physics-ai.git
 ```
 
 ## Step 3: Initial Commit and Push
@@ -45,7 +45,7 @@ git add .
 # Create initial commit
 git commit -m "Initial commit: Beyond Frontier - Neurosymbotic Rule-Based Modular AI
 
-- Core neurosymbotic engine
+- Core neurosymbolic engine
 - Rule-based system
 - Self-evolution module
 - Physics integration

@@ -1,7 +1,7 @@
 # core/
 """
 PATH: core/reasoning.py
-PURPOSE: Implements multiple reasoning paradigms for the neurosymbotic engine.
+PURPOSE: Implements multiple reasoning paradigms for the neurosymbolic engine.
 
 FLOW:
 ┌─────────────┐    ┌──────────────┐    ┌─────────────┐
