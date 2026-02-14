@@ -166,7 +166,7 @@ export default function LandingPage() {
           <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
           <a href="#architecture" className="hover:text-slate-900 transition-colors">Architecture</a>
           <a href="#compare" className="hover:text-slate-900 transition-colors">Compare</a>
-          <Link to="/dashboard" className="btn-fancy text-sm px-5 py-2">
+          <Link to="/login" className="btn-fancy text-sm px-5 py-2">
             Launch App
           </Link>
         </div>
@@ -199,7 +199,7 @@ export default function LandingPage() {
           </p>
 
           <div className="reveal flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/dashboard" className="btn-fancy text-lg px-8 py-3.5 shadow-xl shadow-indigo-200/50">
+            <Link to="/login" className="btn-fancy text-lg px-8 py-3.5 shadow-xl shadow-indigo-200/50">
               Launch App
               <ArrowRight size={20} className="inline ml-2" />
             </Link>
@@ -417,7 +417,7 @@ export default function LandingPage() {
             Open-source. Self-evolving. Built for the future of discovery.
           </p>
           <div className="reveal">
-            <Link to="/dashboard" className="btn-fancy text-lg px-10 py-4 shadow-2xl shadow-indigo-200/60">
+            <Link to="/login" className="btn-fancy text-lg px-10 py-4 shadow-2xl shadow-indigo-200/60">
               Launch Beyond Frontier
               <ArrowRight size={22} className="inline ml-2" />
             </Link>
@@ -442,7 +442,7 @@ export default function LandingPage() {
               GitHub
             </a>
             <Link to="/about" className="hover:text-slate-900 transition-colors">About</Link>
-            <Link to="/dashboard" className="hover:text-slate-900 transition-colors">App</Link>
+            <Link to="/login" className="hover:text-slate-900 transition-colors">Sign In</Link>
           </div>
         </div>
       </footer>

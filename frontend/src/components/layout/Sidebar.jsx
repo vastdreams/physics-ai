@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 
 import { API_BASE } from '../../config';
+import { useAuth } from '../../contexts/AuthContext';
 
 const buildNavigationSections = (knowledgeCount) => [
   {
@@ -136,6 +137,7 @@ function NavSection({ section, collapsed, defaultOpen = true }) {
 export default function Sidebar({ collapsed, onToggle }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [knowledgeCount, setKnowledgeCount] = useState(null);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     fetch(`${API_BASE}/api/v1/knowledge/statistics`)
@@ -208,23 +210,34 @@ export default function Sidebar({ collapsed, onToggle }) {
         ))}
       </nav>
 
-      {/* Footer */}
+      {/* Footer — user + logout */}
       <div className="p-3 border-t border-slate-100">
         {!collapsed ? (
           <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold shadow-sm">
-              A
+              {(user?.name || user?.email || 'U')[0].toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-slate-800 truncate">Abhishek</p>
-              <p className="text-[11px] text-slate-400">Administrator</p>
+              <p className="text-sm font-semibold text-slate-800 truncate">{user?.name || 'User'}</p>
+              <p className="text-[11px] text-slate-400">{user?.role || 'user'}</p>
             </div>
+            <button
+              onClick={logout}
+              title="Sign out"
+              className="text-slate-400 hover:text-red-500 transition-colors p-1"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
           </div>
         ) : (
           <div className="flex justify-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
-              A
-            </div>
+            <button
+              onClick={logout}
+              title="Sign out"
+              className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold hover:opacity-80 transition-opacity"
+            >
+              {(user?.name || user?.email || 'U')[0].toUpperCase()}
+            </button>
           </div>
         )}
       </div>
