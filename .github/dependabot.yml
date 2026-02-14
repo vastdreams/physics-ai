@@ -1,9 +1,9 @@
 # Dependabot configuration for automated dependency updates
-# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
 
 version: 2
 updates:
-  # Enable version updates for Python
+  # Python backend dependencies
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -15,14 +15,24 @@ updates:
       - "dependencies"
       - "python"
     commit-message:
-      prefix: "chore"
+      prefix: "chore(deps)"
       include: "scope"
-    reviewers:
-      - "beyondfrontier"
-    assignees:
-      - "beyondfrontier"
 
-  # Enable version updates for GitHub Actions
+  # Frontend npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -33,6 +43,5 @@ updates:
       - "dependencies"
       - "github-actions"
     commit-message:
-      prefix: "chore"
+      prefix: "chore(deps)"
       include: "scope"
-

@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Discussions
-    url: https://github.com/beyondfrontier/beyondfrontier/discussions
+    url: https://github.com/vastdreams/physics-ai/discussions
     about: Ask questions and discuss ideas with the community
   - name: Documentation
-    url: https://github.com/beyondfrontier/beyondfrontier#readme
+    url: https://github.com/vastdreams/physics-ai#readme
     about: Check the README and documentation for answers

@@ -1,0 +1,25 @@
+# Beyond Frontier — Code Owners
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @vastdreams
+
+# Core engine
+/core/ @vastdreams
+/rules/ @vastdreams
+/physics/ @vastdreams
+
+# API and backend
+/api/ @vastdreams
+/dashboard/ @vastdreams
+/substrate/ @vastdreams
+
+# Frontend
+/frontend/ @vastdreams
+
+# CI/CD and infrastructure
+/.github/ @vastdreams
+/deploy/ @vastdreams
+
+# AI / LLM integration
+/ai/ @vastdreams
