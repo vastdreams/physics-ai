@@ -1,16 +1,9 @@
 /**
  * PATH: frontend/src/components/layout/Sidebar.jsx
- * PURPOSE: Notion-style sidebar navigation with collapsible sections
- * 
- * FLOW:
- * ┌─────────────┐    ┌──────────────┐    ┌─────────────┐
- * │   Logo &    │───▶│  Navigation  │───▶│   Footer    │
- * │   Search    │    │   Sections   │    │   Actions   │
- * └─────────────┘    └──────────────┘    └─────────────┘
+ * PURPOSE: Premium sidebar navigation with gradient accents
  */
 
 import { useState, useEffect } from 'react';
-
 import { NavLink, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
 import {
@@ -39,7 +32,7 @@ const buildNavigationSections = (knowledgeCount) => [
   {
     title: 'Main',
     items: [
-      { name: 'Dashboard', path: '/', icon: Home },
+      { name: 'Dashboard', path: '/dashboard', icon: Home },
       { name: 'Chat', path: '/chat', icon: MessageSquare, badge: 'AI' },
     ]
   },
@@ -71,7 +64,7 @@ const buildNavigationSections = (knowledgeCount) => [
   }
 ];
 
-/** @param {{ item: Object, collapsed: boolean }} props — single navigation link. */
+/** Single navigation link with gradient active indicator. */
 function NavItem({ item, collapsed }) {
   const location = useLocation();
   const isActive = location.pathname === item.path;
@@ -81,18 +74,29 @@ function NavItem({ item, collapsed }) {
     <NavLink
       to={item.path}
       className={clsx(
-        'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200',
-        isActive 
-          ? 'bg-accent-primary/10 text-accent-primary font-medium' 
-          : 'text-light-600 hover:bg-light-200 hover:text-light-900'
+        'flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 relative',
+        isActive
+          ? 'bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-600 font-semibold'
+          : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
       )}
     >
-      <Icon size={18} className={clsx(isActive && 'text-accent-primary')} />
+      {/* Active gradient bar */}
+      {isActive && (
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-gradient-to-b from-indigo-500 to-violet-500" />
+      )}
+      <Icon size={18} className={clsx(isActive ? 'text-indigo-500' : 'text-slate-400')} />
       {!collapsed && (
         <>
           <span className="flex-1 text-sm">{item.name}</span>
           {item.badge && (
-            <span className="badge-green text-[10px]">{item.badge}</span>
+            <span className={clsx(
+              'text-[10px] px-1.5 py-0.5 rounded-full font-semibold',
+              isActive
+                ? 'bg-indigo-100 text-indigo-600'
+                : 'bg-emerald-50 text-emerald-600'
+            )}>
+              {item.badge}
+            </span>
           )}
         </>
       )}
@@ -100,25 +104,25 @@ function NavItem({ item, collapsed }) {
   );
 }
 
-/** @param {{ section: Object, collapsed: boolean, defaultOpen?: boolean }} props */
+/** Collapsible navigation section. */
 function NavSection({ section, collapsed, defaultOpen = true }) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="mb-2">
+    <div className="mb-3">
       {!collapsed && (
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3 py-1.5 w-full text-light-500 hover:text-light-700 transition-colors"
+          className="flex items-center gap-2 px-3 py-1.5 w-full text-slate-400 hover:text-slate-600 transition-colors"
         >
           {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-          <span className="text-xs font-semibold uppercase tracking-wider">
+          <span className="text-[11px] font-bold uppercase tracking-widest">
             {section.title}
           </span>
         </button>
       )}
       {(isOpen || collapsed) && (
-        <div className="mt-1 space-y-0.5">
+        <div className="mt-0.5 space-y-0.5">
           {section.items.map((item) => (
             <NavItem key={item.path} item={item} collapsed={collapsed} />
           ))}
@@ -128,12 +132,7 @@ function NavSection({ section, collapsed, defaultOpen = true }) {
   );
 }
 
-/**
- * Notion-style sidebar navigation with collapsible sections and search.
- * @param {Object} props
- * @param {boolean} props.collapsed - Whether the sidebar is collapsed to icon-only
- * @param {Function} props.onToggle - Toggle collapse callback
- */
+/** Premium sidebar with frosted glass effect. */
 export default function Sidebar({ collapsed, onToggle }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [knowledgeCount, setKnowledgeCount] = useState(null);
@@ -148,22 +147,22 @@ export default function Sidebar({ collapsed, onToggle }) {
   const navigationSections = buildNavigationSections(knowledgeCount);
 
   return (
-    <aside 
+    <aside
       className={clsx(
-        'fixed left-0 top-0 h-screen bg-light-50 border-r border-light-300 flex flex-col z-50 transition-all duration-300',
+        'fixed left-0 top-0 h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200/60 flex flex-col z-50 transition-all duration-300',
         collapsed ? 'w-16' : 'w-64'
       )}
     >
-      {/* Header */}
-      <div className="p-4 border-b border-light-200">
+      {/* Brand */}
+      <div className="p-4 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent-primary to-accent-blue flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-200/50">
             <Sparkles size={18} className="text-white" />
           </div>
           {!collapsed && (
             <div>
-              <h1 className="font-semibold text-light-900">Beyond Frontier</h1>
-              <p className="text-xs text-light-500">Neurosymbolic Engine</p>
+              <h1 className="font-bold text-slate-900 tracking-tight">Beyond Frontier</h1>
+              <p className="text-[11px] text-slate-400 font-medium">Physics Engine</p>
             </div>
           )}
         </div>
@@ -173,25 +172,25 @@ export default function Sidebar({ collapsed, onToggle }) {
       {!collapsed && (
         <div className="p-3">
           <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-light-400" />
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-light-100 border border-light-300 rounded-lg text-sm text-light-800 placeholder-light-400 focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition-all"
             />
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-light-400 bg-light-200 px-1.5 py-0.5 rounded">
-              ⌘K
+            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 bg-white border border-slate-200 px-1.5 py-0.5 rounded font-mono">
+              /
             </kbd>
           </div>
         </div>
       )}
 
-      {/* Quick Actions */}
+      {/* Quick Action */}
       {!collapsed && (
         <div className="px-3 pb-2">
-          <button className="w-full flex items-center gap-2 px-3 py-2 bg-light-100 hover:bg-light-200 border border-light-300 rounded-lg text-sm text-light-600 transition-colors">
+          <button className="w-full flex items-center gap-2 px-3 py-2.5 bg-gradient-to-r from-indigo-50 to-violet-50 hover:from-indigo-100 hover:to-violet-100 border border-indigo-100 rounded-xl text-sm text-indigo-600 font-medium transition-all">
             <Plus size={16} />
             <span>New Simulation</span>
           </button>
@@ -199,31 +198,31 @@ export default function Sidebar({ collapsed, onToggle }) {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+      <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
         {navigationSections.map((section) => (
-          <NavSection 
-            key={section.title} 
-            section={section} 
+          <NavSection
+            key={section.title}
+            section={section}
             collapsed={collapsed}
           />
         ))}
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-light-200">
+      <div className="p-3 border-t border-slate-100">
         {!collapsed ? (
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-light-100">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-purple to-accent-pink flex items-center justify-center text-white text-sm font-medium">
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold shadow-sm">
               A
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-light-800 truncate">Abhishek</p>
-              <p className="text-xs text-light-500">Administrator</p>
+              <p className="text-sm font-semibold text-slate-800 truncate">Abhishek</p>
+              <p className="text-[11px] text-slate-400">Administrator</p>
             </div>
           </div>
         ) : (
           <div className="flex justify-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-purple to-accent-pink flex items-center justify-center text-white text-sm font-medium">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">
               A
             </div>
           </div>

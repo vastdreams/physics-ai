@@ -1,10 +1,9 @@
 /**
  * PATH: frontend/src/components/layout/Header.jsx
- * PURPOSE: Top header bar with breadcrumbs, status indicators, and actions
+ * PURPOSE: Premium glass header with status indicators and actions
  */
 
 import { useState } from 'react';
-
 import { clsx } from 'clsx';
 import {
   PanelLeftClose,
@@ -19,13 +18,7 @@ import {
 import { HotReloadIndicator } from '../HotReloadIndicator';
 
 /**
- * Top header bar with connection status, activity, and action buttons.
- * @param {Object} props
- * @param {boolean} props.sidebarCollapsed - Whether the sidebar is collapsed
- * @param {Function} props.onToggleSidebar - Toggle sidebar callback
- * @param {string} [props.title] - Page title
- * @param {string} [props.subtitle] - Page subtitle
- * @param {React.ReactNode} [props.rightActions] - Extra action buttons
+ * Top header with frosted glass, gradient accents, and status.
  */
 export default function Header({ sidebarCollapsed, onToggleSidebar, title, subtitle, rightActions }) {
   const [isConnected, setIsConnected] = useState(true);
@@ -37,67 +30,66 @@ export default function Header({ sidebarCollapsed, onToggleSidebar, title, subti
   };
 
   return (
-    <header className="h-14 bg-light-50/80 backdrop-blur-xl border-b border-light-200 flex items-center justify-between px-4 sticky top-0 z-40 flex-shrink-0">
-      {/* Left Section */}
+    <header className="h-14 bg-white/70 backdrop-blur-xl border-b border-slate-200/50 flex items-center justify-between px-5 sticky top-0 z-40 flex-shrink-0">
+      {/* Left */}
       <div className="flex items-center gap-4">
-        <button 
+        <button
           onClick={onToggleSidebar}
-          className="p-2 hover:bg-light-200 rounded-lg transition-colors text-light-500 hover:text-light-700"
+          className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
         >
           {sidebarCollapsed ? <PanelLeft size={20} /> : <PanelLeftClose size={20} />}
         </button>
-        
+
         <div>
-          <h2 className="font-semibold text-light-900">{title || 'Dashboard'}</h2>
+          <h2 className="font-bold text-slate-900 tracking-tight">{title || 'Dashboard'}</h2>
           {subtitle && (
-            <p className="text-xs text-light-500">{subtitle}</p>
+            <p className="text-xs text-slate-400">{subtitle}</p>
           )}
         </div>
       </div>
 
-      {/* Right Section */}
+      {/* Right */}
       <div className="flex items-center gap-2">
-        {/* Status Indicator */}
+        {/* Connection status */}
         <div className={clsx(
-          'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm',
-          isConnected ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'
+          'flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors',
+          isConnected ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'
         )}>
-          {isConnected ? <Wifi size={14} /> : <WifiOff size={14} />}
-          <span className="text-xs font-medium">
-            {isConnected ? 'Connected' : 'Disconnected'}
+          {isConnected ? <Wifi size={13} /> : <WifiOff size={13} />}
+          <span className="text-xs font-semibold">
+            {isConnected ? 'Connected' : 'Offline'}
           </span>
         </div>
 
         {/* Activity */}
-        <button className="p-2 hover:bg-light-200 rounded-lg transition-colors text-light-500 hover:text-light-700 relative">
+        <button className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600 relative">
           <Activity size={18} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-accent-primary rounded-full animate-pulse" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-full animate-pulse" />
         </button>
 
-        {/* Hot Reload Indicator */}
+        {/* Hot Reload */}
         <HotReloadIndicator compact />
 
         {/* Refresh */}
-        <button 
+        <button
           onClick={handleRefresh}
-          className="p-2 hover:bg-light-200 rounded-lg transition-colors text-light-500 hover:text-light-700"
-          title="Refresh page"
+          className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
+          title="Refresh"
         >
           <RefreshCw size={18} className={clsx(isRefreshing && 'animate-spin')} />
         </button>
 
         {/* Notifications */}
-        <button className="p-2 hover:bg-light-200 rounded-lg transition-colors text-light-500 hover:text-light-700 relative">
+        <button className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600 relative">
           <Bell size={18} />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-accent-purple rounded-full" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gradient-to-br from-violet-500 to-pink-500 rounded-full" />
         </button>
 
         {/* Divider */}
         {rightActions && (
-          <div className="w-px h-6 bg-light-300 mx-1" />
+          <div className="w-px h-6 bg-slate-200 mx-1" />
         )}
 
-        {/* Custom Right Actions */}
         {rightActions}
       </div>
     </header>

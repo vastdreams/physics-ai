@@ -12,9 +12,9 @@ const ICON_SIZE = 18;
 export default function NotFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-      <div className="text-8xl font-bold gradient-text mb-4">404</div>
-      <h1 className="text-2xl font-semibold text-light-900 mb-2">Page Not Found</h1>
-      <p className="text-light-500 max-w-md mb-8">
+      <div className="text-8xl font-black gradient-text-animated mb-4">404</div>
+      <h1 className="text-2xl font-bold text-slate-900 mb-2">Page Not Found</h1>
+      <p className="text-slate-500 max-w-md mb-8">
         The page you're looking for doesn't exist or has been moved.
       </p>
       <div className="flex items-center gap-4">

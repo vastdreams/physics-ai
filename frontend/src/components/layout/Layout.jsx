@@ -1,20 +1,9 @@
 /**
  * PATH: frontend/src/components/layout/Layout.jsx
- * PURPOSE: Main layout wrapper with Cursor-style resizable panels
- * 
- * LAYOUT:
- * ┌──────────┬────────────────────────────┬──────────┐
- * │          │                            │  Right   │
- * │ Sidebar  │      Main Content          │  Drawer  │
- * │          │                            │  (Chat)  │
- * │          ├────────────────────────────┤          │
- * │          │      Bottom Panel          │          │
- * │          │   (Console/Terminal)       │          │
- * └──────────┴────────────────────────────┴──────────┘
+ * PURPOSE: Main layout with premium light design and resizable panels
  */
 
 import { useState, useCallback } from 'react';
-
 import { Outlet, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { MessageSquare, Terminal, PanelRight } from 'lucide-react';
@@ -26,10 +15,11 @@ import RightDrawer from '../panels/RightDrawer';
 import BottomPanel from '../panels/BottomPanel';
 
 const pageTitles = {
-  '/': { title: 'Dashboard', subtitle: 'System overview and quick actions' },
+  '/dashboard': { title: 'Dashboard', subtitle: 'System overview and quick actions' },
   '/chat': { title: 'AI Chat', subtitle: 'Conversational physics interface' },
   '/simulations': { title: 'Simulations', subtitle: 'Run and visualize physics simulations' },
   '/equations': { title: 'Equations', subtitle: 'Symbolic equation solver' },
+  '/knowledge': { title: 'Knowledge', subtitle: 'Unified physics knowledge base' },
   '/models': { title: 'Physics Models', subtitle: 'Available simulation models' },
   '/rules': { title: 'Rule Engine', subtitle: 'Manage inference rules' },
   '/evolution': { title: 'Evolution', subtitle: 'Self-evolution and code analysis' },
@@ -47,11 +37,9 @@ export default function Layout() {
   const [bottomPanelOpen, setBottomPanelOpen] = useState(false);
   const [rightDrawerMaximized, setRightDrawerMaximized] = useState(false);
   const [bottomPanelMaximized, setBottomPanelMaximized] = useState(false);
-  
-  // Panel sizes
   const [rightDrawerSize, setRightDrawerSize] = useState(380);
   const [bottomPanelSize, setBottomPanelSize] = useState(250);
-  
+
   const location = useLocation();
   const pageInfo = pageTitles[location.pathname] || { title: 'Beyond Frontier', subtitle: '' };
 
@@ -74,20 +62,20 @@ export default function Layout() {
   }, []);
 
   return (
-    <div className="h-screen flex overflow-hidden bg-light-100">
+    <div className="h-screen flex overflow-hidden bg-slate-50">
       {/* Sidebar */}
-      <Sidebar 
-        collapsed={sidebarCollapsed} 
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+      <Sidebar
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      
-      {/* Main Area (Content + Bottom Panel) */}
+
+      {/* Main */}
       <div className={clsx(
         'flex-1 flex flex-col transition-all duration-300 overflow-hidden',
         sidebarCollapsed ? 'ml-16' : 'ml-64'
       )}>
         {/* Header */}
-        <Header 
+        <Header
           sidebarCollapsed={sidebarCollapsed}
           onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
           title={pageInfo.title}
@@ -97,43 +85,42 @@ export default function Layout() {
               <button
                 onClick={toggleBottomPanel}
                 className={clsx(
-                  'p-2 rounded-lg transition-colors',
+                  'p-2 rounded-xl transition-colors',
                   bottomPanelOpen
-                    ? 'bg-accent-primary/10 text-accent-primary'
-                    : 'text-light-500 hover:bg-light-200 hover:text-light-700'
+                    ? 'bg-indigo-50 text-indigo-500'
+                    : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
                 )}
-                title="Toggle Console (Ctrl+`)"
+                title="Toggle Console"
               >
                 <Terminal size={18} />
               </button>
               <button
                 onClick={toggleRightDrawer}
                 className={clsx(
-                  'p-2 rounded-lg transition-colors',
+                  'p-2 rounded-xl transition-colors',
                   rightDrawerOpen
-                    ? 'bg-accent-primary/10 text-accent-primary'
-                    : 'text-light-500 hover:bg-light-200 hover:text-light-700'
+                    ? 'bg-indigo-50 text-indigo-500'
+                    : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'
                 )}
-                title="Toggle AI Chat (Ctrl+Shift+A)"
+                title="Toggle AI Chat"
               >
                 <MessageSquare size={18} />
               </button>
             </div>
           }
         />
-        
-        {/* Content Area with Right Drawer */}
+
+        {/* Content + Panels */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Main Content + Bottom Panel */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Main Content */}
+            {/* Content */}
             <div className={clsx(
               'flex-1 overflow-auto p-6',
               bottomPanelMaximized && 'hidden'
             )}>
               <Outlet />
             </div>
-            
+
             {/* Bottom Panel */}
             {bottomPanelOpen && (
               <ResizablePanel
@@ -142,7 +129,7 @@ export default function Layout() {
                 defaultSize={bottomPanelMaximized ? window.innerHeight - 64 : bottomPanelSize}
                 minSize={150}
                 maxSize={bottomPanelMaximized ? window.innerHeight - 64 : 500}
-                className="border-t border-light-200"
+                className="border-t border-slate-200"
               >
                 <BottomPanel
                   onClose={toggleBottomPanel}
@@ -152,7 +139,7 @@ export default function Layout() {
               </ResizablePanel>
             )}
           </div>
-          
+
           {/* Right Drawer */}
           {rightDrawerOpen && (
             <ResizablePanel
@@ -161,7 +148,7 @@ export default function Layout() {
               defaultSize={rightDrawerMaximized ? 600 : rightDrawerSize}
               minSize={280}
               maxSize={rightDrawerMaximized ? 800 : 500}
-              className="border-l border-light-200"
+              className="border-l border-slate-200"
             >
               <RightDrawer
                 onClose={toggleRightDrawer}
@@ -173,19 +160,19 @@ export default function Layout() {
         </div>
       </div>
 
-      {/* Panel Toggle Bar (always visible at edges) */}
+      {/* Edge panel toggles */}
       {!rightDrawerOpen && (
         <div className="fixed right-0 top-1/2 -translate-y-1/2 z-40">
           <button
             onClick={toggleRightDrawer}
-            className="p-2 bg-light-100 hover:bg-light-200 border border-light-300 border-r-0 rounded-l-lg shadow-sm transition-colors group"
+            className="p-2 bg-white/80 backdrop-blur-sm hover:bg-white border border-slate-200 border-r-0 rounded-l-xl shadow-soft transition-all group"
             title="Open AI Chat"
           >
-            <PanelRight size={16} className="text-light-500 group-hover:text-accent-primary transition-colors" />
+            <PanelRight size={16} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
           </button>
         </div>
       )}
-      
+
       {!bottomPanelOpen && (
         <div className={clsx(
           'fixed bottom-0 left-1/2 -translate-x-1/2 z-40',
@@ -193,11 +180,11 @@ export default function Layout() {
         )}>
           <button
             onClick={toggleBottomPanel}
-            className="px-3 py-1.5 bg-light-100 hover:bg-light-200 border border-light-300 border-b-0 rounded-t-lg shadow-sm transition-colors group flex items-center gap-2"
+            className="px-4 py-1.5 bg-white/80 backdrop-blur-sm hover:bg-white border border-slate-200 border-b-0 rounded-t-xl shadow-soft transition-all group flex items-center gap-2"
             title="Open Console"
           >
-            <Terminal size={14} className="text-light-500 group-hover:text-accent-primary transition-colors" />
-            <span className="text-xs text-light-500 group-hover:text-light-700">Console</span>
+            <Terminal size={14} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />
+            <span className="text-xs text-slate-400 group-hover:text-slate-600 font-medium">Console</span>
           </button>
         </div>
       )}

@@ -1,7 +1,7 @@
 /**
  * PATH: frontend/src/App.jsx
  * PURPOSE: Main application component with routing configuration
- * 
+ *
  * FLOW:
  * ┌─────────────┐    ┌──────────────┐    ┌─────────────┐
  * │   Router    │───▶│    Layout    │───▶│    Pages    │
@@ -12,6 +12,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import Layout from './components/layout/Layout';
+import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
 import Simulations from './pages/Simulations';
@@ -34,8 +35,12 @@ function App() {
     <BrowserRouter>
       <UpdateBanner />
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
+        {/* Landing page — standalone, no sidebar */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* App shell — sidebar + header */}
+        <Route element={<Layout />}>
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="chat" element={<Chat />} />
           <Route path="simulations" element={<Simulations />} />
           <Route path="equations" element={<Equations />} />
