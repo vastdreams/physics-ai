@@ -23,6 +23,10 @@ def append_cot_log(entry: dict) -> None:
         del _cot_log_buffer[:len(_cot_log_buffer) - _COT_LOG_MAX]
 
 
+# Register so ChainOfThoughtLogger pushes step entries to the API buffer
+ChainOfThoughtLogger.register_sink(append_cot_log)
+
+
 @api_v1.route('/cot/logs', methods=['GET'])
 def get_cot_logs():
     """

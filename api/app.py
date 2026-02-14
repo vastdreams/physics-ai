@@ -152,6 +152,54 @@ def create_app(enable_hot_reload: bool = None) -> Flask:
 
         return stats, 200
 
+    # OpenAPI spec and Swagger UI
+    _openapi_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "openapi.json")
+
+    @app.route("/api/openapi.json", methods=["GET"])
+    def openapi_spec():
+        """Serve OpenAPI spec as JSON."""
+        from flask import jsonify
+        try:
+            if os.path.exists(_openapi_path):
+                with open(_openapi_path) as f:
+                    import json
+                    return jsonify(json.load(f)), 200
+        except Exception:
+            pass
+        return jsonify({"openapi": "3.0.3", "info": {"title": "Physics AI API", "version": "1.0.0"}, "paths": {}}), 200
+
+    @app.route("/metrics", methods=["GET"])
+    def prometheus_metrics():
+        """Prometheus metrics endpoint (if prometheus-client installed)."""
+        try:
+            from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+            from flask import Response
+            return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+        except ImportError:
+            from flask import Response
+            return Response("# prometheus_client not installed\n", mimetype="text/plain")
+
+    @app.route("/api/docs", methods=["GET"])
+    def api_docs():
+        """Swagger UI for API documentation."""
+        html = """<!DOCTYPE html>
+<html><head><meta charset="utf-8"/>
+<title>Physics AI API</title>
+<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"/>
+</head><body>
+<div id="swagger-ui"></div>
+<script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+<script>
+  SwaggerUIBundle({
+    url: '/api/openapi.json',
+    dom_id: '#swagger-ui',
+    presets: [SwaggerUIBundle.presets.apis]
+  });
+</script>
+</body></html>"""
+        from flask import Response
+        return Response(html, mimetype="text/html")
+
     # Initialize hot reload if enabled
     if enable_hot_reload is None:
         enable_hot_reload = os.getenv("ENABLE_HOT_RELOAD", "true").lower() == "true"

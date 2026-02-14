@@ -58,7 +58,7 @@ class CoTStep:
 class ChainOfThoughtLogger:
     """
     Comprehensive chain-of-thought logging system.
-    
+
     Features:
     - Step-by-step reasoning logs
     - Decision trees
@@ -66,7 +66,15 @@ class ChainOfThoughtLogger:
     - Performance tracking
     - Hierarchical structure (parent-child relationships)
     """
-    
+
+    _global_sinks: List[Any] = []
+
+    @classmethod
+    def register_sink(cls, sink_fn: Any) -> None:
+        """Register a callback to receive step entries when end_step is called."""
+        if sink_fn not in cls._global_sinks:
+            cls._global_sinks.append(sink_fn)
+
     def __init__(self, session_id: Optional[str] = None):
         """
         Initialize CoT logger.
@@ -172,7 +180,24 @@ class ChainOfThoughtLogger:
             self.current_step_id = step.parent_step_id
         else:
             self.current_step_id = None
-        
+
+        # Push to global sinks (e.g. API log buffer)
+        for sink in ChainOfThoughtLogger._global_sinks:
+            try:
+                entry = {
+                    "type": "cot_step",
+                    "action": step.action,
+                    "message": step.action,
+                    "timestamp": step.timestamp.isoformat(),
+                    "step_id": step_id,
+                    "validation_passed": step.validation_passed,
+                }
+                if step.output_data is not None:
+                    entry["output"] = str(step.output_data)[:200]
+                sink(entry)
+            except Exception:
+                pass
+
         self.logger.log(f"CoT step ended: {step_id}", level="DEBUG")
     
     def log_decision(self,

@@ -23,7 +23,7 @@ from flask import Blueprint
 
 api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
 
-from . import simulate, nodes, rules, evolution, cot, vector, state_graph, context, equational, brain, substrate
+from . import simulate, nodes, rules, evolution, cot, vector, state_graph, context, equational, brain, substrate, system, experiments, discovery
 from .agents import agents_bp
 from .auth import auth_bp
 from .evolution_api import evolution_bp

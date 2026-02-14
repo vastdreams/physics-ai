@@ -528,6 +528,31 @@ def system_stats():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@substrate_bp.route("/arxiv-ingest", methods=["POST"])
+def arxiv_ingest():
+    """
+    Ingest papers from arXiv into the formula graph.
+
+    Request body:
+    {
+        "query": "physics",
+        "max_results": 3
+    }
+    """
+    try:
+        data = request.get_json() or {}
+        query = data.get("query", "physics")
+        max_results = int(data.get("max_results", 3))
+
+        from ingestion.arxiv_ingestion import ingest_arxiv_papers
+
+        ai = get_ai()
+        stats = ingest_arxiv_papers(ai, query=query, max_results=max_results)
+        return jsonify({"success": True, **stats}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @substrate_bp.route("/health", methods=["GET"])
 def health_check():
     """Health check endpoint."""

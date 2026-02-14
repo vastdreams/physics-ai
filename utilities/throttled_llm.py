@@ -73,6 +73,10 @@ class ThrottledLLMClient:
         self._last_start = 0.0
         self.min_delay = min_delay
         self.default_max_tokens = default_max_tokens
+        self._fail_count = 0
+        self._circuit_open_until = 0.0
+        self._max_failures = int(os.getenv("LLM_CIRCUIT_BREAKER_THRESHOLD", "5"))
+        self._cooldown_seconds = float(os.getenv("LLM_CIRCUIT_COOLDOWN", "60"))
 
     def _respect_rate_limits(self) -> None:
         """Sleep if needed to enforce minimum delay between requests."""
@@ -89,24 +93,30 @@ class ThrottledLLMClient:
         max_tokens: Optional[int] = None,
         temperature: float = 0.6,
     ) -> str:
-        """Send a chat completion request with throttling.
-
-        Args:
-            messages: Chat message list.
-            max_tokens: Max tokens for the response.
-            temperature: Sampling temperature.
-
-        Returns:
-            The assistant's response text.
-        """
+        """Send a chat completion request with throttling, retry, and circuit breaker."""
         max_tokens = max_tokens or self.default_max_tokens
 
-        with self._sem:
-            self._respect_rate_limits()
-            completion = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
-        return completion.choices[0].message.content
+        if time.monotonic() < self._circuit_open_until:
+            raise RuntimeError("LLM circuit breaker open — too many failures; try again later")
+
+        last_err = None
+        for attempt in range(3):
+            try:
+                with self._sem:
+                    self._respect_rate_limits()
+                    completion = self.client.chat.completions.create(
+                        model=self.model,
+                        messages=messages,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                    )
+                self._fail_count = 0
+                return completion.choices[0].message.content
+            except Exception as e:
+                last_err = e
+                self._fail_count += 1
+                if self._fail_count >= self._max_failures:
+                    self._circuit_open_until = time.monotonic() + self._cooldown_seconds
+                if attempt < 2:
+                    time.sleep(0.5 * (2 ** attempt))
+        raise last_err

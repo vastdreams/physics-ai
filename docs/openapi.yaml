@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: Physics AI API
+  description: Unified physics infrastructure - simulations, reasoning, knowledge graph
+  version: 1.0.0
+  contact:
+    url: https://github.com/vastdreams/physics-ai
+
+servers:
+  - url: http://localhost:5002
+    description: Local development
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Application status
+
+  /api/v1/simulate:
+    post:
+      summary: Run physics simulation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model: { type: string }
+                parameters: { type: object }
+                initial_conditions: { type: object }
+                t_end: { type: number }
+                dt: { type: number }
+      responses:
+        "200":
+          description: Simulation result
+
+  /api/v1/equations/solve:
+    post:
+      summary: Solve equation symbolically
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                equation: { type: string }
+                variables: { type: object }
+                solve_for: { type: string }
+      responses:
+        "200":
+          description: Solution
+
+  /api/v1/rules:
+    get:
+      summary: List rules
+    post:
+      summary: Add rule
+  /api/v1/rules/{rule_name}:
+    get:
+      summary: Get rule
+    delete:
+      summary: Delete rule
+
+  /api/v1/knowledge/statistics:
+    get:
+      summary: Knowledge graph stats
+
+  /api/v1/system/stats:
+    get:
+      summary: Platform statistics
+
+  /api/v1/settings:
+    get:
+      summary: Get user settings
+    post:
+      summary: Save user settings
+
+  /api/v1/agents/chat:
+    post:
+      summary: Chat with physics AI
+  /api/v1/agents/status:
+    get:
+      summary: Agent system status
+
+  /api/v1/cot/logs:
+    get:
+      summary: Recent chain-of-thought logs
+
+  /api/v1/evolution/history:
+    get:
+      summary: Evolution history

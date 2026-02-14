@@ -1,0 +1,22 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Physics AI API",
+    "description": "Unified physics infrastructure - simulations, reasoning, knowledge graph",
+    "version": "1.0.0"
+  },
+  "servers": [{"url": "http://localhost:5002", "description": "Local"}],
+  "paths": {
+    "/health": {"get": {"summary": "Health check", "responses": {"200": {"description": "Status"}}}},
+    "/api/v1/simulate": {"post": {"summary": "Run simulation"}},
+    "/api/v1/equations/solve": {"post": {"summary": "Solve equation"}},
+    "/api/v1/rules": {"get": {"summary": "List rules"}, "post": {"summary": "Add rule"}},
+    "/api/v1/knowledge/statistics": {"get": {"summary": "Knowledge stats"}},
+    "/api/v1/system/stats": {"get": {"summary": "Platform stats"}},
+    "/api/v1/settings": {"get": {"summary": "Get settings"}, "post": {"summary": "Save settings"}},
+    "/api/v1/agents/chat": {"post": {"summary": "Chat with AI"}},
+    "/api/v1/agents/status": {"get": {"summary": "Agent status"}},
+    "/api/v1/cot/logs": {"get": {"summary": "COT logs"}},
+    "/api/v1/evolution/history": {"get": {"summary": "Evolution history"}}
+  }
+}
