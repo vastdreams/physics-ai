@@ -24,7 +24,7 @@ DEPENDENCIES:
 import os
 import secrets
 
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_socketio import SocketIO
 
@@ -121,48 +121,43 @@ def create_app(enable_hot_reload: bool = None) -> Flask:
     @app.route("/api/v1/system/stats", methods=["GET"])
     def system_stats() -> tuple:
         """Aggregated platform statistics for the Dashboard. Requires auth."""
-        from api.middleware.auth import require_auth as _require_auth, get_current_user as _get_user
+        from api.middleware.auth import _verify_jwt
         auth_header = request.headers.get("Authorization", "")
         if not auth_header.startswith("Bearer "):
-            return {"success": False, "error": "Authentication required"}, 401
-        from api.v1.rules import rule_engine
+            return jsonify({"success": False, "error": "Authentication required"}), 401
+        payload = _verify_jwt(auth_header[7:])
+        if not payload:
+            return jsonify({"success": False, "error": "Invalid token"}), 401
 
         stats: dict = {}
-
-        # Rules
         try:
+            from api.v1.rules import rule_engine
             stats["rules"] = len(rule_engine.list_rules())
         except Exception:
             stats["rules"] = 0
 
-        # Knowledge
         try:
             from physics.knowledge import get_knowledge_graph
-
             graph = get_knowledge_graph()
             stats["knowledge_count"] = graph.get("statistics", {}).get("total_nodes", 0)
         except Exception:
             stats["knowledge_count"] = 0
 
-        # Simulations — no persistent counter yet
         stats["simulations"] = 0
 
-        # Evolution
         try:
             from ai.evolution.tracker import EvolutionTracker
-
             tracker = EvolutionTracker()
             stats["evolutions"] = len(tracker.history) if hasattr(tracker, "history") else 0
         except Exception:
             stats["evolutions"] = 0
 
-        # Uptime
         elapsed = _time.time() - _app_start_time
         h, rem = divmod(int(elapsed), 3600)
         m, _ = divmod(rem, 60)
         stats["uptime"] = f"{h}h {m}m"
 
-        return stats, 200
+        return jsonify(stats), 200
 
     # OpenAPI spec and Swagger UI
     _openapi_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "openapi.json")
