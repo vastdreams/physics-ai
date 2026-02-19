@@ -2,55 +2,65 @@
 
 ## Supported Versions
 
-We release patches for security vulnerabilities. Which versions are eligible for receiving such patches depends on the CVSS v3.0 Rating:
-
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 2.x     | :white_check_mark: |
+| < 2.0   | :x:                |
 
 ## Reporting a Vulnerability
 
-We take the security of Beyond Frontier seriously. If you believe you have found a security vulnerability, please report it to us as described below.
+If you discover a security vulnerability, **please do not open a public issue**.
 
-### Please do the following:
+Instead, email **admin@beyondfrontier.local** with:
 
-1. **Do not** open a public GitHub issue
-2. Email the maintainer at: **vastdreams@users.noreply.github.com** (or use [GitHub Security Advisories](https://github.com/vastdreams/physics-ai/security/advisories/new))
-   - Include a detailed description of the vulnerability
-   - Include steps to reproduce the issue
-   - Include potential impact assessment
-   - Include any suggested fixes (if available)
+1. A description of the vulnerability
+2. Steps to reproduce
+3. Potential impact
+4. Suggested fix (if any)
 
-### What to expect:
+We will acknowledge receipt within 48 hours and aim to release a patch within 7 days for critical issues.
 
-- You will receive a response within 48 hours acknowledging your report
-- We will work with you to understand and resolve the issue quickly
-- We will keep you informed of our progress
-- Once the issue is resolved, we will credit you in our security advisories (if desired)
+## Security Measures
 
-### Security Best Practices
+This project implements multiple layers of defense:
 
-When using Beyond Frontier:
+### Authentication & Authorization
+- JWT-based authentication with secure random secrets
+- Account lockout after repeated failed login attempts
+- Password strength enforcement (minimum 8 chars, uppercase, number)
+- Disposable email domain blocking on registration
+- Registration rate limiting per IP
+- Role-based access control (user, researcher, admin)
 
-1. **Keep dependencies updated**: Regularly run `pip install --upgrade -r requirements.txt`
-2. **Review code**: Always review code before executing, especially when using the self-evolution features
-3. **Validate inputs**: Use the provided validators for all inputs
-4. **Monitor logs**: Check logs regularly for suspicious activity
-5. **Use in isolated environments**: When testing self-modification features, use isolated environments
+### Input Validation & Sanitization
+- HTML tag stripping on all user-supplied text
+- SQL/XSS/command injection pattern detection
+- Request body size limits (configurable, default 10 MB)
+- Null byte removal from inputs
+- Path traversal blocking
 
-### Known Security Considerations
+### HTTP Security Headers
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `X-XSS-Protection: 1; mode=block`
+- `Strict-Transport-Security` (HSTS)
+- `Content-Security-Policy`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Permissions-Policy` (camera, microphone, geolocation, payment, usb disabled)
+- `X-Permitted-Cross-Domain-Policies: none`
+- `Cross-Origin-Opener-Policy: same-origin`
+- `Cross-Origin-Resource-Policy: same-origin`
+- Server header removed
 
-- **Code Generation**: The self-evolution module can generate code. Always review generated code before execution.
-- **Rule Execution**: Rules are executed dynamically. Ensure rules come from trusted sources.
-- **File System Access**: Some modules may access the file system. Be cautious with file paths.
+### Rate Limiting & Abuse Prevention
+- Global rate limiting (configurable per-window)
+- Authentication endpoint rate limiting
+- Per-account daily/monthly API usage quotas
+- Automatic IP blocking after suspicious activity threshold
 
-### Security Updates
-
-Security updates will be announced via:
-
-- GitHub Security Advisories
-- Release notes
-- Project discussions
-
-Thank you for helping keep Beyond Frontier and its users safe.
+### Production Hardening
+- Debug mode auto-disabled when `FLASK_ENV=production`
+- CORS restricted to configured origins (no wildcard default)
+- Prometheus `/metrics` endpoint protectable via bearer token
+- Sensitive data files (users.json, usage.json) excluded from git
+- No hardcoded secrets — all credentials loaded from environment variables

@@ -100,7 +100,9 @@ def _get_recent_commits(limit: int = 20, since: str = '') -> List[Dict]:
     try:
         cmd = ['git', 'log', f'--max-count={limit}', '--format=%H|%h|%s|%an|%aI']
         if since:
-            cmd.append(f'--since={since}')
+            _sanitized = re.sub(r'[^0-9\-T:Z +]', '', since)[:30]
+            if _sanitized:
+                cmd.append(f'--since={_sanitized}')
 
         result = subprocess.run(
             cmd,
@@ -250,7 +252,10 @@ def get_commits():
       ?limit=N     — max commits (default: 20)
       ?since=DATE  — only commits after this date (ISO format)
     """
-    limit = min(int(request.args.get('limit', 20)), 100)
+    try:
+        limit = min(max(int(request.args.get('limit', 20)), 1), 100)
+    except (ValueError, TypeError):
+        limit = 20
     since = request.args.get('since', '')
     commits = _get_recent_commits(limit=limit, since=since)
 

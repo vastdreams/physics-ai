@@ -39,7 +39,7 @@ def main() -> None:
         help=f"Port to listen on (default: {_DEFAULT_PORT})",
     )
     parser.add_argument("--no-hot-reload", action="store_true", help="Disable hot reload")
-    parser.add_argument("--debug", action="store_true", default=True, help="Enable debug mode")
+    parser.add_argument("--debug", action="store_true", default=False, help="Enable debug mode (dev only)")
 
     args = parser.parse_args()
 
@@ -78,7 +78,7 @@ def main() -> None:
         debug=args.debug,
         host=args.host,
         port=args.port,
-        allow_unsafe_werkzeug=True,
+        allow_unsafe_werkzeug=args.debug,
         use_reloader=False,  # We use our own hot reload
     )
 

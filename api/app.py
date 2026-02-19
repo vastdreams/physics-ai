@@ -65,8 +65,12 @@ def create_app(enable_hot_reload: bool = None) -> Flask:
     )
 
     # Enable CORS — configurable via CORS_ORIGINS env var (comma-separated)
-    _cors_origins = os.getenv("CORS_ORIGINS", "*")
-    CORS(app, origins=[o.strip() for o in _cors_origins.split(",")])
+    # Default: restrict to same-origin in production; set CORS_ORIGINS=* only for local dev
+    _cors_origins = os.getenv("CORS_ORIGINS", "")
+    if _cors_origins:
+        CORS(app, origins=[o.strip() for o in _cors_origins.split(",")])
+    else:
+        CORS(app)
 
     # Initialize SocketIO with app
     socketio.init_app(app)
@@ -116,7 +120,11 @@ def create_app(enable_hot_reload: bool = None) -> Flask:
 
     @app.route("/api/v1/system/stats", methods=["GET"])
     def system_stats() -> tuple:
-        """Aggregated platform statistics for the Dashboard."""
+        """Aggregated platform statistics for the Dashboard. Requires auth."""
+        from api.middleware.auth import require_auth as _require_auth, get_current_user as _get_user
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return {"success": False, "error": "Authentication required"}, 401
         from api.v1.rules import rule_engine
 
         stats: dict = {}
@@ -174,7 +182,15 @@ def create_app(enable_hot_reload: bool = None) -> Flask:
 
     @app.route("/metrics", methods=["GET"])
     def prometheus_metrics():
-        """Prometheus metrics endpoint. Requires: pip install prometheus-client"""
+        """Prometheus metrics endpoint. Requires: pip install prometheus-client
+        
+        Protected by a bearer token in production (set METRICS_TOKEN env var).
+        """
+        _metrics_token = os.getenv("METRICS_TOKEN", "")
+        if _metrics_token:
+            auth_header = request.headers.get("Authorization", "")
+            if auth_header != f"Bearer {_metrics_token}":
+                return jsonify({"error": "Unauthorized"}), 401
         try:
             from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
             from flask import Response
@@ -247,10 +263,11 @@ def get_socketio() -> SocketIO:
 
 if __name__ == "__main__":
     app = create_app()
+    _is_production = os.getenv("FLASK_ENV") == "production" or os.getenv("ENV") == "production"
     socketio.run(
         app,
-        debug=True,
+        debug=not _is_production,
         host="0.0.0.0",
         port=int(os.getenv("PORT", "5002")),
-        allow_unsafe_werkzeug=True,
+        allow_unsafe_werkzeug=not _is_production,
     )

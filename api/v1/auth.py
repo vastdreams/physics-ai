@@ -183,11 +183,12 @@ def update_me():
     user = get_current_user()
     data = request.get_json() or {}
     
-    # Find and update user
     email = user['email']
     if email in USERS:
         if 'name' in data:
-            USERS[email]['name'] = data['name'].strip()
+            import re as _re
+            _clean_name = _re.sub(r'<[^>]*>', '', str(data['name']))[:100].strip()
+            USERS[email]['name'] = _clean_name
         
         # Return updated user
         updated = {k: v for k, v in USERS[email].items() if k not in ('password_hash', 'salt')}
@@ -220,10 +221,10 @@ def change_password():
             'error': 'Current and new passwords are required'
         }), 400
     
-    if len(new_password) < 8:
+    if len(new_password) < 8 or not any(c.isupper() for c in new_password) or not any(c.isdigit() for c in new_password):
         return jsonify({
             'success': False,
-            'error': 'New password must be at least 8 characters'
+            'error': 'New password must be at least 8 characters with an uppercase letter and a number'
         }), 400
     
     email = user['email']

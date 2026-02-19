@@ -112,9 +112,14 @@ class SecurityMiddleware:
             response.headers["X-Frame-Options"] = "DENY"
             response.headers["X-XSS-Protection"] = "1; mode=block"
             response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+            response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+            response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+            response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
             response.headers["Permissions-Policy"] = (
-                "camera=(), microphone=(), geolocation=(), payment=()"
+                "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
             )
+            if "text/html" not in (response.content_type or ""):
+                response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
 
             # Content Security Policy — permissive for API, tighter for HTML
             if response.content_type and "text/html" in response.content_type:
