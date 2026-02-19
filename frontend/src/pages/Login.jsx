@@ -153,17 +153,16 @@ export default function Login() {
               </button>
             </form>
 
-            <div className="mt-6 text-center text-sm text-slate-500">
-              <p>
-                Default credentials:{' '}
-                <code className="text-xs bg-slate-100 px-1.5 py-0.5 rounded font-mono text-indigo-600">
-                  admin@beyondfrontier.local
-                </code>
-              </p>
-            </div>
           </div>
 
-          <p className="mt-6 text-center text-sm text-slate-400">
+          <p className="mt-6 text-center text-sm text-slate-500">
+            Don&apos;t have an account?{' '}
+            <Link to="/signup" className="text-indigo-500 font-semibold hover:text-indigo-600 transition-colors">
+              Sign up free
+            </Link>
+          </p>
+
+          <p className="mt-3 text-center text-sm text-slate-400">
             <Link to="/" className="hover:text-slate-600 transition-colors">
               Back to home
             </Link>

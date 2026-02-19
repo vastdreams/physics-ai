@@ -60,6 +60,7 @@ const buildNavigationSections = (knowledgeCount) => [
       { name: 'Logs', path: '/logs', icon: Terminal },
       { name: 'Metrics', path: '/metrics', icon: LineChart },
       { name: 'Settings', path: '/settings', icon: Settings },
+      { name: 'Documentation', path: '/docs', icon: BookOpen },
       { name: 'About', path: '/about', icon: Info },
     ]
   }

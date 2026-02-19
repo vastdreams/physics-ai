@@ -84,14 +84,18 @@ def create_app(enable_hot_reload: bool = None) -> Flask:
     # Setup WebSocket handlers
     setup_websocket_handlers(app, socketio)
 
-    # Setup middleware
+    # Setup middleware (order: security → logging → validation → rate limit → usage)
+    from api.middleware.security import SecurityMiddleware
     from api.middleware.logging import LoggingMiddleware
     from api.middleware.rate_limit import RateLimitMiddleware
     from api.middleware.validation import ValidationMiddleware
+    from api.middleware.usage_limits import UsageLimitMiddleware
 
+    SecurityMiddleware.setup(app)
     LoggingMiddleware.setup(app)
     ValidationMiddleware.setup(app)
     RateLimitMiddleware.setup(app, global_limit=120, global_window=60)
+    UsageLimitMiddleware.setup(app)
 
     # Health check endpoint
     @app.route("/health", methods=["GET"])

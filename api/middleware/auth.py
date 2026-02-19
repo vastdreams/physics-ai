@@ -44,7 +44,57 @@ AUTH_CONFIG = {
     "access_token_expiry": 3600,  # 1 hour
     "refresh_token_expiry": 86400 * 7,  # 7 days
     "password_min_length": 8,
+    # ── Account lockout ──
+    "max_failed_attempts": 5,          # lock after N failures
+    "lockout_duration": 900,           # 15 minutes
+    "failed_attempt_window": 600,      # track failures within 10 min
 }
+
+# ── Failed login attempt tracker (IP + email) ──────────────────
+# Key: "ip:<addr>" or "email:<addr>" → list of timestamps
+_failed_attempts: Dict[str, list] = {}
+_failed_lock = __import__("threading").Lock()
+
+
+def _record_failed_attempt(ip: str, email: str) -> None:
+    """Record a failed login attempt for both IP and email."""
+    now = time.time()
+    window = AUTH_CONFIG["failed_attempt_window"]
+    with _failed_lock:
+        for key in (f"ip:{ip}", f"email:{email}"):
+            attempts = _failed_attempts.setdefault(key, [])
+            # Prune old entries
+            _failed_attempts[key] = [t for t in attempts if now - t < window]
+            _failed_attempts[key].append(now)
+
+
+def _is_locked_out(ip: str, email: str) -> Tuple[bool, int]:
+    """
+    Check if the IP or email is locked out.
+    Returns (is_locked, seconds_remaining).
+    """
+    now = time.time()
+    max_attempts = AUTH_CONFIG["max_failed_attempts"]
+    lockout_dur = AUTH_CONFIG["lockout_duration"]
+    window = AUTH_CONFIG["failed_attempt_window"]
+
+    with _failed_lock:
+        for key in (f"ip:{ip}", f"email:{email}"):
+            attempts = _failed_attempts.get(key, [])
+            recent = [t for t in attempts if now - t < window]
+            if len(recent) >= max_attempts:
+                last = max(recent)
+                remaining = int(lockout_dur - (now - last))
+                if remaining > 0:
+                    return True, remaining
+    return False, 0
+
+
+def _clear_failed_attempts(ip: str, email: str) -> None:
+    """Clear failed attempt counters on successful login."""
+    with _failed_lock:
+        _failed_attempts.pop(f"ip:{ip}", None)
+        _failed_attempts.pop(f"email:{email}", None)
 
 # ── Persistent user store (JSON file) ───────────────────────────
 _USERS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "users.json")
@@ -188,31 +238,135 @@ def _verify_password(password: str, hashed: str, salt: str) -> bool:
     return hmac.compare_digest(test_hash, hashed)
 
 
+def _validate_email(email: str) -> bool:
+    """Basic but strict email validation."""
+    import re
+    if not email or len(email) > 254:
+        return False
+    pattern = r'^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$'
+    return bool(re.match(pattern, email))
+
+
+# Disposable / temporary email domains — block throwaway signups
+_DISPOSABLE_DOMAINS = frozenset({
+    "mailinator.com", "guerrillamail.com", "guerrillamail.net", "tempmail.com",
+    "throwaway.email", "10minutemail.com", "trashmail.com", "yopmail.com",
+    "sharklasers.com", "guerrillamailblock.com", "grr.la", "dispostable.com",
+    "mailnesia.com", "maildrop.cc", "discard.email", "getnada.com",
+    "tempail.com", "temp-mail.org", "fakeinbox.com", "mailcatch.com",
+    "meltmail.com", "harakirimail.com", "tmail.ws", "mohmal.com",
+    "burnermail.io", "inboxkitten.com", "mailsac.com", "tempmailo.com",
+    "emailondeck.com", "crazymailing.com", "mytemp.email",
+    "minutemail.com", "tempmailaddress.com", "emailfake.com",
+    "generator.email", "safetymail.info", "trashmail.me", "trashmail.net",
+})
+
+
+def _is_disposable_email(email: str) -> bool:
+    """Check if email uses a known disposable/temporary domain."""
+    domain = email.rsplit("@", 1)[-1].lower()
+    return domain in _DISPOSABLE_DOMAINS
+
+
+# ── Registration rate tracking (per IP) ──────────────────────
+_registration_tracker: Dict[str, list] = {}
+_reg_lock = __import__("threading").Lock()
+_MAX_REGISTRATIONS_PER_IP = int(os.environ.get("MAX_REGISTRATIONS_PER_IP", "3"))
+_REGISTRATION_WINDOW = int(os.environ.get("REGISTRATION_WINDOW", "3600"))  # 1 hour
+
+
+def _check_registration_rate(ip: str) -> Tuple[bool, str]:
+    """Limit registrations per IP to prevent mass account creation."""
+    now = time.time()
+    with _reg_lock:
+        regs = _registration_tracker.get(ip, [])
+        recent = [t for t in regs if now - t < _REGISTRATION_WINDOW]
+        _registration_tracker[ip] = recent
+
+        if len(recent) >= _MAX_REGISTRATIONS_PER_IP:
+            return False, f"Too many registrations from this IP. Try again in {_REGISTRATION_WINDOW // 60} minutes."
+        return True, ""
+
+
+def _record_registration(ip: str) -> None:
+    """Record a successful registration from this IP."""
+    with _reg_lock:
+        _registration_tracker.setdefault(ip, []).append(time.time())
+
+
+def _validate_password_strength(password: str) -> Optional[str]:
+    """
+    Enforce password complexity.
+    Returns error message or None if valid.
+    """
+    min_len = AUTH_CONFIG["password_min_length"]
+    if len(password) < min_len:
+        return f"Password must be at least {min_len} characters"
+    if len(password) > 128:
+        return "Password must be 128 characters or fewer"
+    if not any(c.isupper() for c in password):
+        return "Password must contain at least one uppercase letter"
+    if not any(c.isdigit() for c in password):
+        return "Password must contain at least one number"
+    # Check for common weak passwords
+    weak = {"password", "12345678", "qwerty123", "letmein", "welcome1", "admin123", "changeme"}
+    if password.lower().strip() in weak:
+        return "Password is too common — choose something stronger"
+    return None
+
+
+def _sanitize_text(text: str, max_length: int = 100) -> str:
+    """Strip dangerous characters and limit length."""
+    import re
+    # Remove any HTML / script tags
+    text = re.sub(r'<[^>]+>', '', text)
+    # Remove null bytes
+    text = text.replace('\x00', '')
+    # Limit length
+    return text[:max_length].strip()
+
+
 def register_user(
     email: str,
     password: str,
     name: str = "",
-    role: str = "user"
+    role: str = "user",
+    client_ip: str = "unknown",
 ) -> Tuple[bool, str, Optional[Dict]]:
     """
     Register a new user.
     
     Returns (success, message, user_data).
     """
-    # Validation
-    if not email or '@' not in email:
+    # ── Input sanitization ──
+    email = email.strip().lower()
+    name = _sanitize_text(name, 100)
+
+    # ── Email validation ──
+    if not _validate_email(email):
         return False, "Invalid email address", None
+
+    # ── Block disposable emails ──
+    if _is_disposable_email(email):
+        return False, "Temporary/disposable email addresses are not allowed. Please use a real email.", None
+
+    # ── Registration rate limit per IP ──
+    allowed, rate_msg = _check_registration_rate(client_ip)
+    if not allowed:
+        return False, rate_msg, None
+
+    # ── Password strength ──
+    pw_error = _validate_password_strength(password)
+    if pw_error:
+        return False, pw_error, None
     
-    if len(password) < AUTH_CONFIG["password_min_length"]:
-        return False, f"Password must be at least {AUTH_CONFIG['password_min_length']} characters", None
-    
-    if email.lower() in USERS:
+    if email in USERS:
         return False, "Email already registered", None
     
     # Hash password
     password_hash, salt = _hash_password(password)
     
-    # Create user
+    # Create user with usage tracking
     user_id = hashlib.sha256(email.lower().encode()).hexdigest()[:16]
     user = {
         "id": user_id,
@@ -224,7 +378,10 @@ def register_user(
         "created_at": datetime.now().isoformat(),
         "last_login": None,
         "is_active": True,
+        "registered_ip": client_ip,
     }
+
+    _record_registration(client_ip)
     
     USERS[email.lower()] = user
     _save_users()
@@ -234,24 +391,39 @@ def register_user(
     return True, "User registered successfully", safe_user
 
 
-def login_user(email: str, password: str) -> Tuple[bool, str, Optional[Dict]]:
+def login_user(email: str, password: str, client_ip: str = "unknown") -> Tuple[bool, str, Optional[Dict]]:
     """
     Authenticate a user and return tokens.
+    Includes account lockout after repeated failures.
     
     Returns (success, message, token_data).
     """
-    email = email.lower()
-    
+    email = email.lower().strip()
+
+    # ── Check lockout before even touching the DB ──
+    locked, remaining = _is_locked_out(client_ip, email)
+    if locked:
+        return False, f"Account temporarily locked. Try again in {remaining // 60 + 1} minutes.", None
+
     if email not in USERS:
+        _record_failed_attempt(client_ip, email)
         return False, "Invalid credentials", None
     
     user = USERS[email]
     
     if not user.get("is_active", True):
-        return False, "Account is disabled", None
+        return False, "Account is disabled. Contact support.", None
     
     if not _verify_password(password, user["password_hash"], user["salt"]):
+        _record_failed_attempt(client_ip, email)
+        # Check if this attempt triggers lockout — give helpful message
+        locked_now, secs = _is_locked_out(client_ip, email)
+        if locked_now:
+            return False, f"Too many failed attempts. Account locked for {secs // 60 + 1} minutes.", None
         return False, "Invalid credentials", None
+    
+    # ── Success — clear failed attempts ──
+    _clear_failed_attempts(client_ip, email)
     
     # Update last login
     user["last_login"] = datetime.now().isoformat()

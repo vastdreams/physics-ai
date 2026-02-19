@@ -10,6 +10,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/layout/Layout';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Chat from './pages/Chat';
 import Simulations from './pages/Simulations';
@@ -23,6 +24,7 @@ import Logs from './pages/Logs';
 import Metrics from './pages/Metrics';
 import Settings from './pages/Settings';
 import About from './pages/About';
+import Documentation from './pages/Documentation';
 import NotFound from './pages/NotFound';
 import UpdateBanner from './components/UpdateBanner';
 
@@ -36,6 +38,8 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/docs" element={<Documentation />} />
 
           {/* Protected app routes */}
           <Route element={

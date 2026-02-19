@@ -1,73 +1,98 @@
 /**
  * PATH: frontend/src/hooks/useAutoUpdate.js
- * PURPOSE: Poll /version.json to detect when a new build is deployed.
+ * PURPOSE: Poll /version.json to detect new builds + expose release notes.
  *
- * When a mismatch is detected the hook exposes `updateAvailable = true`
- * so the UI can show a non-intrusive refresh banner.
- *
- * The build hash is injected at compile time by Vite via `define`.
+ * The build hash is shared between the Vite `define` and the version.json
+ * manifest, so a mismatch genuinely means a new deployment happened.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-/* Globals injected by vite.config.js */
+/* Globals injected by vite.config.js — same hash written to version.json */
 const CURRENT_BUILD = typeof __BUILD_HASH__ !== 'undefined' ? __BUILD_HASH__ : null;
+const CURRENT_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '';
 
-/** How often to poll (ms).  Default: 60 s in production, never in dev. */
+/** Poll interval: 60s in prod, disabled in dev */
 const POLL_INTERVAL = import.meta.env.PROD ? 60_000 : 0;
 
 /**
- * Poll /version.json to detect new builds and expose an update banner.
- * @returns {{ updateAvailable: boolean, latestVersion: string|null, reload: Function, dismiss: Function }}
+ * @returns {{
+ *   updateAvailable: boolean,
+ *   latestVersion: string|null,
+ *   currentVersion: string,
+ *   releaseNotes: Array<{version:string, date:string, changes:Array}>,
+ *   reload: () => void,
+ *   dismiss: () => void,
+ * }}
  */
 export default function useAutoUpdate() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [latestVersion, setLatestVersion] = useState(null);
+  const [releaseNotes, setReleaseNotes] = useState([]);
   const timerRef = useRef(null);
 
   const check = useCallback(async () => {
-    // Don't poll during development or if we have no build hash
     if (!CURRENT_BUILD) return;
 
     try {
-      // Cache-bust so CDNs and browsers don't serve the old manifest
       const res = await fetch(`/version.json?_=${Date.now()}`, {
         cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' },
       });
       if (!res.ok) return;
 
       const data = await res.json();
+
+      // Always grab release notes (useful for "What's New" even if no update)
+      if (data.releaseNotes?.length) {
+        setReleaseNotes(data.releaseNotes);
+      }
+
       if (data.buildHash && data.buildHash !== CURRENT_BUILD) {
         setUpdateAvailable(true);
         setLatestVersion(data.version || null);
       }
     } catch {
-      // Network error — silent. We'll retry on the next interval.
+      // Network error — silent retry next interval
     }
   }, []);
 
   useEffect(() => {
-    if (!POLL_INTERVAL) return;
+    // Always do an initial fetch for release notes (even in dev)
+    const initialDelay = setTimeout(check, 2_000);
 
-    // Initial check after a short delay (let the app settle)
-    const initialDelay = setTimeout(check, 5_000);
-
-    // Recurring checks
-    timerRef.current = setInterval(check, POLL_INTERVAL);
+    if (POLL_INTERVAL) {
+      timerRef.current = setInterval(check, POLL_INTERVAL);
+    }
 
     return () => {
       clearTimeout(initialDelay);
-      clearInterval(timerRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [check]);
 
+  /** Hard reload — bust the service worker & browser cache */
   const reload = useCallback(() => {
-    window.location.reload();
+    // Unregister any service workers that might cache the old build
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        regs.forEach((r) => r.unregister());
+      });
+    }
+    // Cache-busting reload
+    window.location.href = window.location.pathname + '?v=' + Date.now();
   }, []);
 
   const dismiss = useCallback(() => {
     setUpdateAvailable(false);
   }, []);
 
-  return { updateAvailable, latestVersion, reload, dismiss };
+  return {
+    updateAvailable,
+    latestVersion,
+    currentVersion: CURRENT_VERSION,
+    releaseNotes,
+    reload,
+    dismiss,
+  };
 }

@@ -29,15 +29,31 @@ from api.middleware.auth import (
     _hash_password,
     _verify_password,
 )
+from api.middleware.rate_limit import rate_limit_auth
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
+def _get_client_ip():
+    """Get real client IP, respecting reverse proxy headers."""
+    # X-Forwarded-For from Nginx / load balancer
+    forwarded = request.headers.get('X-Forwarded-For', '')
+    if forwarded:
+        return forwarded.split(',')[0].strip()
+    return request.remote_addr or 'unknown'
+
+
 @auth_bp.route('/register', methods=['POST'])
+@rate_limit_auth
 def register():
-    """Register a new user."""
-    data = request.get_json() or {}
-    
+    """Register a new user. Rate-limited to prevent abuse."""
+    data = request.get_json()
+    if not data or not isinstance(data, dict):
+        return jsonify({
+            'success': False,
+            'error': 'Invalid request body'
+        }), 400
+
     email = data.get('email', '').strip()
     password = data.get('password', '')
     name = data.get('name', '').strip()
@@ -48,11 +64,13 @@ def register():
             'error': 'Email and password are required'
         }), 400
     
+    client_ip = _get_client_ip()
     success, message, user = register_user(
         email=email,
         password=password,
         name=name,
-        role='user'  # Default role
+        role='user',  # Default role — never trust client-supplied role
+        client_ip=client_ip,
     )
     
     if not success:
@@ -69,10 +87,16 @@ def register():
 
 
 @auth_bp.route('/login', methods=['POST'])
+@rate_limit_auth
 def login():
-    """Login and get access/refresh tokens."""
-    data = request.get_json() or {}
-    
+    """Login and get access/refresh tokens. Rate-limited with account lockout."""
+    data = request.get_json()
+    if not data or not isinstance(data, dict):
+        return jsonify({
+            'success': False,
+            'error': 'Invalid request body'
+        }), 400
+
     email = data.get('email', '').strip()
     password = data.get('password', '')
     
@@ -82,7 +106,8 @@ def login():
             'error': 'Email and password are required'
         }), 400
     
-    success, message, token_data = login_user(email, password)
+    client_ip = _get_client_ip()
+    success, message, token_data = login_user(email, password, client_ip=client_ip)
     
     if not success:
         return jsonify({
@@ -94,6 +119,19 @@ def login():
         'success': True,
         'message': message,
         **token_data
+    })
+
+
+@auth_bp.route('/usage', methods=['GET'])
+@require_auth
+def get_usage():
+    """Get current user's API usage and remaining quota."""
+    from api.middleware.usage_limits import get_usage_summary
+    user = get_current_user()
+    summary = get_usage_summary(user['id'], user.get('role', 'user'))
+    return jsonify({
+        'success': True,
+        'usage': summary,
     })
 
 

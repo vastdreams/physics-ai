@@ -26,6 +26,7 @@ api_v1 = Blueprint('api_v1', __name__, url_prefix='/api/v1')
 from . import simulate, nodes, rules, evolution, cot, vector, state_graph, context, equational, brain, substrate, system, experiments, discovery
 from .agents import agents_bp
 from .auth import auth_bp
+from .changelog import changelog_bp
 from .evolution_api import evolution_bp
 from .knowledge import knowledge_bp
 from .logs import logs_bp
@@ -40,3 +41,4 @@ api_v1.register_blueprint(logs_bp)
 api_v1.register_blueprint(agents_bp)
 api_v1.register_blueprint(evolution_bp)
 api_v1.register_blueprint(auth_bp)
+api_v1.register_blueprint(changelog_bp)

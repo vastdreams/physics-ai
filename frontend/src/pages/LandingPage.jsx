@@ -166,8 +166,9 @@ export default function LandingPage() {
           <a href="#features" className="hover:text-slate-900 transition-colors">Features</a>
           <a href="#architecture" className="hover:text-slate-900 transition-colors">Architecture</a>
           <a href="#compare" className="hover:text-slate-900 transition-colors">Compare</a>
-          <Link to="/login" className="btn-fancy text-sm px-5 py-2">
-            Launch App
+          <Link to="/docs" className="hover:text-slate-900 transition-colors">Docs</Link>
+          <Link to="/signup" className="btn-fancy text-sm px-5 py-2">
+            Get Started
           </Link>
         </div>
       </nav>
@@ -199,8 +200,8 @@ export default function LandingPage() {
           </p>
 
           <div className="reveal flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/login" className="btn-fancy text-lg px-8 py-3.5 shadow-xl shadow-indigo-200/50">
-              Launch App
+            <Link to="/signup" className="btn-fancy text-lg px-8 py-3.5 shadow-xl shadow-indigo-200/50">
+              Get Started Free
               <ArrowRight size={20} className="inline ml-2" />
             </Link>
             <a href="#features" className="btn-ghost-fancy text-lg px-8 py-3.5">
@@ -417,8 +418,8 @@ export default function LandingPage() {
             Open-source. Self-evolving. Built for the future of discovery.
           </p>
           <div className="reveal">
-            <Link to="/login" className="btn-fancy text-lg px-10 py-4 shadow-2xl shadow-indigo-200/60">
-              Launch Beyond Frontier
+            <Link to="/signup" className="btn-fancy text-lg px-10 py-4 shadow-2xl shadow-indigo-200/60">
+              Get Started Free
               <ArrowRight size={22} className="inline ml-2" />
             </Link>
           </div>
@@ -438,6 +439,7 @@ export default function LandingPage() {
             Pushing physics past the known. Open source under MIT License.
           </p>
           <div className="flex items-center gap-6 text-sm text-slate-500">
+            <Link to="/docs" className="hover:text-slate-900 transition-colors">Documentation</Link>
             <a href="https://github.com/vastdreams/physics-ai" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900 transition-colors">
               GitHub
             </a>

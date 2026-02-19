@@ -55,6 +55,32 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  /** Register a new account and auto-login */
+  const register = useCallback(async (name, email, password) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Registration failed');
+      }
+
+      // Auto-login after registration
+      return await login(email, password);
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [login]);
+
   /** Logout */
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
@@ -104,7 +130,7 @@ export function AuthProvider({ children }) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated, loading, error, login, logout, setError }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, loading, error, login, register, logout, setError }}>
       {children}
     </AuthContext.Provider>
   );

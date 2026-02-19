@@ -9,6 +9,7 @@ import {
   Atom,
   Brain,
   GitBranch,
+  GitCommit,
   Activity,
   Zap,
   BookOpen,
@@ -22,6 +23,11 @@ import {
   Database,
   Sparkles,
   Play,
+  Rocket,
+  Shield,
+  Wrench,
+  Star,
+  ChevronRight,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { API_BASE } from '../config';
@@ -191,6 +197,170 @@ function SystemStatus({ status }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/*  What's New — changelog + commits from API                          */
+/* ------------------------------------------------------------------ */
+const categoryIcon = {
+  Features: Rocket,
+  Added: Rocket,
+  Improvements: Star,
+  Changed: Star,
+  Fixes: Wrench,
+  Fixed: Wrench,
+  Security: Shield,
+  default: ChevronRight,
+};
+const categoryColor = {
+  Features: 'text-indigo-500 bg-indigo-50',
+  Added: 'text-indigo-500 bg-indigo-50',
+  Improvements: 'text-amber-500 bg-amber-50',
+  Changed: 'text-amber-500 bg-amber-50',
+  Fixes: 'text-emerald-500 bg-emerald-50',
+  Fixed: 'text-emerald-500 bg-emerald-50',
+  Security: 'text-red-500 bg-red-50',
+  default: 'text-slate-500 bg-slate-50',
+};
+
+function WhatsNew({ changelog, commits, loading }) {
+  const [tab, setTab] = useState('notes');
+
+  // Combine changelog changes + generated notes for display
+  const changes = [];
+  if (changelog?.latest_release?.changes) {
+    changes.push(...changelog.latest_release.changes);
+  }
+  if (changelog?.generated_notes?.[0]?.changes) {
+    changes.push(...changelog.generated_notes[0].changes);
+  }
+  // Deduplicate by text
+  const seen = new Set();
+  const uniqueChanges = changes.filter(c => {
+    const key = c.text?.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const recentCommits = (changelog?.recent_commits || commits || []).slice(0, 8);
+  const version = changelog?.latest_release?.version || '';
+  const releaseDate = changelog?.latest_release?.date || '';
+
+  if (loading) {
+    return (
+      <div className="card animate-pulse">
+        <div className="h-5 bg-slate-100 rounded w-32 mb-4" />
+        <div className="space-y-3">
+          <div className="h-4 bg-slate-50 rounded w-full" />
+          <div className="h-4 bg-slate-50 rounded w-3/4" />
+          <div className="h-4 bg-slate-50 rounded w-5/6" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!uniqueChanges.length && !recentCommits.length) return null;
+
+  return (
+    <div className="card">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center">
+            <Sparkles size={14} className="text-white" />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-800">What&apos;s New</h3>
+            {version && (
+              <p className="text-[10px] text-slate-400 font-medium">
+                v{version}{releaseDate ? ` · ${releaseDate}` : ''}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex rounded-lg bg-slate-100 p-0.5">
+          {['notes', 'commits'].map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={clsx(
+                'px-3 py-1 rounded-md text-xs font-semibold transition-all',
+                tab === t
+                  ? 'bg-white text-slate-800 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-600'
+              )}
+            >
+              {t === 'notes' ? 'Release Notes' : 'Commits'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {tab === 'notes' && uniqueChanges.length > 0 && (
+        <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+          {uniqueChanges.slice(0, 12).map((item, i) => {
+            const Icon = categoryIcon[item.category] || categoryIcon.default;
+            const color = categoryColor[item.category] || categoryColor.default;
+            return (
+              <div key={i} className="flex items-start gap-2.5 py-1.5">
+                <div className={clsx('w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5', color)}>
+                  <Icon size={12} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  {item.category && (
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 mr-2">
+                      {item.category}
+                    </span>
+                  )}
+                  <p className="text-sm text-slate-600 leading-relaxed">{item.text}</p>
+                </div>
+              </div>
+            );
+          })}
+          {uniqueChanges.length > 12 && (
+            <p className="text-xs text-slate-400 text-center pt-1">
+              +{uniqueChanges.length - 12} more changes
+            </p>
+          )}
+        </div>
+      )}
+
+      {tab === 'notes' && uniqueChanges.length === 0 && (
+        <p className="text-sm text-slate-400 text-center py-6">
+          No release notes yet — check the commits tab
+        </p>
+      )}
+
+      {tab === 'commits' && recentCommits.length > 0 && (
+        <div className="space-y-1 max-h-64 overflow-y-auto pr-1">
+          {recentCommits.map((c, i) => (
+            <div key={c.sha || i} className="flex items-start gap-2.5 py-2 group">
+              <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center flex-shrink-0 mt-0.5 text-slate-400 group-hover:text-slate-600">
+                <GitCommit size={12} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-slate-600 truncate">{c.message}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <code className="text-[10px] font-mono text-indigo-400 bg-indigo-50 px-1.5 py-0.5 rounded">
+                    {c.short_sha}
+                  </code>
+                  <span className="text-[10px] text-slate-400">
+                    {c.author}{c.date ? ` · ${c.date.slice(0, 10)}` : ''}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === 'commits' && recentCommits.length === 0 && (
+        <p className="text-sm text-slate-400 text-center py-6">
+          No recent commits found
+        </p>
+      )}
+    </div>
+  );
+}
+
 /* ================================================================== */
 /*  Dashboard                                                          */
 /* ================================================================== */
@@ -207,9 +377,24 @@ export default function Dashboard() {
     ]
   });
   const [demoMode, setDemoMode] = useState(false);
+  const [changelog, setChangelog] = useState(null);
+  const [changelogLoading, setChangelogLoading] = useState(true);
 
   useEffect(() => {
     let failed = 0;
+
+    // Fetch changelog / What's New data
+    const fetchChangelog = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/v1/changelog/latest`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success) setChangelog(data);
+        }
+      } catch { /* non-fatal */ }
+      finally { setChangelogLoading(false); }
+    };
+    fetchChangelog();
 
     const fetchStats = async () => {
       try {
@@ -382,6 +567,7 @@ export default function Dashboard() {
         </div>
 
         <div className="space-y-4">
+          <WhatsNew changelog={changelog} loading={changelogLoading} />
           <RecentActivity activities={activities} />
           <SystemStatus status={systemStatus} />
         </div>
